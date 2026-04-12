@@ -1,0 +1,540 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="Optica.Site1" %>
+
+<!DOCTYPE html>
+<html lang="es">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Óptica 20/20 - Sistema de Gestión</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script type="text/javascript">
+        setInterval(function () {
+            fetch('/KeepAlive.ashx').catch(e => console.log(e));
+        }, 30000);
+    </script>
+
+    <style>
+        :root {
+            --sidebar-bg: #1e1e2d;           
+            --sidebar-text: #9899ac;        
+            --sidebar-hover-bg: #2a2a3c;    
+            --accent-color: #FFC107;        
+            --text-white: #ffffff;
+            --body-bg: #f4f6f9;
+            
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 70px;
+            --header-height: 70px;
+            --transition-speed: 0.4s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        a { text-decoration: none; }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed { 
+            width: var(--sidebar-collapsed-width); 
+            overflow: visible;
+        }
+
+        .sidebar-header {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            white-space: nowrap;
+            transition: opacity 0.3s;
+        }
+
+        .logo-icon { 
+            font-size: 28px; 
+            color: var(--accent-color); 
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .company-name { font-size: 20px; font-weight: 600; color: var(--text-white); }
+        
+        .sidebar.collapsed .company-name { display: none; }
+
+        .sidebar-nav { flex: 1; padding-top: 25px; overflow-y: auto; overflow-x: hidden; }
+        
+        .sidebar-nav::-webkit-scrollbar { width: 5px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+        .nav-list { list-style: none; padding: 0 15px; }
+        
+        .nav-item { 
+            margin-bottom: 15px;
+            position: relative; 
+        }
+
+        .nav-item { animation: slideInLeft 0.5s backwards; }
+        .nav-item:nth-child(1) { animation-delay: 0.1s; }
+        .nav-item:nth-child(2) { animation-delay: 0.15s; }
+        .nav-item:nth-child(3) { animation-delay: 0.2s; }
+        .nav-item:nth-child(4) { animation-delay: 0.25s; }
+        .nav-item:nth-child(5) { animation-delay: 0.3s; }
+        .nav-item:nth-child(6) { animation-delay: 0.35s; }
+        .nav-item:nth-child(7) { animation-delay: 0.4s; }
+        .nav-item:nth-child(8) { animation-delay: 0.45s; }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 15px;
+            color: var(--sidebar-text);
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            white-space: nowrap;
+            gap: 15px;
+        }
+
+        .nav-icon {
+            width: 24px; 
+            font-size: 19px; 
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .nav-text { font-weight: 500; font-size: 14px; transition: 0.2s; }
+        .dropdown-icon { margin-left: auto; font-size: 12px; transition: 0.3s; }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--sidebar-hover-bg);
+            color: var(--text-white);
+            transform: translateX(5px);
+        }
+        
+        .nav-link:hover .nav-icon, .nav-link.active .nav-icon { 
+            color: var(--accent-color); 
+            transform: scale(1.1);
+        }
+
+        .nav-link::before {
+            content: ''; position: absolute; left: 0; top: 50%; height: 0%; width: 4px;
+            background-color: var(--accent-color);
+            border-radius: 0 4px 4px 0;
+            transform: translateY(-50%); 
+            transition: height 0.3s;
+        }
+        .nav-link:hover::before, .nav-link.active::before { height: 70%; }
+
+        .submenu {
+            list-style: none; background: rgba(0,0,0,0.2);
+            max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out;
+            margin-left: 10px; margin-right: 10px; border-radius: 8px;
+        }
+        .submenu.active { max-height: 500px; padding: 5px 0; margin-bottom: 10px; }
+        .has-submenu.active > .nav-link .dropdown-icon { transform: rotate(180deg); }
+        
+        .submenu li a {
+            display: flex; 
+            align-items: center;
+            padding: 12px 15px 12px 48px;
+            font-size: 13px; color: var(--sidebar-text);
+            border-radius: 6px;
+            transition: all 0.2s;
+            gap: 12px;
+        }
+        .submenu li a i { font-size: 12px; width: 15px; text-align: center; }
+
+        .submenu li a:hover { 
+            color: var(--text-white); 
+            background: rgba(255,255,255,0.05); 
+            padding-left: 52px;
+        }
+
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .dropdown-icon,
+        .sidebar.collapsed .submenu {
+            display: none; 
+        }
+
+        .sidebar.collapsed .nav-item:hover .nav-link {
+            background-color: var(--sidebar-hover-bg);
+            width: var(--sidebar-collapsed-width);
+            transform: none;
+        }
+
+        .sidebar.collapsed .nav-item:hover .nav-text {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: var(--sidebar-collapsed-width);
+            top: 0;
+            background-color: var(--sidebar-bg);
+            color: var(--text-white);
+            height: 100%;
+            padding-left: 25px;
+            padding-right: 25px;
+            width: auto;
+            min-width: 200px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            z-index: 1002;
+            font-weight: 600;
+            animation: fadeIn 0.2s;
+        }
+
+        .sidebar.collapsed .nav-item:hover .submenu {
+            display: block;
+            position: absolute;
+            left: var(--sidebar-collapsed-width);
+            top: 55px; 
+            width: 220px;
+            background-color: var(--sidebar-hover-bg);
+            max-height: fit-content;
+            padding: 10px 0;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 5px 10px 15px rgba(0,0,0,0.3);
+            z-index: 1001;
+            animation: fadeIn 0.3s;
+        }
+
+        .sidebar.collapsed .nav-item:hover .submenu li a {
+            padding-left: 25px;
+            color: #ccc;
+        }
+        .sidebar.collapsed .nav-item:hover .submenu li a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            padding-left: 30px;
+        }
+
+        .user-info {
+            padding: 20px; text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.2);
+            margin-top: auto;
+        }
+        .user-avatar i { 
+            font-size: 35px;
+            color: var(--accent-color); 
+            margin-bottom: 8px; 
+            transition: transform 0.3s;
+        }
+        .user-info:hover .user-avatar i { transform: scale(1.2) rotate(10deg); }
+
+        .user-name { color: #fff; font-weight: 600; font-size: 14px; margin: 0; }
+        .user-role { color: var(--sidebar-text); font-size: 11px; margin-bottom: 12px; }
+        
+        .logout-btn {
+            background: linear-gradient(45deg, #d32f2f, #b71c1c);
+            color: white; border: none; padding: 10px 15px;
+            border-radius: 20px; font-size: 12px; cursor: pointer;
+            width: 100%; transition: 0.3s;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .logout-btn:hover { 
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.5); 
+            transform: translateY(-2px); 
+        }
+
+        .sidebar.collapsed .user-details, 
+        .sidebar.collapsed .logout-btn { display: none; }
+        
+        .main-content {
+            flex: 1; margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: var(--body-bg);
+            display: flex; flex-direction: column;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .main-content.expanded { margin-left: var(--sidebar-collapsed-width); }
+
+        .content-header {
+            height: var(--header-height); background: #fff; padding: 0 30px;
+            display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 900;
+        }
+
+        .toggle-btn {
+            background: none; border: none; font-size: 22px;
+            cursor: pointer; color: #333; margin-right: 25px;
+            transition: transform 0.3s, color 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%;
+        }
+        .toggle-btn:hover { 
+            color: var(--accent-color); 
+            background: rgba(0,0,0,0.05);
+        }
+        .toggle-btn:active { transform: scale(0.9); }
+
+        #pageTitle { font-size: 1.3rem; font-weight: 600; color: #1e1e2d; margin: 0; }
+        .content-area { padding: 30px; flex: 1; }
+
+        <% if (Request.Url.AbsoluteUri.ToLower().Contains("login.aspx")) { %>
+            .sidebar, .content-header { display: none !important; }
+            .main-content { margin-left: 0 !important; }
+            .content-area { padding: 0 !important; }
+            body { background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%) !important; }
+        <% } %>
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: var(--sidebar-width); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .main-content.expanded { margin-left: 0; }
+            .sidebar.collapsed { transform: translateX(0); }
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="main-container">
+            
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo-container">
+                        <i class="fas fa-glasses logo-icon"></i>
+                        <h1 class="company-name">Óptica 20/20</h1>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="/Formularios/Default.aspx" class="nav-link active">
+                                <i class="fas fa-home nav-icon"></i><span class="nav-text">Inicio</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liGabinete" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-user-doctor nav-icon"></i>
+                                <span class="nav-text">Gabinete</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/Expediente.aspx"><i class="fas fa-file-medical"></i> Expedientes</a></li>
+                                <li><a href="/Formularios/Cita.aspx"><i class="fas fa-calendar-check"></i> Citas</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liVentas" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-cash-register nav-icon"></i>
+                                <span class="nav-text">Ventas</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/HistorialVentas.aspx"><i class="fas fa-list-check"></i> Historial Ventas</a></li>
+                                <li><a href="/Formularios/Venta.aspx"><i class="fas fa-cart-plus"></i> Nueva Venta</a></li>
+                                <li><a href="/Formularios/Entrega.aspx"><i class="fas fa-truck-fast"></i> Entregas</a></li>
+                                <li><a href="/Formularios/Garantias.aspx"><i class="fas fa-shield-halved"></i> Garantías</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liCompras" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-bag-shopping nav-icon"></i>
+                                <span class="nav-text">Compras</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/GestionCompras.aspx"><i class="fas fa-list-check"></i> Historial Compras</a></li>
+                                <li><a href="/Formularios/RegistrarCompra.aspx"><i class="fas fa-truck-ramp-box"></i> Nueva Compra</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liProductos" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-box nav-icon"></i>
+                                <span class="nav-text">Productos</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/Productos.aspx"><i class="fas fa-glasses"></i> Inventario</a></li>
+                                <li><a href="/Formularios/Categoria.aspx"><i class="fas fa-tags"></i> Categorías</a></li>
+                                <li><a href="/Formularios/Tratamientos.aspx"><i class="fas fa-wand-magic-sparkles"></i> Tratamientos</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liContactos" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-address-book nav-icon"></i>
+                                <span class="nav-text">Contactos</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/Clientes.aspx"><i class="fas fa-users"></i> Clientes</a></li>
+                                <li><a href="/Formularios/Proveedor.aspx"><i class="fas fa-truck"></i> Proveedores</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liReportes" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-chart-pie nav-icon"></i>
+                                <span class="nav-text">Reportes</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/ReporteVenta.aspx"><i class="fas fa-chart-line"></i> Ventas</a></li>
+                                <li><a href="/Formularios/ReporteCompra.aspx"><i class="fas fa-shopping-cart"></i> Compras</a></li>
+                                <li><a href="/Formularios/ReporteInventario.aspx"><i class="fas fa-boxes"></i> Inventario</a></li>
+                                <li><a href="/Formularios/ReporteUtilidades.aspx"><i class="fas fa-sack-dollar"></i> Utilidades</a></li>
+                                <li><a href="/Formularios/Kardex.aspx"><i class="fas fa-exchange-alt"></i> Kardex</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liConfiguracion" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-cogs nav-icon"></i>
+                                <span class="nav-text">Configuración</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/Empresa.aspx"><i class="fas fa-building"></i> Datos Empresa</a></li>
+                                <li><a href="/Formularios/TipoDocumento.aspx"><i class="fas fa-file-contract"></i> Tipos Documento</a></li>
+                                <li><a href="/Formularios/TipoPago.aspx"><i class="fas fa-credit-card"></i> Tipos de Pago</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item has-submenu" id="liAccesos" runat="server">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-user-shield nav-icon"></i>
+                                <span class="nav-text">Admin. Accesos</span>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="/Formularios/GestionUsuarios.aspx"><i class="fas fa-users-gear"></i> Gestión Usuarios</a></li>
+                                <li><a href="/Formularios/AccesoUsuarios.aspx"><i class="fas fa-user-check"></i> Sesiones Activas</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="user-info">
+                    <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
+                    <div class="user-details">
+                        <p class="user-name" id="lblUsuarioNombre" runat="server">Usuario</p>
+                        <p class="user-role" id="lblUsuarioRol" runat="server">En Línea</p>
+                    </div>
+                    <asp:Button ID="btnCerrarSesion" runat="server" CssClass="logout-btn" Text="Salir" OnClick="btnCerrarSesion_Click" />
+                </div>
+            </div>
+
+            <div class="main-content" id="mainContent">
+                <header class="content-header">
+                    <div class="header-left" style="display:flex; align-items:center;">
+                        <button type="button" class="toggle-btn" id="toggleBtn"><i class="fas fa-times"></i></button>
+                        <h2 id="pageTitle">Panel de Control</h2>
+                    </div>
+                </header>
+                <main class="content-area">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+                </main>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggleBtn = document.getElementById('toggleBtn');
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('mainContent');
+
+                if (toggleBtn && sidebar && mainContent) {
+                    toggleBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        sidebar.classList.toggle('collapsed');
+                        mainContent.classList.toggle('expanded');
+
+                        const icon = this.querySelector('i');
+                        if (sidebar.classList.contains('collapsed')) {
+                            icon.className = 'fas fa-bars';
+                            icon.style.transform = 'rotate(180deg)';
+                        } else {
+                            icon.className = 'fas fa-times';
+                            icon.style.transform = 'rotate(0deg)';
+                        }
+                    });
+                }
+
+                const submenuParents = document.querySelectorAll('.has-submenu');
+                submenuParents.forEach(parent => {
+                    const link = parent.querySelector('.nav-link');
+                    link.addEventListener('click', function (e) {
+                        if (sidebar.classList.contains('collapsed')) return;
+
+                        e.preventDefault();
+
+                        submenuParents.forEach(op => {
+                            if (op !== parent) {
+                                op.classList.remove('active');
+                                const sub = op.querySelector('.submenu');
+                                if (sub) sub.classList.remove('active');
+                            }
+                        });
+
+                        parent.classList.toggle('active');
+                        const submenu = parent.querySelector('.submenu');
+                        if (submenu) submenu.classList.toggle('active');
+                    });
+                });
+            });
+        </script>
+    </form>
+</body>
+</html>
