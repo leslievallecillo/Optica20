@@ -2,7 +2,6 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
-        /* Tus estilos CSS permanecen igual */
         .dashboard-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -17,6 +16,12 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
             border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
         }
 
         .card-online {
@@ -76,6 +81,8 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             background: white;
+            min-width: 150px;
+            font-family: 'Poppins', sans-serif;
         }
 
         .refresh-btn {
@@ -88,6 +95,9 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s ease;
         }
 
         .refresh-btn:hover {
@@ -106,6 +116,7 @@
             font-weight: 600;
             color: #333;
             border-bottom: 2px solid #e9ecef;
+            white-space: nowrap;
         }
 
         .user-table td {
@@ -123,6 +134,7 @@
             border-radius: 12px;
             font-size: 0.8em;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .status-online {
@@ -138,7 +150,8 @@
         .user-avatar {
             width: 35px;
             height: 35px;
-            background: #667eea;
+            min-width: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -150,24 +163,13 @@
         .last-connection {
             font-size: 0.85em;
             color: #666;
+            white-space: nowrap;
         }
 
         .no-data {
             text-align: center;
             padding: 40px;
             color: #666;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            color: #667eea;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .action-btn:hover {
-            color: #5a6fd8;
         }
 
         .btn-danger {
@@ -178,15 +180,61 @@
             padding: 5px 10px;
             cursor: pointer;
             font-size: 0.8em;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s ease;
         }
 
         .btn-danger:hover {
             background: #c82333;
+            text-decoration: none;
+            color: white;
         }
 
-        @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Animación para las tarjetas */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: slideInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Responsive para tablets */
+        @media (max-width: 992px) {
             .dashboard-cards {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .card-number {
+                font-size: 2em;
+            }
+            
+            .users-grid {
+                padding: 20px;
             }
             
             .grid-header {
@@ -194,12 +242,125 @@
                 align-items: stretch;
             }
             
+            .grid-title {
+                text-align: center;
+            }
+            
             .filters {
                 justify-content: center;
             }
+        }
+
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                text-align: left;
+            }
+            
+            .card i {
+                font-size: 2em !important;
+                order: 2;
+            }
+            
+            .card-number {
+                font-size: 1.8em;
+                margin: 0;
+                order: 1;
+            }
+            
+            .card-label {
+                font-size: 0.9em;
+                order: 3;
+            }
+            
+            .grid-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                gap: 10px;
+            }
+            
+            .filter-select {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .refresh-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .users-grid {
+                padding: 15px;
+            }
             
             .user-table {
+                font-size: 0.85em;
+            }
+            
+            .user-table th,
+            .user-table td {
+                padding: 8px 10px;
+            }
+            
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+                min-width: 30px;
                 font-size: 0.9em;
+            }
+            
+            .btn-danger {
+                padding: 4px 8px;
+                font-size: 0.75em;
+            }
+            
+            .status-badge {
+                padding: 3px 6px;
+                font-size: 0.75em;
+            }
+        }
+
+        /* Responsive para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+            
+            .card-number {
+                font-size: 1.5em;
+            }
+            
+            .grid-title {
+                font-size: 1.2em;
+            }
+            
+            .user-table {
+                font-size: 0.8em;
+            }
+            
+            /* Ocultar columnas menos importantes en pantallas muy pequeñas */
+            .user-table th:nth-child(4),
+            .user-table td:nth-child(4),
+            .user-table th:nth-child(5),
+            .user-table td:nth-child(5) {
+                display: none;
             }
         }
     </style>
@@ -208,19 +369,19 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="dashboard-cards">
         <div class="card card-online">
-            <i class="fas fa-user-check" style="font-size: 2em; color: #28a745;"></i>
+            <i class="fas fa-user-check" style="font-size: 2.5em; color: #28a745;"></i>
             <div class="card-number" id="onlineCount" runat="server">0</div>
             <div class="card-label">Usuarios En Línea</div>
         </div>
         
         <div class="card card-offline">
-            <i class="fas fa-user-clock" style="font-size: 2em; color: #6c757d;"></i>
+            <i class="fas fa-user-clock" style="font-size: 2.5em; color: #6c757d;"></i>
             <div class="card-number" id="offlineCount" runat="server">0</div>
             <div class="card-label">Usuarios Desconectados</div>
         </div>
         
         <div class="card card-total">
-            <i class="fas fa-users" style="font-size: 2em; color: #ffc107;"></i>
+            <i class="fas fa-users" style="font-size: 2.5em; color: #ffc107;"></i>
             <div class="card-number" id="totalUsers" runat="server">0</div>
             <div class="card-label">Total de Usuarios</div>
         </div>
@@ -246,10 +407,16 @@
             </div>
         </div>
 
-        <div style="overflow-x: auto;">
+        <div class="table-responsive">
             <asp:GridView ID="gvUsuarios" runat="server" AutoGenerateColumns="False" 
                 CssClass="user-table" EmptyDataText="No se encontraron usuarios" 
                 OnRowDataBound="gvUsuarios_RowDataBound">
+                <EmptyDataTemplate>
+                    <div class="no-data">
+                        <i class="fas fa-users-slash" style="font-size: 3em; color: #ccc; margin-bottom: 15px; display: block;"></i>
+                        <p>No se encontraron usuarios que coincidan con los filtros seleccionados.</p>
+                    </div>
+                </EmptyDataTemplate>
                 <Columns>
                     <asp:TemplateField HeaderText="Usuario">
                         <ItemTemplate>
@@ -275,7 +442,7 @@
                         <ItemTemplate>
                             <span class='status-badge <%# Convert.ToBoolean(Eval("EnLinea")) ? "status-online" : "status-offline" %>'>
                                 <i class='fas fa-circle'></i>
-                                <%# Convert.ToBoolean(Eval("EnLinea")) ? "En línea" : "Desconectado" %>
+                                <%# Convert.ToBoolean(Eval("EnLinea")) ? " En línea" : " Desconectado" %>
                             </span>
                         </ItemTemplate>
                     </asp:TemplateField>
@@ -315,9 +482,34 @@
     </div>
 
     <script type="text/javascript">
+        // Función para actualizar el título de la página sin afectar otros elementos
+        function updatePageTitle() {
+            var pageTitleElement = document.getElementById('pageTitle');
+            if (pageTitleElement) {
+                pageTitleElement.textContent = 'Gestión de Usuarios Activos';
+            }
+        }
+        
         // Auto-refresh cada 30 segundos
-        setInterval(function() {
-            __doPostBack('<%= btnRefresh.UniqueID %>', '');
-        }, 100000);
+        var refreshInterval = setInterval(function() {
+            var refreshBtn = document.getElementById('<%= btnRefresh.ClientID %>');
+            if (refreshBtn) {
+                __doPostBack(refreshBtn.name, '');
+            }
+        }, 30000);
+
+        // Limpiar el intervalo cuando se navega fuera de la página
+        window.addEventListener('beforeunload', function () {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+
+        // Ejecutar cuando el DOM esté listo sin interferir con otros scripts
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updatePageTitle);
+        } else {
+            updatePageTitle();
+        }
     </script>
 </asp:Content>

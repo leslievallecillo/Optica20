@@ -315,6 +315,61 @@
             .content-header { padding: 0 15px; } 
             .content-area { padding: 15px; } 
         }
+        .user-info {
+    padding: 15px 10px;
+    text-align: center;
+}
+
+.user-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-avatar i {
+    font-size: 30px; /* tamaño controlado */
+    color: var(--accent-color);
+}
+
+/* 🔥 CLAVE: cuando está colapsado */
+.sidebar.collapsed .user-avatar i {
+    font-size: 26px; /* más pequeño para que no se deforme */
+}
+
+/* Evitar que crezca raro */
+.sidebar.collapsed .user-info {
+    padding: 10px 5px;
+}
+
+/* Asegurar que todo esté centrado */
+.sidebar.collapsed .user-avatar {
+    margin: 0 auto;
+}
+
+/* 🔥 FIX DEFINITIVO PARA EL SIDEBAR */
+.sidebar .user-avatar {
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    background: none !important;
+    display: block !important;
+}
+
+.sidebar .user-avatar i {
+    font-size: 35px !important;
+    color: var(--accent-color) !important;
+}
+
+/* Cuando está colapsado */
+.sidebar.collapsed .user-avatar {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.sidebar.collapsed .user-avatar i {
+    font-size: 28px !important;
+}
     </style>
 
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
