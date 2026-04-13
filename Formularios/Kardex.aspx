@@ -2,18 +2,58 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-    <style>
-        .panel-kardex { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .kardex-header { display:flex; gap:15px; align-items:center; background:#f1f1f1; padding:20px; border-radius:8px; margin-bottom:20px; }
-        .input-std { padding:8px; width:100%; border:1px solid #ccc; border-radius:4px; }
-        .btn-search { background:#333; color:white; padding:8px 20px; border:none; border-radius:4px; cursor:pointer; }
+<style>
+        /* Panel principal: Fondo blanco y sombra suave igual a Ventas */
+        .panel-kardex { 
+            background: #ffffff; 
+            padding: 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+        }
         
-        .table-kardex { width:100%; border-collapse:collapse; font-size:0.9rem; }
-        .table-kardex th { background:#343a40; color:white; padding:10px; text-align:left; }
-        .table-kardex td { padding:10px; border-bottom:1px solid #eee; }
+        /* Contenedor de filtros: Gris muy claro (#f8f9fa) como en la imagen */
+        .kardex-header { 
+            display: flex; 
+            gap: 15px; 
+            align-items: center; 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+        }
         
-        .mov-entrada { color: #28a745; font-weight:bold; }
-        .mov-salida { color: #dc3545; font-weight:bold; }
+        /* Inputs estandarizados con el borde sutil de la imagen */
+        .input-std { 
+            padding: 8px 12px; 
+            width: 100%; 
+            border: 1px solid #ced4da; 
+            border-radius: 4px; 
+            background-color: #ffffff;
+            color: #495057;
+        }
+        
+        /* Tabla estandarizada. Usa el azul del botón "Generar Reporte" para la cabecera */
+        .table-kardex { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.9rem; 
+            border: 1px solid #dee2e6; /* Borde exterior que rodea el "No hay ventas" de la imagen */
+        }
+        .table-kardex th { 
+            background: #0056b3; 
+            color: white; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        .table-kardex td { 
+            padding: 10px; 
+            border-bottom: 1px solid #eee; 
+            color: #333;
+        }
+        
+        /* Colores para las cantidades (Intactos) */
+        .mov-entrada { color: #28a745; font-weight: bold; }
+        .mov-salida { color: #dc3545; font-weight: bold; }
     </style>
 </asp:Content>
 
