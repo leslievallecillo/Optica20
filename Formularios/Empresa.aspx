@@ -59,7 +59,6 @@
             border: 1px solid #f1f5f9;
         }
 
-        /* --- PERFIL --- */
         .profile-container {
             text-align: center;
             display: flex;
@@ -98,6 +97,7 @@
             background: #f1f5f9;
             padding: 5px 15px;
             border-radius: 20px;
+            word-break: break-all;
         }
 
         .status-pill {
@@ -109,7 +109,6 @@
             border-radius: 50px;
         }
 
-        /* --- FORMULARIO --- */
         .form-title-tab {
             font-size: 1.1rem;
             font-weight: 600;
@@ -238,6 +237,12 @@
         @media (max-width: 992px) {
             .content-grid { grid-template-columns: 1fr; }
             .img-profile { width: 140px; height: 140px; }
+            .empresa-wrapper { padding: 15px; }
+            .input-group-row { flex-direction: column; align-items: flex-start; }
+            .field-label { width: 100%; text-align: left; padding-right: 0; padding-top: 0; margin-bottom: 5px; }
+            .field-input-container { width: 100%; }
+            .upload-box { flex-direction: column; align-items: flex-start; }
+            .btn-primary-action { float: none; width: 100%; text-align: center; }
         }
     </style>
 
@@ -314,7 +319,6 @@
 
             if (!nombre) { showError("Ingrese el nombre de la empresa."); return false; }
 
-            // Validación RUC: 13 números + 1 letra (Total 14)
             if (ruc) {
                 if (ruc.length !== 14) { showError("El RUC debe tener 14 caracteres."); return false; }
                 if (!/^\d{13}[A-Za-z]$/.test(ruc)) { showError("El RUC debe ser 13 números seguidos de 1 letra."); return false; }
@@ -401,7 +405,7 @@
                     <div class="field-input-container">
                         <div class="upload-box">
                             <asp:Image ID="imgLogoPreview" runat="server" CssClass="preview-small" ImageUrl="~/Images/default-logo.png" />
-                            <div style="flex-grow: 1;">
+                            <div style="flex-grow: 1; width: 100%;">
                                 <asp:FileUpload ID="fuLogo" runat="server" CssClass="ui-input" style="padding-top: 9px;" onchange="previewImage(this);" />
                             </div>
                         </div>

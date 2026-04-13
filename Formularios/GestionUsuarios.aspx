@@ -6,7 +6,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* === ESTILOS (Se mantienen igual) === */
         :root { --color-primary: #0056b3; --color-danger: #d32f2f; --color-text: #333; --color-border: #ced4da; --bg-light: #f8f9fa; }
         .form-group-formal { margin-bottom: 20px; }
         .lbl-formal { font-weight: 700; font-size: 0.9rem; color: #2c3e50; display: block; margin-bottom: 5px; }
@@ -21,9 +20,12 @@
         .toolbar { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 20px; }
         .form-grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .form-full-width { grid-column: 1 / -1; }
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std thead th { background-color: #f1f3f5; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
         .table-std tbody td { padding: 10px; border-bottom: 1px solid #eee; }
+        
         .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .badge-active { background-color: #e8f5e9; color: #2e7d32; }
         .badge-inactive { background-color: #ffebee; color: #c62828; }
@@ -34,50 +36,55 @@
         .btn-secondary { background-color: #6c757d; color: white; }
         .btn-info { background-color: #17a2b8; color: white; }
         .section-divider { margin: 25px 0; border-bottom: 2px solid #f1f1f1; padding-bottom: 10px; font-size: 1.1rem; color: var(--color-primary); font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px !important; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar > div { width: 100% !important; min-width: auto !important; }
+            .toolbar .btn-std { width: 100%; justify-content: center; margin-bottom: 5px; }
+            .toolbar > div:last-child > div { flex-direction: column; }
+            .form-grid-layout { grid-template-columns: 1fr; }
+            .panel-body > div[style*="text-align:right"] { display: flex; flex-direction: column; gap: 10px; }
+            .panel-body > div[style*="text-align:right"] .btn-std { width: 100%; justify-content: center; }
+        }
     </style>
 
     <script type="text/javascript">
-        // === LÓGICA ENTER PARA NAVEGAR Y GUARDAR ===
         document.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 var target = e.target;
 
-                // Si es un textarea o un botón submit, dejar que actúe normal (o click)
                 if (target.tagName === "TEXTAREA" || (target.tagName === "INPUT" && target.type === "submit")) {
                     return true;
                 }
 
-                e.preventDefault(); // Prevenir el submit por defecto del form
+                e.preventDefault();
 
-                // Obtener todos los elementos focusables del formulario actual visible
                 var formElements = Array.from(document.querySelectorAll('input:not([type=hidden]):not([disabled]), select:not([disabled]), button:not([disabled]), input[type=submit]'));
                 var index = formElements.indexOf(target);
 
                 if (index > -1 && index < formElements.length - 1) {
                     var nextElement = formElements[index + 1];
 
-                    // Si el siguiente elemento es el botón cancelar, saltarlo e ir al Guardar
                     if (nextElement.value === "Cancelar" || nextElement.innerText === "Cancelar") {
                         if (index + 2 < formElements.length) {
                             formElements[index + 2].focus();
                         }
                     } else {
-                        nextElement.focus(); // Mover foco al siguiente
+                        nextElement.focus();
                     }
                 } else {
-                    // Si es el último elemento o estamos en el botón Guardar, hacer click
-                    // Buscamos el botón guardar explícitamente
                     var btnGuardar = document.getElementById('<%= btnGuardar.ClientID %>');
                     if (btnGuardar) btnGuardar.click();
                 }
             }
         });
 
-        // === VALIDACIONES DE FORMATO (Mantenemos las anteriores) ===
         function soloLetras(input) {
             let val = input.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
-            val = val.replace(/(.)\1{2,}/g, '$1$1'); // Anti-spam caracteres
-            val = val.replace(/\s\s+/g, ' '); // Anti-doble espacio
+            val = val.replace(/(.)\1{2,}/g, '$1$1');
+            val = val.replace(/\s\s+/g, ' ');
             val = val.toLowerCase().replace(/(?:^|\s)\S/g, function (a) { return a.toUpperCase(); });
             input.value = val;
         }
@@ -122,7 +129,7 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div class="container-fluid" style="padding: 20px;">
+    <div class="container-fluid" style="padding: 20px; box-sizing: border-box;">
         
         <asp:Panel ID="PanelListado" runat="server">
             <div class="panel-card">
@@ -164,31 +171,35 @@
                         </div>
                     </div>
 
-                    <asp:GridView ID="gvUsuarios" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
-                        DataKeyNames="ID_Usuario" AllowPaging="True" PageSize="10" 
-                        OnRowCommand="gvUsuarios_RowCommand" OnPageIndexChanging="gvUsuarios_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
-                        <Columns>
-                            <asp:BoundField DataField="ID_Usuario" HeaderText="ID" ItemStyle-Width="50px" />
-                            <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre Completo" />
-                            <asp:BoundField DataField="NombreUsuario" HeaderText="Usuario" />
-                            <asp:BoundField DataField="Rol" HeaderText="Rol" />
-                            <asp:BoundField DataField="Correo" HeaderText="Correo" />
-                            <asp:TemplateField HeaderText="Estado">
-                                <ItemTemplate>
-                                    <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
-                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
-                                    </span>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Acciones">
-                                <ItemTemplate>
-                                    <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-primary" style="padding:4px 8px;"><i class="fa-solid fa-pen"></i></asp:LinkButton>
-                                    <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-danger" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                    <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-success" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvUsuarios" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
+                            DataKeyNames="ID_Usuario" AllowPaging="True" PageSize="10" 
+                            OnRowCommand="gvUsuarios_RowCommand" OnPageIndexChanging="gvUsuarios_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
+                            <Columns>
+                                <asp:BoundField DataField="ID_Usuario" HeaderText="ID" ItemStyle-Width="50px" />
+                                <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre Completo" />
+                                <asp:BoundField DataField="NombreUsuario" HeaderText="Usuario" />
+                                <asp:BoundField DataField="Rol" HeaderText="Rol" />
+                                <asp:BoundField DataField="Correo" HeaderText="Correo" />
+                                <asp:TemplateField HeaderText="Estado">
+                                    <ItemTemplate>
+                                        <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
+                                            <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Acciones">
+                                    <ItemTemplate>
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-primary" style="padding:4px 8px;"><i class="fa-solid fa-pen"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-danger" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-success" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
                 </div>
             </div>
         </asp:Panel>

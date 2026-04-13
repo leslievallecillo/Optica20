@@ -24,6 +24,19 @@
         .btn-pos { padding: 12px 25px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; }
         .btn-save { background-color: var(--c-success); } .btn-save:hover { background-color: #157347; }
         .btn-cancel { background-color: var(--c-danger); }
+
+        @media (max-width: 768px) {
+            .pos-card { padding: 15px; }
+            .pos-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .pos-header > div { width: 100%; text-align: left !important; }
+            
+            .detail-section > div { grid-template-columns: 1fr !important; }
+            .pay-box > div:nth-child(3) { grid-template-columns: 1fr !important; }
+            .pay-box > div:nth-child(4) { grid-template-columns: 1fr !important; }
+
+            .btn-pos { width: 100%; justify-content: center; }
+            div[style*="justify-content:flex-end"] { flex-direction: column; }
+        }
     </style>
 
     <script>

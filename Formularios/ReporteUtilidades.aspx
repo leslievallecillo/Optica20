@@ -18,18 +18,28 @@
         .btn-print { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
         .btn-search { background: #0056b3; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
 
-        .table-rep { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-rep { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-rep th { background: #0056b3; color: white; padding: 12px; text-align: left; }
         .table-rep td { padding: 10px; border-bottom: 1px solid #eee; }
 
-        /* Clases específicas para este reporte */
         .utilidad-pos { color: #28a745; font-weight: bold; }
         .utilidad-neg { color: #dc3545; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .panel-report { padding: 15px; }
+            .report-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-print { width: 100%; text-align: center; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .form-grp { width: 100%; }
+            .input-std { width: 100%; box-sizing: border-box; }
+            .btn-search { width: 100%; text-align: center; }
+        }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
+    <div style="padding: 20px; max-width: 1400px; margin: 0 auto; box-sizing: border-box;">
         <div class="panel-report">
             <div class="report-header">
                 <h2 style="margin:0; color:#333;"><i class="fa-solid fa-chart-pie"></i> Reporte de Utilidades</h2>
@@ -51,22 +61,24 @@
                 </div>
             </div>
 
-            <asp:GridView ID="gvUtilidades" runat="server" CssClass="table-rep" AutoGenerateColumns="False" EmptyDataText="No hay datos para mostrar.">
-                <Columns>
-                    <asp:BoundField DataField="FacturaNo" HeaderText="Factura Nº" ItemStyle-Font-Bold="true" />
-                    <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
-                    <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd-MM-yyyy}" />
-                    <asp:BoundField DataField="TotalCosto" HeaderText="Total Costo" DataFormatString="{0:N2}" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right" />
-                    <asp:BoundField DataField="TotalVenta" HeaderText="Total Venta" DataFormatString="{0:N2}" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right" />
-                    <asp:TemplateField HeaderText="Total Utilidad" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right">
-                        <ItemTemplate>
-                            <span class='<%# Convert.ToDecimal(Eval("TotalUtilidad")) >= 0 ? "utilidad-pos" : "utilidad-neg" %>'>
-                                <%# Eval("TotalUtilidad", "{0:N2}") %>
-                            </span>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
+            <div class="table-responsive">
+                <asp:GridView ID="gvUtilidades" runat="server" CssClass="table-rep" AutoGenerateColumns="False" EmptyDataText="No hay datos para mostrar.">
+                    <Columns>
+                        <asp:BoundField DataField="FacturaNo" HeaderText="Factura Nº" ItemStyle-Font-Bold="true" />
+                        <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
+                        <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd-MM-yyyy}" />
+                        <asp:BoundField DataField="TotalCosto" HeaderText="Total Costo" DataFormatString="{0:N2}" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right" />
+                        <asp:BoundField DataField="TotalVenta" HeaderText="Total Venta" DataFormatString="{0:N2}" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right" />
+                        <asp:TemplateField HeaderText="Total Utilidad" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right">
+                            <ItemTemplate>
+                                <span class='<%# Convert.ToDecimal(Eval("TotalUtilidad")) >= 0 ? "utilidad-pos" : "utilidad-neg" %>'>
+                                    <%# Eval("TotalUtilidad", "{0:N2}") %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
     </div>
 </asp:Content>

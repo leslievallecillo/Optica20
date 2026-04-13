@@ -5,7 +5,6 @@
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Mismos estilos que GestionCompras.aspx */
         :root { --color-primary: #0056b3; --color-bg: #f4f6f9; --color-border: #dee2e6; }
         .panel-card { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 20px; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
@@ -13,20 +12,29 @@
         .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 20px; align-items: end; }
         .lbl-std { display: block; font-size: 0.85rem; font-weight: bold; color: #666; margin-bottom: 5px; }
         .form-control-std { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; height: 38px; }
-        .btn-std { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-std { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-primary { background: #0056b3; } .btn-success { background: #28a745; } .btn-danger { background: #dc3545; } .btn-secondary { background: #6c757d; }
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap;}
         .table-std th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
         .table-std td { padding: 10px; border-bottom: 1px solid #eee; }
-        .input-form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 500px; margin: 0 auto; }
+        .input-form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 500px; margin: 0 auto; width: 100%; box-sizing: border-box;}
+        
+        @media (max-width: 768px) {
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .btn-std { width: 100%; margin-bottom: 5px;}
+            .input-form-grid > div > div { display: flex; flex-direction: column; width: 100%;}
+            .input-form-grid > div > div > .btn-std { width: 100% !important;}
+        }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
+    <div style="padding: 20px; max-width: 1400px; margin: 0 auto; box-sizing: border-box;">
         
         <div style="margin-bottom: 20px;">
-            <asp:LinkButton ID="btnVolver" runat="server" PostBackUrl="/Formularios/GestionCompras.aspx" CssClass="btn-std btn-secondary">
+            <asp:LinkButton ID="btnVolver" runat="server" PostBackUrl="/Formularios/GestionCompras.aspx" CssClass="btn-std btn-secondary" style="width: auto;">
                 <i class="fa-solid fa-arrow-left"></i> Volver al Listado
             </asp:LinkButton>
         </div>
@@ -36,7 +44,7 @@
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-list-check"></i> Gestión de Detalle Compra</h3>
                     <span style="font-size: 0.9rem; color: #666;">Compra #<asp:Label ID="lblNumCompra" runat="server" Font-Bold="true"></asp:Label></span>
-                    <asp:Button ID="btnNuevo" runat="server" Text="Nuevo registro" CssClass="btn-std btn-success" OnClick="btnNuevo_Click" />
+                    <asp:Button ID="btnNuevo" runat="server" Text="Nuevo registro" CssClass="btn-std btn-success" OnClick="btnNuevo_Click" style="width: auto;" />
                 </div>
 
                 <div class="filters-grid">
@@ -64,32 +72,34 @@
                     </div>
                 </div>
 
-                <asp:GridView ID="gvDetalles" runat="server" CssClass="table-std" AutoGenerateColumns="False"
-                    OnRowCommand="gvDetalles_RowCommand" EmptyDataText="No hay productos en esta compra.">
-                    <Columns>
-                        <asp:BoundField DataField="Producto" HeaderText="Producto" />
-                        <asp:BoundField DataField="Cantidad" HeaderText="Cantidad" />
-                        <asp:BoundField DataField="PrecioUnitario" HeaderText="Precio Unitario" DataFormatString="{0:C}" />
-                        <asp:BoundField DataField="Iva" HeaderText="Iva" DataFormatString="{0:C}" />
-                        <asp:BoundField DataField="PrecioTotal" HeaderText="Precio Total" DataFormatString="{0:C}" />
-                         <asp:BoundField DataField="PrecioVenta" HeaderText="P. Venta" DataFormatString="{0:C}" />
-                        <asp:TemplateField HeaderText="Estado">
-                            <ItemTemplate>
-                                <span style='color:<%# Convert.ToBoolean(Eval("Estado")) ? "green" : "red" %>'>
-                                    <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Anulado" %>
-                                </span>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Acciones">
-                            <ItemTemplate>
-                                <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_DetalleCompra") %>' 
-                                    CssClass="btn-std btn-danger btn-sm" OnClientClick="return confirm('¿Eliminar producto?');" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'>
-                                    <i class="fa-solid fa-trash"></i> Dar baja
-                                </asp:LinkButton>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
+                <div class="table-responsive">
+                    <asp:GridView ID="gvDetalles" runat="server" CssClass="table-std" AutoGenerateColumns="False"
+                        OnRowCommand="gvDetalles_RowCommand" EmptyDataText="No hay productos en esta compra.">
+                        <Columns>
+                            <asp:BoundField DataField="Producto" HeaderText="Producto" />
+                            <asp:BoundField DataField="Cantidad" HeaderText="Cantidad" />
+                            <asp:BoundField DataField="PrecioUnitario" HeaderText="Precio Unitario" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="Iva" HeaderText="Iva" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="PrecioTotal" HeaderText="Precio Total" DataFormatString="{0:C}" />
+                             <asp:BoundField DataField="PrecioVenta" HeaderText="P. Venta" DataFormatString="{0:C}" />
+                            <asp:TemplateField HeaderText="Estado">
+                                <ItemTemplate>
+                                    <span style='color:<%# Convert.ToBoolean(Eval("Estado")) ? "green" : "red" %>'>
+                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Anulado" %>
+                                    </span>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="Acciones">
+                                <ItemTemplate>
+                                    <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_DetalleCompra") %>' 
+                                        CssClass="btn-std btn-danger btn-sm" OnClientClick="return confirm('¿Eliminar producto?');" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'>
+                                        <i class="fa-solid fa-trash"></i> Dar baja
+                                    </asp:LinkButton>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                        </Columns>
+                    </asp:GridView>
+                </div>
             </div>
         </asp:Panel>
 
@@ -135,7 +145,7 @@
                             <asp:TextBox ID="txtFechaRegistro" runat="server" CssClass="form-control-std" ReadOnly="true" BackColor="#eee"></asp:TextBox>
                         </div>
 
-                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
                             <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" Width="120px" />
                             <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" Width="120px" />
                         </div>

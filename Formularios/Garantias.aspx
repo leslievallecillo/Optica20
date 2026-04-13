@@ -17,9 +17,8 @@
             --color-info: #17a2b8;
         }
         body { background-color: var(--color-bg); color: var(--color-text); font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container-fluid { padding: 20px; max-width: 1600px; margin: 0 auto; }
+        .container-fluid { padding: 20px; max-width: 1600px; margin: 0 auto; box-sizing: border-box; }
 
-        /* ESTILOS FORMALES */
         .panel-card { background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
         .panel-header { background-color: #fff; padding: 15px 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; }
         .panel-header h3 { margin: 0; font-size: 1.25rem; color: var(--color-primary); font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -41,7 +40,8 @@
         .help-text { display: block; font-size: 0.75rem; color: #6c757d; margin-top: 4px; font-style: italic; line-height: 1.2; }
         .error-text { display: block; font-size: 0.8rem; color: var(--color-danger); font-weight: 700; margin-top: 3px; background-color: #fff5f5; padding: 2px 5px; border-radius: 3px; border-left: 3px solid var(--color-danger); }
         
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std thead th { background-color: #f8f9fa; color: #495057; font-weight: 700; padding: 12px 15px; text-align: left; border-bottom: 2px solid var(--color-border); position: sticky; top: 0; z-index: 1; }
         .table-std tbody td { padding: 10px 15px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
         .table-std tbody tr:hover { background-color: #eef2f7; }
@@ -60,6 +60,18 @@
         .bg-anulada { background-color: #f8d7da; color: #721c24; }
 
         .alert-info-custom { background-color: #e3f2fd; color: #0d47a1; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.9rem; text-align: center; border: 1px solid #bbdefb; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .panel-header > div { display: flex; flex-direction: column; width: 100%; gap: 10px; }
+            .btn-std { width: 100%; justify-content: center; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .form-group-filter { width: 100% !important; min-width: auto !important; }
+            .form-group-filter > div { display: flex; flex-direction: column; gap: 5px; }
+            .form-grid-layout { grid-template-columns: 1fr; }
+            .panel-body > div[style*="text-align: right"] { display: flex; flex-direction: column; gap: 10px; }
+        }
     </style>
 
     <script type="text/javascript">
@@ -189,9 +201,11 @@
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Acciones" ItemStyle-HorizontalAlign="Center" ItemStyle-Width="200px">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="btnEditarG" runat="server" CommandName="EditarG" CommandArgument='<%# Eval("ID_Garantia") %>' CssClass="btn-std btn-sm btn-primary" ToolTip="Editar"><i class="fa-solid fa-pen"></i></asp:LinkButton>
-                                        <asp:LinkButton ID="btnBajaG" runat="server" CommandName="DarBajaG" CommandArgument='<%# Eval("ID_Garantia") %>' CssClass="btn-std btn-sm btn-danger" ToolTip="Anular Garantía" OnClientClick="return confirmarBaja(this);" Visible='<%# Eval("Estado").ToString() != "Anulada" %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                        <asp:LinkButton ID="btnReclamos" runat="server" CommandName="VerReclamos" CommandArgument='<%# Eval("ID_Garantia") %>' CssClass="btn-std btn-sm btn-info" ToolTip="Ver Reclamos"><i class="fa-solid fa-list-check"></i> Reclamos</asp:LinkButton>
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            <asp:LinkButton ID="btnEditarG" runat="server" CommandName="EditarG" CommandArgument='<%# Eval("ID_Garantia") %>' CssClass="btn-std btn-sm btn-primary" ToolTip="Editar"><i class="fa-solid fa-pen"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnBajaG" runat="server" CommandName="DarBajaG" CommandArgument='<%# Eval("ID_Garantia") %>' CssClass="btn-std btn-sm btn-danger" ToolTip="Anular Garantía" OnClientClick="return confirmarBaja(this);" Visible='<%# Eval("Estado").ToString() != "Anulada" %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnReclamos" runat="server" CommandName="VerReclamos" CommandArgument='<%# Eval("ID_Garantia") %>' CssClass="btn-std btn-sm btn-info" ToolTip="Ver Reclamos"><i class="fa-solid fa-list-check"></i> Reclamos</asp:LinkButton>
+                                        </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -266,22 +280,25 @@
                         <asp:Button ID="btnNuevoReclamo" runat="server" Text="Nuevo Reclamo" CssClass="btn-std btn-info" OnClick="btnNuevoReclamo_Click" />
                     </div>
                 </div>
-
-                <asp:GridView ID="gvReclamos" runat="server" CssClass="table-std" AutoGenerateColumns="False"
-                    DataKeyNames="ID_Reclamo" OnRowCommand="gvReclamos_RowCommand"
-                    EmptyDataText="No hay reclamos registrados para esta garantía.">
-                    <Columns>
-                        <asp:BoundField DataField="FechaReclamo" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="100px" />
-                        <asp:BoundField DataField="Motivo" HeaderText="Motivo" />
-                        <asp:BoundField DataField="EstadoReclamo" HeaderText="Estado" ItemStyle-Font-Bold="true" />
-                        <asp:BoundField DataField="Responsable" HeaderText="Responsable" />
-                        <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="120px" ItemStyle-HorizontalAlign="Center">
-                            <ItemTemplate>
-                                <asp:LinkButton ID="btnEditarR" runat="server" CommandName="EditarR" CommandArgument='<%# Eval("ID_Reclamo") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen"></i></asp:LinkButton>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
+                <div class="panel-body">
+                    <div class="table-scroll-container">
+                        <asp:GridView ID="gvReclamos" runat="server" CssClass="table-std" AutoGenerateColumns="False"
+                            DataKeyNames="ID_Reclamo" OnRowCommand="gvReclamos_RowCommand"
+                            EmptyDataText="No hay reclamos registrados para esta garantía.">
+                            <Columns>
+                                <asp:BoundField DataField="FechaReclamo" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="100px" />
+                                <asp:BoundField DataField="Motivo" HeaderText="Motivo" />
+                                <asp:BoundField DataField="EstadoReclamo" HeaderText="Estado" ItemStyle-Font-Bold="true" />
+                                <asp:BoundField DataField="Responsable" HeaderText="Responsable" />
+                                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="120px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="btnEditarR" runat="server" CommandName="EditarR" CommandArgument='<%# Eval("ID_Reclamo") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
             </div>
         </asp:Panel>
 

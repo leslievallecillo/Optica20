@@ -33,6 +33,7 @@
             align-items: center;
             margin: 0;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
         .contenedor-login {
@@ -48,6 +49,7 @@
             opacity: 0;
             transform: scale(0.95);
             animation: cardEntrance 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            box-sizing: border-box;
         }
 
         @keyframes cardEntrance {
@@ -230,6 +232,16 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                overflow-y: auto;
+                padding: 20px;
+            }
+            .contenedor-login {
+                padding: 40px 20px;
+            }
         }
     </style>
 </head>

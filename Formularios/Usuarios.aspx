@@ -6,7 +6,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* === ESTILOS GENERALES (Copiados de tu diseño Clientes.aspx) === */
         :root {
             --color-primary: #0056b3;
             --color-secondary: #6c757d;
@@ -28,9 +27,9 @@
             padding: 20px;
             max-width: 1600px;
             margin: 0 auto;
+            box-sizing: border-box;
         }
 
-        /* === PANELES Y CARDS === */
         .panel-card {
             background: #fff;
             border: 1px solid rgba(0,0,0,0.1);
@@ -63,7 +62,6 @@
             padding: 20px;
         }
 
-        /* === FILTROS === */
         .toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -88,7 +86,6 @@
             color: var(--color-secondary);
         }
 
-        /* === GRID FORMULARIO === */
         .form-grid-layout {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -99,7 +96,6 @@
             grid-column: 1 / -1;
         }
 
-        /* === CONTROLES DE FORMULARIO === */
         .form-control-std {
             width: 100%;
             padding: 8px 12px;
@@ -137,7 +133,6 @@
             border-bottom-left-radius: 0;
         }
 
-        /* === TEXTOS Y ETIQUETAS === */
         .lbl-std {
             display: block;
             margin-bottom: 5px;
@@ -174,26 +169,30 @@
             letter-spacing: 0.5px;
         }
 
-        /* === TABLA === */
         .table-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .table-scroll-container {
             width: 100%;
             max-height: 600px; 
             overflow-y: auto;
+            overflow-x: auto;
             border: 1px solid var(--color-border);
             border-radius: 4px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .table-std {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .table-std thead th {
@@ -206,7 +205,6 @@
             position: sticky;
             top: 0;
             z-index: 1;
-            white-space: nowrap;
         }
 
         .table-std tbody td {
@@ -219,7 +217,6 @@
             background-color: #eef2f7;
         }
 
-        /* === BOTONES === */
         .btn-std {
             display: inline-flex;
             align-items: center;
@@ -249,6 +246,17 @@
         }
         .badge-active { background-color: #d4edda; color: #155724; }
         .badge-inactive { background-color: #f8d7da; color: #721c24; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .panel-header h3 { font-size: 1.15rem; }
+            .btn-std { width: 100%; justify-content: center; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .form-group-filter { width: 100% !important; min-width: auto !important; }
+            .form-grid-layout { grid-template-columns: 1fr; }
+            .panel-body > div[style*="justify-content: flex-end"] { flex-direction: column; }
+        }
     </style>
 
     <script type="text/javascript">
@@ -367,24 +375,26 @@
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="180px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Usuario") %>' 
-                                            CssClass="btn-std btn-sm btn-primary" ToolTip="Editar Usuario">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </asp:LinkButton>
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Usuario") %>' 
+                                                CssClass="btn-std btn-sm btn-primary" ToolTip="Editar Usuario">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </asp:LinkButton>
 
-                                        <asp:LinkButton ID="btnBaja" runat="server" CommandName="Desactivar" CommandArgument='<%# Eval("ID_Usuario") %>' 
-                                            CssClass="btn-std btn-sm btn-danger" ToolTip="Desactivar Acceso" 
-                                            OnClientClick="return confirmarDesactivar(this);" 
-                                            Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'>
-                                            <i class="fa-solid fa-ban"></i>
-                                        </asp:LinkButton>
+                                            <asp:LinkButton ID="btnBaja" runat="server" CommandName="Desactivar" CommandArgument='<%# Eval("ID_Usuario") %>' 
+                                                CssClass="btn-std btn-sm btn-danger" ToolTip="Desactivar Acceso" 
+                                                OnClientClick="return confirmarDesactivar(this);" 
+                                                Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'>
+                                                <i class="fa-solid fa-ban"></i>
+                                            </asp:LinkButton>
 
-                                        <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Usuario") %>' 
-                                            CssClass="btn-std btn-sm btn-success" ToolTip="Reactivar Acceso" 
-                                            OnClientClick="return confirmarReactivar(this);" 
-                                            Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'>
-                                            <i class="fa-solid fa-check"></i>
-                                        </asp:LinkButton>
+                                            <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Usuario") %>' 
+                                                CssClass="btn-std btn-sm btn-success" ToolTip="Reactivar Acceso" 
+                                                OnClientClick="return confirmarReactivar(this);" 
+                                                Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'>
+                                                <i class="fa-solid fa-check"></i>
+                                            </asp:LinkButton>
+                                        </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -458,7 +468,7 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: right; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
                         <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar Usuario" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" />
                     </div>

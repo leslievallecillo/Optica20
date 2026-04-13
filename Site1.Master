@@ -18,7 +18,7 @@
 
     <style>
         :root {
-            --sidebar-bg: #1e1e2d;           
+            --sidebar-bg: #1e1e2d;            
             --sidebar-text: #9899ac;        
             --sidebar-hover-bg: #2a2a3c;    
             --accent-color: #FFC107;        
@@ -60,7 +60,7 @@
             position: fixed;
             height: 100vh;
             z-index: 1000;
-            transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1), width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 4px 0 15px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
@@ -117,21 +117,6 @@
         .nav-item { 
             margin-bottom: 15px;
             position: relative; 
-        }
-
-        .nav-item { animation: slideInLeft 0.5s backwards; }
-        .nav-item:nth-child(1) { animation-delay: 0.1s; }
-        .nav-item:nth-child(2) { animation-delay: 0.15s; }
-        .nav-item:nth-child(3) { animation-delay: 0.2s; }
-        .nav-item:nth-child(4) { animation-delay: 0.25s; }
-        .nav-item:nth-child(5) { animation-delay: 0.3s; }
-        .nav-item:nth-child(6) { animation-delay: 0.35s; }
-        .nav-item:nth-child(7) { animation-delay: 0.4s; }
-        .nav-item:nth-child(8) { animation-delay: 0.45s; }
-        
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
         }
 
         .nav-link {
@@ -230,7 +215,6 @@
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
             z-index: 1002;
             font-weight: 600;
-            animation: fadeIn 0.2s;
         }
 
         .sidebar.collapsed .nav-item:hover .submenu {
@@ -245,17 +229,6 @@
             border-radius: 0 0 10px 10px;
             box-shadow: 5px 10px 15px rgba(0,0,0,0.3);
             z-index: 1001;
-            animation: fadeIn 0.3s;
-        }
-
-        .sidebar.collapsed .nav-item:hover .submenu li a {
-            padding-left: 25px;
-            color: #ccc;
-        }
-        .sidebar.collapsed .nav-item:hover .submenu li a:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.1);
-            padding-left: 30px;
         }
 
         .user-info {
@@ -271,7 +244,6 @@
             transition: transform 0.3s;
         }
         .user-info:hover .user-avatar i { transform: scale(1.2) rotate(10deg); }
-
         .user-name { color: #fff; font-weight: 600; font-size: 14px; margin: 0; }
         .user-role { color: var(--sidebar-text); font-size: 11px; margin-bottom: 12px; }
         
@@ -283,10 +255,6 @@
             font-weight: 500;
             letter-spacing: 0.5px;
         }
-        .logout-btn:hover { 
-            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.5); 
-            transform: translateY(-2px); 
-        }
 
         .sidebar.collapsed .user-details, 
         .sidebar.collapsed .logout-btn { display: none; }
@@ -297,6 +265,7 @@
             background-color: var(--body-bg);
             display: flex; flex-direction: column;
             animation: fadeIn 0.8s ease-out;
+            min-width: 0; 
         }
         
         .main-content.expanded { margin-left: var(--sidebar-collapsed-width); }
@@ -312,13 +281,12 @@
             cursor: pointer; color: #333; margin-right: 25px;
             transition: transform 0.3s, color 0.3s;
             display: flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 5px;
         }
         .toggle-btn:hover { 
             color: var(--accent-color); 
             background: rgba(0,0,0,0.05);
         }
-        .toggle-btn:active { transform: scale(0.9); }
 
         #pageTitle { font-size: 1.3rem; font-weight: 600; color: #1e1e2d; margin: 0; }
         .content-area { padding: 30px; flex: 1; }
@@ -331,11 +299,21 @@
         <% } %>
 
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); width: var(--sidebar-width); }
-            .sidebar.active { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .main-content.expanded { margin-left: 0; }
-            .sidebar.collapsed { transform: translateX(0); }
+            .sidebar { 
+                transform: translateX(-100%);
+                width: var(--sidebar-width) !important;
+            }
+            .sidebar.mobile-open { 
+                transform: translateX(0); 
+            }
+            
+            .main-content { 
+                margin-left: 0 !important; 
+                max-width: 100vw; 
+            }
+            
+            .content-header { padding: 0 15px; } 
+            .content-area { padding: 15px; } 
         }
     </style>
 
@@ -479,7 +457,7 @@
             <div class="main-content" id="mainContent">
                 <header class="content-header">
                     <div class="header-left" style="display:flex; align-items:center;">
-                        <button type="button" class="toggle-btn" id="toggleBtn"><i class="fas fa-times"></i></button>
+                        <button type="button" class="toggle-btn" id="toggleBtn"><i class="fas fa-bars"></i></button>
                         <h2 id="pageTitle">Panel de Control</h2>
                     </div>
                 </header>
@@ -494,20 +472,33 @@
                 const toggleBtn = document.getElementById('toggleBtn');
                 const sidebar = document.getElementById('sidebar');
                 const mainContent = document.getElementById('mainContent');
+                const icon = toggleBtn.querySelector('i');
+
+                if (window.innerWidth > 768) {
+                    icon.className = 'fas fa-bars';
+                }
 
                 if (toggleBtn && sidebar && mainContent) {
                     toggleBtn.addEventListener('click', function (e) {
                         e.preventDefault();
-                        sidebar.classList.toggle('collapsed');
-                        mainContent.classList.toggle('expanded');
 
-                        const icon = this.querySelector('i');
-                        if (sidebar.classList.contains('collapsed')) {
-                            icon.className = 'fas fa-bars';
-                            icon.style.transform = 'rotate(180deg)';
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.toggle('mobile-open');
+
+                            if (sidebar.classList.contains('mobile-open')) {
+                                icon.className = 'fas fa-times';
+                            } else {
+                                icon.className = 'fas fa-bars';
+                            }
                         } else {
-                            icon.className = 'fas fa-times';
-                            icon.style.transform = 'rotate(0deg)';
+                            sidebar.classList.toggle('collapsed');
+                            mainContent.classList.toggle('expanded');
+
+                            if (sidebar.classList.contains('collapsed')) {
+                                icon.className = 'fas fa-angle-double-right';
+                            } else {
+                                icon.className = 'fas fa-bars';
+                            }
                         }
                     });
                 }
@@ -516,7 +507,7 @@
                 submenuParents.forEach(parent => {
                     const link = parent.querySelector('.nav-link');
                     link.addEventListener('click', function (e) {
-                        if (sidebar.classList.contains('collapsed')) return;
+                        if (sidebar.classList.contains('collapsed') && window.innerWidth > 768) return;
 
                         e.preventDefault();
 

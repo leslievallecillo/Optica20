@@ -11,11 +11,14 @@
         .filter-group { display: flex; flex-direction: column; gap: 5px; }
         .filter-group label { font-size: 0.85rem; font-weight: 600; color: #555; }
         .form-control-sm { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
-        .table-elegant { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-elegant { width: 100%; border-collapse: collapse; margin-top: 10px; white-space: nowrap; }
         .table-elegant th { text-align: left; padding: 15px; color: #444; font-weight: 700; border-bottom: 2px solid #eee; font-size: 0.95rem; }
         .table-elegant td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #f0f0f0; color: #333; font-size: 0.9rem; }
         .table-elegant tr:hover { background-color: #fafafa; }
         .table-elegant tr:last-child td { border-bottom: none; }
+        
         .btn-filter { background-color: #0056b3; color: white; border: none; padding: 9px 20px; border-radius: 4px; cursor: pointer; font-weight: 600; }
         .btn-filter:hover { background-color: #004494; }
         .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -32,6 +35,15 @@
         .btn-print { background-color: #17a2b8; color: white; } 
         .btn-print:hover { background-color: #138496; }
         .msg-count { background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; border: 1px solid #ffeeba; margin-top: 10px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+
+        @media (max-width: 768px) {
+            .main-card { padding: 15px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-group { width: 100%; }
+            .form-control-sm { width: 100%; box-sizing: border-box; }
+            .btn-filter { width: 100%; text-align: center; }
+            .action-btn { margin-bottom: 5px; }
+        }
     </style>
 
     <script>
@@ -73,7 +85,7 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div class="main-card">
+    <div class="main-card" style="box-sizing: border-box;">
         <h2 style="color:#333; margin-bottom:20px;">Historial de Ventas</h2>
 
         <div class="filter-bar">
@@ -107,55 +119,60 @@
                 </asp:DropDownList>
             </div>
             <div class="filter-group">
+                <label>&nbsp;</label>
                 <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="btn-filter" OnClick="btnFiltrar_Click" />
             </div>
         </div>
 
-        <asp:GridView ID="gvVentas" runat="server" AutoGenerateColumns="false" CssClass="table-elegant" GridLines="None" DataKeyNames="ID_Venta" OnRowCommand="gvVentas_RowCommand">
-            <Columns>
-                <asp:BoundField DataField="NumeroDocumento" HeaderText="Factura" ItemStyle-Font-Bold="true" />
-                <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
-                <asp:BoundField DataField="Total" HeaderText="Total" DataFormatString="C$ {0:N2}" />
-                <asp:BoundField DataField="TipoDoc" HeaderText="Tipo Doc." />
-                
-                <asp:TemplateField HeaderText="Pago Lente">
-                    <ItemTemplate>
-                        <span class='badge <%# Convert.ToString(Eval("EstadoPagoVenta")) == "Pendiente" ? "bg-pendiente" : "bg-active" %>' style='<%# string.IsNullOrEmpty(Convert.ToString(Eval("EstadoPagoVenta"))) ? "display:none;" : "" %>'>
-                            <%# Convert.ToString(Eval("EstadoPagoVenta")).ToUpper() %>
-                        </span>
-                    </ItemTemplate>
-                </asp:TemplateField>
+        <div class="table-responsive">
+            <asp:GridView ID="gvVentas" runat="server" AutoGenerateColumns="false" CssClass="table-elegant" GridLines="None" DataKeyNames="ID_Venta" OnRowCommand="gvVentas_RowCommand">
+                <Columns>
+                    <asp:BoundField DataField="NumeroDocumento" HeaderText="Factura" ItemStyle-Font-Bold="true" />
+                    <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
+                    <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
+                    <asp:BoundField DataField="Total" HeaderText="Total" DataFormatString="C$ {0:N2}" />
+                    <asp:BoundField DataField="TipoDoc" HeaderText="Tipo Doc." />
+                    
+                    <asp:TemplateField HeaderText="Pago Lente">
+                        <ItemTemplate>
+                            <span class='badge <%# Convert.ToString(Eval("EstadoPagoVenta")) == "Pendiente" ? "bg-pendiente" : "bg-active" %>' style='<%# string.IsNullOrEmpty(Convert.ToString(Eval("EstadoPagoVenta"))) ? "display:none;" : "" %>'>
+                                <%# Convert.ToString(Eval("EstadoPagoVenta")).ToUpper() %>
+                            </span>
+                        </ItemTemplate>
+                    </asp:TemplateField>
 
-                <asp:TemplateField HeaderText="Estado">
-                    <ItemTemplate>
-                        <span class='badge <%# Convert.ToBoolean(Eval("Estado")) ? "bg-active" : "bg-inactive" %>'>
-                            <%# Convert.ToBoolean(Eval("Estado")) ? "ACTIVO" : "INACTIVO" %>
-                        </span>
-                    </ItemTemplate>
-                </asp:TemplateField>
+                    <asp:TemplateField HeaderText="Estado">
+                        <ItemTemplate>
+                            <span class='badge <%# Convert.ToBoolean(Eval("Estado")) ? "bg-active" : "bg-inactive" %>'>
+                                <%# Convert.ToBoolean(Eval("Estado")) ? "ACTIVO" : "INACTIVO" %>
+                            </span>
+                        </ItemTemplate>
+                    </asp:TemplateField>
 
-                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="160px">
-                    <ItemTemplate>
-                        <asp:LinkButton ID="btnPrint" runat="server" CommandName="Imprimir" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-print" ToolTip="Generar Reporte PDF">
-                            <i class="fa-solid fa-print"></i>
-                        </asp:LinkButton>
+                    <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="160px">
+                        <ItemTemplate>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <asp:LinkButton ID="btnPrint" runat="server" CommandName="Imprimir" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-print" ToolTip="Generar Reporte PDF">
+                                    <i class="fa-solid fa-print"></i>
+                                </asp:LinkButton>
 
-                        <asp:LinkButton ID="btnMod" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-edit" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' ToolTip="Modificar">
-                            <i class="fa-solid fa-pen"></i>
-                        </asp:LinkButton>
+                                <asp:LinkButton ID="btnMod" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-edit" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' ToolTip="Modificar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </asp:LinkButton>
 
-                        <asp:LinkButton ID="btnBaja" runat="server" CommandName="CambiarEstado" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-anular" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' OnClientClick="return confirmarAccion(this, event, '¿Desea dar de baja esta venta? (No será eliminada)', 'warning');" ToolTip="Anular">
-                            <i class="fa-solid fa-ban"></i>
-                        </asp:LinkButton>
+                                <asp:LinkButton ID="btnBaja" runat="server" CommandName="CambiarEstado" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-anular" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' OnClientClick="return confirmarAccion(this, event, '¿Desea dar de baja esta venta? (No será eliminada)', 'warning');" ToolTip="Anular">
+                                    <i class="fa-solid fa-ban"></i>
+                                </asp:LinkButton>
 
-                        <asp:LinkButton ID="btnAlta" runat="server" CommandName="CambiarEstado" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-reactivar" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>' OnClientClick="return confirmarAccion(this, event, '¿Desea reactivar esta venta?', 'question');" ToolTip="Reactivar">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </asp:LinkButton>
-                    </ItemTemplate>
-                </asp:TemplateField>
-            </Columns>
-        </asp:GridView>
+                                <asp:LinkButton ID="btnAlta" runat="server" CommandName="CambiarEstado" CommandArgument='<%# Eval("ID_Venta") %>' CssClass="action-btn btn-reactivar" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>' OnClientClick="return confirmarAccion(this, event, '¿Desea reactivar esta venta?', 'question');" ToolTip="Reactivar">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </asp:LinkButton>
+                            </div>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                </Columns>
+            </asp:GridView>
+        </div>
 
         <asp:Panel ID="pnlAviso" runat="server" Visible="false" CssClass="msg-count">
             <i class="fa-solid fa-circle-info"></i>

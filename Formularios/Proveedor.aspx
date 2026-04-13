@@ -128,7 +128,9 @@
 
         .form-full-width { grid-column: 1 / -1; }
 
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std thead th { background-color: #f1f3f5; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
         .table-std tbody td { padding: 10px; border-bottom: 1px solid #eee; }
         
@@ -152,6 +154,37 @@
             font-size: 0.9rem;
             text-align: center;
             border: 1px solid #bbdefb;
+        }
+
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 10px !important;
+            }
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .panel-body {
+                padding: 15px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar > div {
+                width: 100% !important;
+            }
+            .form-grid-layout {
+                grid-template-columns: 1fr;
+            }
+            .btn-std {
+                width: 100%;
+                justify-content: center;
+            }
+            .toolbar .btn-std {
+                flex: 1;
+            }
         }
     </style>
 
@@ -263,7 +296,7 @@
                         </div>
                         <div>
                             <label class="lbl-formal">&nbsp;</label>
-                            <div style="display:flex; gap:5px;">
+                            <div style="display:flex; gap:5px; width: 100%;">
                                 <asp:Button ID="btnBuscar" runat="server" Text="Filtrar" CssClass="btn-std btn-primary" OnClick="btnBuscar_Click" />
                                 <asp:Button ID="btnMostrarTodo" runat="server" Text="Mostrar Todo" CssClass="btn-std btn-info" OnClick="btnMostrarTodo_Click" />
                             </div>
@@ -284,36 +317,38 @@
                         </div>
                     </div>
 
-                    <asp:GridView ID="gvProveedores" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
-                        DataKeyNames="ID_Proveedor" AllowPaging="True" PageSize="10" 
-                        OnRowCommand="gvProveedores_RowCommand" OnPageIndexChanging="gvProveedores_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
-                        <Columns>
-                            <asp:BoundField DataField="ID_Proveedor" HeaderText="ID" ItemStyle-Width="50px" />
-                            <asp:TemplateField HeaderText="Nombre / Razón Social">
-                                <ItemTemplate>
-                                    <div style="font-weight:bold;"><%# Eval("Nombre") %> <%# Eval("Apellido") %></div>
-                                    <div style="color: #666; font-size:0.85rem;"><i class="fa-solid fa-building"></i> <%# Eval("RazonSocial") %></div>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:BoundField DataField="Telefono" HeaderText="Teléfono" ItemStyle-Width="120px" />
-                            <asp:BoundField DataField="Correo" HeaderText="Correo Electrónico" />
-                            <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="100px" />
-                            <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
-                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
-                                    </span>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="180px" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Proveedor") %>' CssClass="btn-std btn-primary" style="padding:4px 8px;"><i class="fa-solid fa-pen"></i></asp:LinkButton>
-                                    <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Proveedor") %>' CssClass="btn-std btn-danger" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                    <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Proveedor") %>' CssClass="btn-std btn-success" style="padding:4px 8px;" OnClientClick="return confirmarReactivar(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvProveedores" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
+                            DataKeyNames="ID_Proveedor" AllowPaging="True" PageSize="10" 
+                            OnRowCommand="gvProveedores_RowCommand" OnPageIndexChanging="gvProveedores_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
+                            <Columns>
+                                <asp:BoundField DataField="ID_Proveedor" HeaderText="ID" ItemStyle-Width="50px" />
+                                <asp:TemplateField HeaderText="Nombre / Razón Social">
+                                    <ItemTemplate>
+                                        <div style="font-weight:bold;"><%# Eval("Nombre") %> <%# Eval("Apellido") %></div>
+                                        <div style="color: #666; font-size:0.85rem;"><i class="fa-solid fa-building"></i> <%# Eval("RazonSocial") %></div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:BoundField DataField="Telefono" HeaderText="Teléfono" ItemStyle-Width="120px" />
+                                <asp:BoundField DataField="Correo" HeaderText="Correo Electrónico" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="100px" />
+                                <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
+                                            <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="180px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Proveedor") %>' CssClass="btn-std btn-primary" style="padding:4px 8px;"><i class="fa-solid fa-pen"></i></asp:LinkButton>
+                                        <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Proveedor") %>' CssClass="btn-std btn-danger" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
+                                        <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Proveedor") %>' CssClass="btn-std btn-success" style="padding:4px 8px;" OnClientClick="return confirmarReactivar(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
 
                     <asp:Panel ID="pnlMensajeGrid" runat="server" Visible="false" CssClass="alert-info-custom">
                         <i class="fa-solid fa-circle-info"></i> <asp:Label ID="lblMensajeGrid" runat="server"></asp:Label>
@@ -393,7 +428,7 @@
                         </div>
                     </div>
 
-                    <div style="text-align:right; margin-top:20px;">
+                    <div style="text-align:right; margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
                         <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" OnClientClick="return confirmarGuardar(this);" />
                     </div>

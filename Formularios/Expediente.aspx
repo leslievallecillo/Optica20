@@ -13,9 +13,12 @@
         .toolbar { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 20px; }
         .lbl-formal { font-weight: 700; font-size: 0.9rem; color: #2c3e50; display: block; margin-bottom: 5px; }
         .form-control-formal { width: 100%; padding: 8px 12px; font-size: 1rem; border: 1px solid var(--color-border); border-radius: 4px; box-sizing: border-box; }
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std th { background-color: #f1f3f5; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
         .table-std td { padding: 10px; border-bottom: 1px solid #eee; }
+        
         .btn-std { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem; text-decoration:none; }
         .btn-primary { background-color: var(--color-primary); }
         .btn-success { background-color: #28a745; }
@@ -26,6 +29,17 @@
         .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         .badge-active { background-color: #e8f5e9; color: #2e7d32; }
         .badge-inactive { background-color: #ffebee; color: #c62828; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px !important; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-std { width: 100%; justify-content: center; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar > div { width: 100% !important; }
+            .form-grid-layout { grid-template-columns: 1fr !important; }
+            .rx-box .form-grid-layout { grid-template-columns: 1fr 1fr !important; }
+            div[style*="text-align:right"] { display: flex; flex-direction: column; gap: 10px; }
+        }
     </style>
 
     <script>
@@ -51,7 +65,7 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div class="container-fluid" style="padding: 20px;">
+    <div class="container-fluid" style="padding: 20px; box-sizing: border-box;">
         <asp:HiddenField ID="hfIDExpediente" runat="server" />
 
         <asp:Panel ID="PanelListado" runat="server">
@@ -83,40 +97,43 @@
                             <asp:TextBox ID="txtFiltroHasta" runat="server" TextMode="Date" CssClass="form-control-formal"></asp:TextBox>
                         </div>
                         <div>
+                            <label class="lbl-formal">&nbsp;</label>
                             <asp:Button ID="btnBuscar" runat="server" Text="Filtrar" CssClass="btn-std btn-primary" OnClick="btnBuscar_Click" />
                         </div>
                     </div>
 
                     <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
                         <div>
-                            Mostrar <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                            Mostrar <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged" CssClass="form-control-formal" style="width: auto; display: inline-block;">
                                 <asp:ListItem>10</asp:ListItem><asp:ListItem>20</asp:ListItem><asp:ListItem Value="All">Todos</asp:ListItem>
                             </asp:DropDownList>
                         </div>
                     </div>
 
-                    <asp:GridView ID="gvExpedientes" runat="server" CssClass="table-std" AutoGenerateColumns="False" GridLines="None" 
-                        AllowPaging="True" PageSize="10" OnPageIndexChanging="gvExpedientes_PageIndexChanging">
-                        <Columns>
-                            <asp:BoundField DataField="ID_Expediente" HeaderText="Ref" />
-                            <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                            <asp:BoundField DataField="NombreCliente" HeaderText="Titular" />
-                            <asp:BoundField DataField="Beneficiario" HeaderText="Paciente" />
-                            <asp:BoundField DataField="Producto" HeaderText="Lente" />
-                            <asp:TemplateField HeaderText="Estado" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
-                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
-                                    </span>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Acciones" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <asp:LinkButton ID="btnEditar" runat="server" OnClick="btnEditar_Click" CommandArgument='<%# Eval("ID_Expediente") %>' CssClass="btn-std btn-primary"><i class="fa-solid fa-pen"></i></asp:LinkButton>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvExpedientes" runat="server" CssClass="table-std" AutoGenerateColumns="False" GridLines="None" 
+                            AllowPaging="True" PageSize="10" OnPageIndexChanging="gvExpedientes_PageIndexChanging">
+                            <Columns>
+                                <asp:BoundField DataField="ID_Expediente" HeaderText="Ref" />
+                                <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
+                                <asp:BoundField DataField="NombreCliente" HeaderText="Titular" />
+                                <asp:BoundField DataField="Beneficiario" HeaderText="Paciente" />
+                                <asp:BoundField DataField="Producto" HeaderText="Lente" />
+                                <asp:TemplateField HeaderText="Estado" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
+                                            <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Acciones" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="btnEditar" runat="server" OnClick="btnEditar_Click" CommandArgument='<%# Eval("ID_Expediente") %>' CssClass="btn-std btn-primary"><i class="fa-solid fa-pen"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
                 </div>
             </div>
         </asp:Panel>
@@ -170,5 +187,4 @@
             </div>
         </asp:Panel>
     </div>
-    <a href="Login.aspx">Login.aspx</a>
 </asp:Content>

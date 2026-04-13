@@ -6,7 +6,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* ESTILOS VISUALES IDÉNTICOS A USUARIOS/CLIENTES */
         :root { --color-primary: #0056b3; --color-danger: #d32f2f; --color-text: #333; --color-border: #ced4da; --bg-light: #f8f9fa; }
         
         .panel-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eaeaea; }
@@ -29,7 +28,8 @@
         
         .req { color: #dc3545; font-weight: bold; margin-left: 3px; }
 
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std thead th { background-color: #f1f3f5; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
         .table-std tbody td { padding: 10px; border-bottom: 1px solid #eee; }
         
@@ -45,22 +45,29 @@
         .btn-info { background-color: #17a2b8; color: white; }
         
         .alert-info-custom { background-color: #e3f2fd; color: #0d47a1; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.9rem; text-align: center; border: 1px solid #bbdefb; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px !important; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar > div { width: 100% !important; min-width: auto !important; }
+            .toolbar .btn-std { width: 100%; justify-content: center; }
+            .toolbar > div > div { flex-direction: column; }
+        }
     </style>
 
     <script type="text/javascript">
-        // 1. LIMPIAR ESPACIOS DOBLES
         function noDobleEspacio(input) {
             if (input.value.startsWith(' ')) input.value = input.value.trimStart();
             input.value = input.value.replace(/  +/g, ' ');
         }
 
-        // 2. NAVEGACIÓN CON ENTER
         document.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 var target = e.target;
 
                 var formPanel = document.getElementById('<%= PanelMantenimiento.ClientID %>');
-                if (!formPanel || !formPanel.contains(target)) return; // Solo en el formulario
+                if (!formPanel || !formPanel.contains(target)) return;
 
                 if (target.tagName === "TEXTAREA" || (target.tagName === "INPUT" && target.type === "submit")) return true;
 
@@ -70,7 +77,6 @@
                 var index = elements.indexOf(target);
 
                 if (index > -1) {
-                    // Si es el último campo o es un botón, disparar guardar
                     if (index === elements.length - 1 || target.id.includes("btnGuardar")) {
                         var btn = document.getElementById('<%= btnGuardar.ClientID %>');
                         if (btn) btn.click();
@@ -81,7 +87,6 @@
             }
         });
 
-        // 3. CONFIRMACIONES
         var guardando = false;
         function confirmarGuardar(sender) {
             if (guardando) return true;
@@ -105,9 +110,8 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="sm" runat="server"></asp:ScriptManager>
 
-    <div class="container-fluid" style="padding: 20px;">
+    <div class="container-fluid" style="padding: 20px; box-sizing: border-box;">
         
-        <%-- PANEL LISTADO --%>
         <asp:Panel ID="PanelListado" runat="server">
             <div class="panel-card">
                 <div class="panel-header">
@@ -152,43 +156,47 @@
                         </div>
                     </div>
 
-                    <asp:GridView ID="gvTratamientos" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
-                        DataKeyNames="ID_Tratamiento" AllowPaging="True" PageSize="10" 
-                        OnRowCommand="gvTratamientos_RowCommand" OnPageIndexChanging="gvTratamientos_PageIndexChanging" 
-                        GridLines="None" ShowHeaderWhenEmpty="true">
-                        <Columns>
-                            <asp:BoundField DataField="ID_Tratamiento" HeaderText="ID" ItemStyle-Width="50px" />
-                            <asp:BoundField DataField="Nombre" HeaderText="Tratamiento" />
-                            <asp:BoundField DataField="PrecioAdicional" HeaderText="Precio Adicional" DataFormatString="{0:C}" ItemStyle-Width="150px" />
-                            <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="120px" />
-                            
-                            <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
-                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
-                                    </span>
-                                </ItemTemplate>
-                            </asp:TemplateField>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvTratamientos" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
+                            DataKeyNames="ID_Tratamiento" AllowPaging="True" PageSize="10" 
+                            OnRowCommand="gvTratamientos_RowCommand" OnPageIndexChanging="gvTratamientos_PageIndexChanging" 
+                            GridLines="None" ShowHeaderWhenEmpty="true">
+                            <Columns>
+                                <asp:BoundField DataField="ID_Tratamiento" HeaderText="ID" ItemStyle-Width="50px" />
+                                <asp:BoundField DataField="Nombre" HeaderText="Tratamiento" />
+                                <asp:BoundField DataField="PrecioAdicional" HeaderText="Precio Adicional" DataFormatString="{0:C}" ItemStyle-Width="150px" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="120px" />
+                                
+                                <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
+                                            <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="160px">
-                                <ItemTemplate>
-                                    <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Tratamiento") %>' CssClass="btn-std btn-primary" style="padding:4px 8px;"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
-                                    
-                                    <asp:LinkButton ID="btnDesactivar" runat="server" CommandName="Desactivar" CommandArgument='<%# Eval("ID_Tratamiento") %>' 
-                                        CssClass="btn-std btn-danger" style="padding:4px 8px;" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' 
-                                        OnClientClick="return confirmarEstado(this, 'Desactivar');">
-                                        <i class="fa-solid fa-ban"></i>
-                                    </asp:LinkButton>
-                                    
-                                    <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Tratamiento") %>' 
-                                        CssClass="btn-std btn-success" style="padding:4px 8px;" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>' 
-                                        OnClientClick="return confirmarEstado(this, 'Reactivar');">
-                                        <i class="fa-solid fa-check"></i>
-                                    </asp:LinkButton>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="160px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Tratamiento") %>' CssClass="btn-std btn-primary" style="padding:4px 8px;"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
+                                            
+                                            <asp:LinkButton ID="btnDesactivar" runat="server" CommandName="Desactivar" CommandArgument='<%# Eval("ID_Tratamiento") %>' 
+                                                CssClass="btn-std btn-danger" style="padding:4px 8px;" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' 
+                                                OnClientClick="return confirmarEstado(this, 'Desactivar');">
+                                                <i class="fa-solid fa-ban"></i>
+                                            </asp:LinkButton>
+                                            
+                                            <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Tratamiento") %>' 
+                                                CssClass="btn-std btn-success" style="padding:4px 8px;" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>' 
+                                                OnClientClick="return confirmarEstado(this, 'Reactivar');">
+                                                <i class="fa-solid fa-check"></i>
+                                            </asp:LinkButton>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
 
                     <asp:Panel ID="pnlMensajeGrid" runat="server" Visible="false" CssClass="alert-info-custom">
                         <i class="fa-solid fa-circle-info"></i> <asp:Label ID="lblMensajeGrid" runat="server"></asp:Label>
@@ -197,7 +205,6 @@
             </div>
         </asp:Panel>
 
-        <%-- PANEL MANTENIMIENTO --%>
         <asp:Panel ID="PanelMantenimiento" runat="server" Visible="false">
             <div class="panel-card" style="max-width: 700px; margin: 0 auto;">
                 <div class="panel-header">
@@ -207,14 +214,12 @@
                     
                     <asp:HiddenField ID="hfIDTratamiento" runat="server" />
 
-                    <%-- ANTI-AUTOCOMPLETE FANTASMA (Por consistencia, aunque menos crítico aquí) --%>
                     <div style="width: 0px; height: 0px; overflow: hidden; position: absolute;">
                         <input type="text" />
                     </div>
 
                     <div class="form-grid-layout" style="grid-template-columns: 1fr;">
                         
-                        <%-- NOMBRE --%>
                         <div class="form-group-formal">
                             <label class="lbl-formal">Nombre del Tratamiento <span class="req">*</span></label>
                             <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control-formal" autocomplete="off" MaxLength="50" oninput="noDobleEspacio(this)"></asp:TextBox>
@@ -222,7 +227,6 @@
                             <asp:Label ID="errNombre" runat="server" CssClass="error-message-formal" Visible="false"></asp:Label>
                         </div>
 
-                        <%-- PRECIO --%>
                         <div class="form-group-formal">
                             <label class="lbl-formal">Precio Adicional (C$) <span class="req">*</span></label>
                             <asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control-formal" TextMode="Number" step="0.01" min="0" placeholder="0.00"></asp:TextBox>
@@ -232,7 +236,7 @@
 
                     </div>
 
-                    <div style="text-align:right; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
+                    <div style="text-align:right; margin-top:20px; border-top:1px solid #eee; padding-top:20px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
                         <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" CausesValidation="false" formnovalidate="formnovalidate" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar Datos" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" OnClientClick="return confirmarGuardar(this);" />
                     </div>

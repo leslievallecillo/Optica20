@@ -17,7 +17,7 @@
             --color-info: #17a2b8;
         }
         body { background-color: var(--color-bg); color: var(--color-text); font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container-fluid { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .container-fluid { padding: 20px; max-width: 1200px; margin: 0 auto; box-sizing: border-box; }
         .panel-card { background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
         .panel-header { background-color: #fff; padding: 15px 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; }
         .panel-header h3 { margin: 0; font-size: 1.25rem; color: var(--color-primary); font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -31,7 +31,7 @@
         .required-asterisk { color: var(--color-danger); font-weight: bold; margin-left: 3px; }
         .help-text { display: block; font-size: 0.75rem; color: #6c757d; margin-top: 4px; font-style: italic; line-height: 1.2; }
         .error-text { display: block; font-size: 0.8rem; color: var(--color-danger); font-weight: 700; margin-top: 3px; background-color: #fff5f5; padding: 2px 5px; border-radius: 3px; border-left: 3px solid var(--color-danger); }
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std thead th { background-color: #f8f9fa; color: #495057; font-weight: 700; padding: 12px 15px; text-align: left; border-bottom: 2px solid var(--color-border); }
         .table-std tbody td { padding: 10px 15px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
         .table-std tbody tr:hover { background-color: #eef2f7; }
@@ -45,8 +45,18 @@
         .badge-status { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
         .badge-active { background-color: #d4edda; color: #155724; }
         .badge-inactive { background-color: #f8d7da; color: #721c24; }
-        .table-scroll-container { width: 100%; max-height: 600px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; }
+        .table-scroll-container { width: 100%; max-height: 600px; overflow-y: auto; overflow-x: auto; border: 1px solid var(--color-border); border-radius: 4px; -webkit-overflow-scrolling: touch; }
         .alert-info-custom { background-color: #e3f2fd; color: #0d47a1; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.9rem; text-align: center; border: 1px solid #bbdefb; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .panel-header h3 { font-size: 1.1rem; }
+            .btn-std { width: 100%; text-align: center; justify-content: center; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .form-group-filter { width: 100% !important; min-width: auto !important; }
+            .form-group-filter > div { display: flex; flex-direction: column; gap: 5px; }
+        }
     </style>
 
     <script type="text/javascript">
@@ -165,9 +175,11 @@
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="150px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_TipoDocumento") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
-                                        <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_TipoDocumento") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                        <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_TipoDocumento") %>' CssClass="btn-std btn-sm btn-success" OnClientClick="return confirmarReactivar(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_TipoDocumento") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_TipoDocumento") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_TipoDocumento") %>' CssClass="btn-std btn-sm btn-success" OnClientClick="return confirmarReactivar(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                        </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -204,7 +216,7 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: right; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
                         <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" OnClientClick="return confirmarGuardar(this);" />
                     </div>

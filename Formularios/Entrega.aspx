@@ -18,7 +18,7 @@
             --color-text: #333;
         }
         body { background-color: var(--color-bg); color: var(--color-text); font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container-fluid { padding: 20px; max-width: 1400px; margin: 0 auto; }
+        .container-fluid { padding: 20px; max-width: 1400px; margin: 0 auto; box-sizing: border-box; }
         .panel-card { background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
         .panel-header { background-color: #fff; padding: 15px 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; }
         .panel-header h3 { margin: 0; font-size: 1.25rem; color: var(--color-primary); font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -32,7 +32,7 @@
         .required-asterisk { color: var(--color-danger); font-weight: bold; margin-left: 3px; }
         .help-text { display: block; font-size: 0.75rem; color: #6c757d; margin-top: 4px; font-style: italic; line-height: 1.2; }
         .error-text { display: block; font-size: 0.8rem; color: var(--color-danger); font-weight: 700; margin-top: 3px; background-color: #fff5f5; padding: 2px 5px; border-radius: 3px; border-left: 3px solid var(--color-danger); }
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std thead th { background-color: #f8f9fa; color: #495057; font-weight: 700; padding: 12px 15px; text-align: left; border-bottom: 2px solid var(--color-border); position: sticky; top: 0; z-index: 1; }
         .table-std tbody td { padding: 10px 15px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
         .table-std tbody tr:hover { background-color: #eef2f7; }
@@ -48,9 +48,8 @@
         .badge-active { background-color: #d4edda; color: #155724; }
         .badge-inactive { background-color: #f8d7da; color: #721c24; }
 
-        /* Estilo botones de acción Responsable */
         .input-group-btn { display: flex; gap: 0; }
-        .input-group-btn .form-control-std { border-radius: 4px 0 0 4px; }
+        .input-group-btn .form-control-std { border-radius: 4px 0 0 4px; flex-grow: 1; }
         .btn-addon { border-radius: 0; height: 38px; width: 38px; padding: 0; font-size: 1rem; border: 1px solid rgba(0,0,0,0.1); }
         .btn-addon:last-child { border-radius: 0 4px 4px 0; }
 
@@ -64,10 +63,27 @@
             text-align: center;
             border: 1px solid #bbdefb;
         }
+        
+        .form-grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .form-full-width { grid-column: 1 / -1; }
+        textarea.form-control-std { height: auto; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-std { width: 100%; justify-content: center; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .form-group-filter { width: 100% !important; min-width: auto !important; }
+            .form-group-filter > div { display: flex; flex-direction: column; gap: 5px; }
+            .form-grid-layout { grid-template-columns: 1fr; }
+            .panel-body > div[style*="text-align: right"] { display: flex; flex-direction: column; gap: 10px; }
+            .input-group-btn { flex-wrap: wrap; }
+            .input-group-btn .form-control-std { border-radius: 4px; margin-bottom: 5px; width: 100%; }
+            .btn-addon { flex-grow: 1; border-radius: 4px !important; margin-bottom: 5px; }
+        }
     </style>
 
     <script type="text/javascript">
-        // 1. Navegación con Enter
         document.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 var target = e.target;
@@ -91,7 +107,6 @@
             }
         });
 
-        // 2. Confirmación Guardar
         var guardando = false;
         function confirmarGuardar(sender) {
             if (guardando) return true;
@@ -121,7 +136,6 @@
             Swal.fire({ title: '¿Reactivar Entrega?', text: "La entrega volverá a estar activa.", icon: 'question', showCancelButton: true, confirmButtonColor: '#28a745', cancelButtonColor: '#6c757d', confirmButtonText: 'Sí, reactivar', cancelButtonText: 'Cancelar' }).then((result) => { if (result.isConfirmed) { eval(sender.href); } }); return false;
         }
 
-        // --- GESTIÓN RESPONSABLE ---
         function setAction(action, value) {
             document.getElementById('<%= hfActionResponsable.ClientID %>').value = action;
             document.getElementById('<%= hfValorResponsable.ClientID %>').value = value;
@@ -308,11 +322,13 @@
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="150px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Entrega") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
-                                        
-                                        <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Entrega") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarBajaTabla(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                        
-                                        <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Entrega") %>' CssClass="btn-std btn-sm btn-success" OnClientClick="return confirmarReactivarTabla(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                            <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Entrega") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
+                                            
+                                            <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Entrega") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarBajaTabla(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
+                                            
+                                            <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Entrega") %>' CssClass="btn-std btn-sm btn-success" OnClientClick="return confirmarReactivarTabla(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                        </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -381,7 +397,7 @@
 
                         <div>
                             <label class="lbl-std">Fecha de Registro</label>
-                            <asp:TextBox ID="txtFechaRegistro" runat="server" CssClass="form-control-std" TextMode="Date"></asp:TextBox>
+                            <asp:TextBox ID="txtFechaRegistro" runat="server" CssClass="form-control-std" TextMode="Date" Enabled="false"></asp:TextBox>
                             <small class="help-text">Automática.</small>
                             <asp:Label ID="errFechaRegistro" runat="server" CssClass="error-text" Visible="false"></asp:Label>
                         </div>

@@ -37,7 +37,10 @@
         .input-group-row { margin-bottom: 15px; }
         .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         
-        .table-clean { width: 100%; border-collapse: collapse; }
+        /* Contenedor responsive para la tabla */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        
+        .table-clean { width: 100%; border-collapse: collapse; white-space: nowrap; }
         .table-clean th { text-align: left; padding: 12px 15px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
         .table-clean td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; font-size: 0.95rem; }
         .status-pill { background-color: var(--success-bg); color: var(--success-text); font-weight: 600; font-size: 0.75rem; padding: 4px 12px; border-radius: 50px; }
@@ -53,6 +56,19 @@
         .upload-box { border: 1px dashed var(--border-input); background-color: #f8fafc; padding: 12px 15px; border-radius: 10px; display: flex; align-items: center; gap: 15px; }
         
         .swal-image-zoom { max-width: 600px !important; max-height: 80vh !important; object-fit: contain; border-radius: 8px; }
+
+        /* --- MEDIA QUERIES RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .empresa-wrapper { padding: 15px; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-primary-action { width: 100%; text-align: center; }
+            .ui-card { padding: 15px; }
+            .grid-2-col { grid-template-columns: 1fr; gap: 15px; }
+            .modal-header { padding: 15px 20px; }
+            .modal-body { padding: 15px 20px; }
+            .upload-box { flex-direction: column; align-items: flex-start; text-align: center; }
+            .preview-small { align-self: center; }
+        }
     </style>
 
     <script type="text/javascript">
@@ -129,41 +145,43 @@
 
             <asp:UpdatePanel ID="upGrid" runat="server">
                 <ContentTemplate>
-                    <asp:GridView ID="gvProductos" runat="server" CssClass="table-clean" AutoGenerateColumns="False"
-                        OnRowCommand="gvProductos_RowCommand" DataKeyNames="ID_Producto" AllowPaging="True" PageSize="8"
-                        OnPageIndexChanging="gvProductos_PageIndexChanging" GridLines="None" EmptyDataText="No se encontraron productos.">
-                        <Columns>
-                            <asp:BoundField DataField="Codigo" HeaderText="CÓDIGO" ItemStyle-Font-Bold="true" />
-                            
-                            <asp:TemplateField HeaderText="IMAGEN">
-                                <ItemTemplate>
-                                    <asp:Image ID="imgProd" runat="server" CssClass="img-thumb" title="Click para ampliar" onclick="verImagenFull(this.src)"
-                                        ImageUrl='<%# string.IsNullOrEmpty(Eval("RutaImagen").ToString()) ? "~/Images/default-product.png" : Eval("RutaImagen") %>' />
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            
-                            <asp:BoundField DataField="Categoria" HeaderText="CATEGORÍA" />
-                            <asp:BoundField DataField="Descripcion" HeaderText="DESCRIPCIÓN" />
-                            <asp:BoundField DataField="Marca" HeaderText="MARCA" NullDisplayText="-" />
-                            <asp:BoundField DataField="Precio" HeaderText="PRECIO" DataFormatString="C$ {0:N2}" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#059669" ItemStyle-Wrap="false" />
-                            <asp:BoundField DataField="Stock" HeaderText="STOCK" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#3b82f6" />
-                            <asp:TemplateField HeaderText="ESTADO">
-                                <ItemTemplate>
-                                    <span class='status-pill <%# Convert.ToBoolean(Eval("Estado")) ? "" : "status-inactive" %>'>
-                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
-                                    </span>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="ACCIONES">
-                                <ItemTemplate>
-                                    <div class="action-buttons-container">
-                                        <asp:LinkButton ID="btnEdit" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Producto") %>' CssClass="btn-primary-action" style="padding: 6px 12px; font-size:0.8rem;"><i class="fas fa-edit"></i></asp:LinkButton>
-                                        <asp:LinkButton ID="btnDel" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Producto") %>' CssClass="btn-danger-action" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' OnClientClick="return confirm('¿Desactivar?');"><i class="fas fa-ban"></i></asp:LinkButton>
-                                    </div>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvProductos" runat="server" CssClass="table-clean" AutoGenerateColumns="False"
+                            OnRowCommand="gvProductos_RowCommand" DataKeyNames="ID_Producto" AllowPaging="True" PageSize="8"
+                            OnPageIndexChanging="gvProductos_PageIndexChanging" GridLines="None" EmptyDataText="No se encontraron productos.">
+                            <Columns>
+                                <asp:BoundField DataField="Codigo" HeaderText="CÓDIGO" ItemStyle-Font-Bold="true" />
+                                
+                                <asp:TemplateField HeaderText="IMAGEN">
+                                    <ItemTemplate>
+                                        <asp:Image ID="imgProd" runat="server" CssClass="img-thumb" title="Click para ampliar" onclick="verImagenFull(this.src)"
+                                            ImageUrl='<%# string.IsNullOrEmpty(Eval("RutaImagen").ToString()) ? "~/Images/default-product.png" : Eval("RutaImagen") %>' />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                
+                                <asp:BoundField DataField="Categoria" HeaderText="CATEGORÍA" />
+                                <asp:BoundField DataField="Descripcion" HeaderText="DESCRIPCIÓN" />
+                                <asp:BoundField DataField="Marca" HeaderText="MARCA" NullDisplayText="-" />
+                                <asp:BoundField DataField="Precio" HeaderText="PRECIO" DataFormatString="C$ {0:N2}" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#059669" ItemStyle-Wrap="false" />
+                                <asp:BoundField DataField="Stock" HeaderText="STOCK" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#3b82f6" />
+                                <asp:TemplateField HeaderText="ESTADO">
+                                    <ItemTemplate>
+                                        <span class='status-pill <%# Convert.ToBoolean(Eval("Estado")) ? "" : "status-inactive" %>'>
+                                            <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="ACCIONES">
+                                    <ItemTemplate>
+                                        <div class="action-buttons-container">
+                                            <asp:LinkButton ID="btnEdit" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Producto") %>' CssClass="btn-primary-action" style="padding: 6px 12px; font-size:0.8rem;"><i class="fas fa-edit"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnDel" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Producto") %>' CssClass="btn-danger-action" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' OnClientClick="return confirm('¿Desactivar?');"><i class="fas fa-ban"></i></asp:LinkButton>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
                 </ContentTemplate>
             </asp:UpdatePanel>
         </div>
@@ -225,7 +243,7 @@
                             <span class="field-label">Imagen del Producto</span>
                             <div class="upload-box">
                                 <asp:Image ID="imgProductoPreview" runat="server" CssClass="preview-small" title="Click para ampliar" onclick="verImagenFull(this.src)" ImageUrl="~/Images/default-product.png" />
-                                <div style="flex-grow: 1;">
+                                <div style="flex-grow: 1; width: 100%;">
                                     <asp:FileUpload ID="fuImagen" runat="server" CssClass="ui-input" style="padding-top: 9px;" onchange="previewImage(this);" />
                                 </div>
                             </div>

@@ -8,40 +8,38 @@
         :root {
             --bg-light: #f4f6f9;
             --card-shadow: 0 1px 1px rgba(0,0,0,0.1);
-            /* Colores de las tarjetas */
             --color-purple: #605ca8;
             --color-green: #00a65a;
             --color-orange: #f39c12;
             --color-blue: #00c0ef;
         }
 
-        /* Estructura General */
-        .dashboard-wrapper { padding: 15px; background-color: var(--bg-light); min-height: 100vh; }
+        .dashboard-wrapper { padding: 15px; background-color: var(--bg-light); min-height: 100vh; box-sizing: border-box; }
         .dash-header { margin-bottom: 20px; color: #444; font-weight: 300; font-size: 24px; }
         .dash-header small { font-size: 15px; color: #777; margin-left: 5px; }
 
-        /* === SECCIÓN SUPERIOR (Gráfico y KPIs) === */
         .top-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
         
         .chart-section {
-            flex: 2; /* 66% ancho */
+            flex: 2; 
             background: #fff;
             border-top: 3px solid #d2d6de;
             box-shadow: var(--card-shadow);
             border-radius: 3px;
             padding: 10px;
-            min-width: 500px;
+            min-width: 300px;
+            box-sizing: border-box;
         }
 
         .kpi-section {
-            flex: 1; /* 33% ancho */
+            flex: 1; 
             display: flex;
             flex-direction: column;
             gap: 15px;
-            min-width: 280px;
+            min-width: 250px;
+            box-sizing: border-box;
         }
 
-        /* Tarjetas KPI (Small Boxes) */
         .small-box {
             border-radius: 2px;
             position: relative;
@@ -51,6 +49,7 @@
             color: #fff;
             padding: 20px;
             overflow: hidden;
+            box-sizing: border-box;
         }
         .small-box .inner { padding-right: 10px; }
         .small-box h3 { font-size: 28px; font-weight: bold; margin: 0 0 10px 0; white-space: nowrap; padding: 0; }
@@ -67,22 +66,21 @@
         }
         .small-box:hover .icon { transform: scale(1.1); }
 
-        /* Colores KPI */
         .bg-purple { background-color: var(--color-purple) !important; }
         .bg-green { background-color: var(--color-green) !important; }
         .bg-orange { background-color: var(--color-orange) !important; }
         .bg-blue { background-color: var(--color-blue) !important; }
 
-        /* === SECCIÓN INFERIOR (Tablas) === */
         .bottom-row { display: flex; flex-wrap: wrap; gap: 20px; }
 
         .box {
             flex: 1;
             background: #fff;
-            border-top: 3px solid #00c0ef; /* Azul por defecto */
+            border-top: 3px solid #00c0ef;
             box-shadow: var(--card-shadow);
             border-radius: 3px;
-            min-width: 400px;
+            min-width: 300px;
+            box-sizing: border-box;
         }
 
         .box-header {
@@ -94,15 +92,13 @@
         }
         .box-title { display: inline-block; font-size: 18px; margin: 0; line-height: 1; font-weight: 400; }
 
-        .box-body { padding: 0; }
+        .box-body { padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-        /* Tabla Últimas Ventas / Próximas Citas */
-        .table-dash { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .table-dash { width: 100%; border-collapse: collapse; font-size: 14px; white-space: nowrap;}
         .table-dash th { background-color: #fff; border-bottom: 2px solid #f4f4f4; padding: 8px; text-align: left; color: #333; font-weight: 600; }
         .table-dash td { border-bottom: 1px solid #f4f4f4; padding: 8px; color: #555; }
         .link-inv { color: #3c8dbc; cursor: pointer; text-decoration: none; }
         
-        /* Lista Productos */
         .products-list { list-style: none; padding: 0; margin: 0; }
         .products-list .item {
             padding: 10px;
@@ -110,15 +106,26 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
         .products-list .product-img img { width: 50px; height: 50px; object-fit: cover; border: 1px solid #ddd; padding: 2px; }
-        .products-list .product-info { flex: 1; }
-        .products-list .product-title { font-weight: 600; color: #3c8dbc; font-size: 14px; text-decoration: none; display: block; }
+        .products-list .product-info { flex: 1; min-width: 150px;}
+        .products-list .product-title { font-weight: 600; color: #3c8dbc; font-size: 14px; text-decoration: none; display: block; margin-bottom: 5px;}
         .products-list .product-description { display: block; color: #999; font-size: 12px; }
         .label-price { float: right; padding: .2em .6em .3em; font-size: 75%; font-weight: 700; line-height: 1; color: #fff; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: .25em; background-color: #dd4b39; }
 
         .box-footer { padding: 10px; text-align: center; background-color: #fff; border-top: 1px solid #f4f4f4; }
         .box-footer a { color: #444; text-transform: uppercase; text-decoration: none; font-size: 13px; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .dashboard-wrapper { padding: 10px; }
+            .top-row { flex-direction: column; }
+            .chart-section, .kpi-section { flex: auto; width: 100%; min-width: auto; }
+            .bottom-row { flex-direction: column; }
+            .box { width: 100%; min-width: auto; }
+            .small-box h3 { font-size: 24px; }
+            .label-price { float: none; display: inline-block; margin-top: 5px; }
+        }
     </style>
 </asp:Content>
 
@@ -132,7 +139,7 @@
                 <div style="margin-bottom:10px; font-weight:bold; color:#666; text-align:center;">
                     Compras & Ventas <script>document.write(new Date().getFullYear())</script>
                 </div>
-                <div style="height: 320px; width:100%;">
+                <div style="height: 320px; width:100%; position: relative;">
                     <canvas id="mainChart"></canvas>
                 </div>
             </div>
@@ -235,7 +242,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Datos inyectados desde C#
             const dataVentas = <%= JsonVentas %>;
             const dataCompras = <%= JsonCompras %>;
 
@@ -256,7 +262,7 @@
                             backgroundColor: '#f39c12',
                             borderColor: '#f39c12',
                             data: dataCompras,
-                            hidden: true // Oculto inicialmente para igualar la imagen de referencia
+                            hidden: true
                         }
                     ]
                 },

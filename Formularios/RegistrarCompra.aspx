@@ -35,7 +35,6 @@
         .btn-info-action { background-color: #0ea5e9; color: white; border: none; border-radius: 8px; padding: 0 15px; cursor: pointer; font-size: 1rem; transition: 0.2s; }
         .btn-info-action:hover { background-color: #0284c7; }
 
-        /* Modales */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-overlay-top { z-index: 1050; }
         .modal-box { background: var(--bg-card); width: 95%; max-width: 800px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; }
@@ -44,18 +43,17 @@
         .modal-body { padding: 30px; overflow-y: auto; }
         .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: white; line-height: 1; }
 
-        /* Layouts */
         .grid-3-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 15px; }
         .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px; }
+        .grid-precios { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 15px; margin-bottom: 15px; }
         .input-group-row { margin-bottom: 15px; }
         
-        /* Tabla */
-        .table-clean { width: 100%; border-collapse: collapse; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-clean { width: 100%; border-collapse: collapse; white-space: nowrap; }
         .table-clean th { text-align: left; padding: 12px 15px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
         .table-clean td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; font-size: 0.95rem; }
         .total-row { font-size: 1.5rem; font-weight: 700; text-align: right; padding-top: 20px; color: var(--accent); }
 
-        /* Imágenes y Autocomplete */
         .preview-small { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0; cursor: zoom-in; transition: transform 0.2s ease; }
         .preview-small:hover { transform: scale(1.05); }
         .upload-box { border: 1px dashed var(--border-input); background-color: #f8fafc; padding: 12px 15px; border-radius: 10px; display: flex; align-items: center; gap: 15px; }
@@ -64,10 +62,22 @@
         .ui-autocomplete { z-index: 2000 !important; max-height: 250px; overflow-y: auto; overflow-x: hidden; font-family: 'Inter', sans-serif; font-size: 0.9rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
         .ui-menu-item { padding: 10px; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
         .ui-menu-item:hover { background-color: #f8fafc; }
+
+        @media (max-width: 768px) {
+            .empresa-wrapper { padding: 15px; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .page-header > div { flex-direction: column; align-items: flex-start; width: 100%; gap: 10px; }
+            .ui-card { padding: 15px; }
+            .grid-3-col, .grid-2-col, .grid-precios { grid-template-columns: 1fr; }
+            .btn-primary-action, .btn-secondary-action, .btn-success-action { width: 100%; justify-content: center; text-align: center; }
+            .total-row { text-align: center; }
+            .modal-header, .modal-body { padding: 15px; }
+            .upload-box { flex-direction: column; align-items: flex-start; }
+            .btn-info-action { padding: 10px 15px; }
+        }
     </style>
 
     <script type="text/javascript">
-        // 1. Evitar submit con Enter
         document.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 var target = e.target;
@@ -91,7 +101,6 @@
             }
         }
 
-        // 2. Zoom de imágenes y previsualización
         function verImagenFull(srcPath) {
             if (srcPath.includes("default-product.png") && srcPath.indexOf('data:image') === -1) return;
             Swal.fire({
@@ -108,7 +117,6 @@
             }
         }
 
-        // 3. Cálculos Dinámicos y Bidireccionales (Margen vs Precio)
         function calcularAutomatica() {
             var costo = parseFloat(document.getElementById('<%= txtPrecioUnitario.ClientID %>').value) || 0;
             var margenPct = parseFloat(document.getElementById('<%= txtMargen.ClientID %>').value) || 0;
@@ -122,7 +130,6 @@
             document.getElementById('<%= txtIva.ClientID %>').value = iva.toFixed(2);
             document.getElementById('<%= txtPrecioVenta.ClientID %>').value = precioSugerido.toFixed(2);
 
-            // Actualiza el texto de ayuda
             document.getElementById('lblMargenHelp').innerText = 'Margen del ' + margenPct + '% sugerido. Se actualizará en Inventario.';
         }
 
@@ -141,11 +148,9 @@
                 document.getElementById('<%= txtMargen.ClientID %>').value = "0.00";
             }
 
-            // Actualiza el texto de ayuda con el margen exacto
             document.getElementById('lblMargenHelp').innerText = 'Margen real del ' + margenReal.toFixed(2) + '%. Se actualizará en Inventario.';
         }
 
-        // 4. Autocomplete y AJAX
         function initAutocomplete() {
             $("#<%= txtBusquedaProducto.ClientID %>").autocomplete({
                 source: function (request, response) {
@@ -196,7 +201,6 @@
             prm.add_endRequest(function () { initAutocomplete(); });
         });
 
-        // 5. Manejo de Modales
         function openModal() { 
             document.getElementById('modalProd').style.display = 'flex'; 
             setTimeout(function() { document.getElementById('<%= txtBusquedaProducto.ClientID %>').focus(); }, 100);
@@ -210,7 +214,6 @@
         }
         function cerrarModalNuevoProducto() { document.getElementById('modalNuevoProducto').style.display = 'none'; return false; }
 
-        // 6. Confirmación Final
         var guardando = false;
         function confirmarGuardar(sender) {
             if (guardando) return true;
@@ -264,26 +267,28 @@
         <div class="ui-card">
             <asp:UpdatePanel ID="upDetalle" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap: wrap; gap: 10px;">
                         <h4 style="margin:0; color: var(--text-main);">Detalle de Productos</h4>
                         <asp:Button ID="btnAddItem" runat="server" Text="+ Agregar Producto" CssClass="btn-primary-action" OnClick="btnAddItem_Click" OnClientClick="openModal(); return false;" />
                     </div>
 
-                    <asp:GridView ID="gvDetalle" runat="server" CssClass="table-clean" AutoGenerateColumns="False" OnRowCommand="gvDetalle_RowCommand" EmptyDataText="No hay productos en el carrito.">
-                        <Columns>
-                            <asp:BoundField DataField="Producto" HeaderText="PRODUCTO" />
-                            <asp:BoundField DataField="Cantidad" HeaderText="CANT." ItemStyle-Font-Bold="true" />
-                            <asp:BoundField DataField="PrecioUnitario" HeaderText="COSTO" DataFormatString="C$ {0:N2}" />
-                            <asp:BoundField DataField="Iva" HeaderText="IVA" DataFormatString="C$ {0:N2}" />
-                            <asp:BoundField DataField="PrecioTotal" HeaderText="SUBTOTAL" DataFormatString="C$ {0:N2}" ItemStyle-Font-Bold="true" />
-                            <asp:BoundField DataField="PrecioVenta" HeaderText="P. VENTA (Oficial)" DataFormatString="C$ {0:N2}" ItemStyle-ForeColor="#059669" ItemStyle-Font-Bold="true" />
-                            <asp:TemplateField>
-                                <ItemTemplate>
-                                    <asp:LinkButton ID="btnDel" runat="server" CommandName="Borrar" CommandArgument='<%# Container.DataItemIndex %>' CssClass="btn-danger-action" ToolTip="Eliminar"><i class="fa-solid fa-trash"></i></asp:LinkButton>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvDetalle" runat="server" CssClass="table-clean" AutoGenerateColumns="False" OnRowCommand="gvDetalle_RowCommand" EmptyDataText="No hay productos en el carrito.">
+                            <Columns>
+                                <asp:BoundField DataField="Producto" HeaderText="PRODUCTO" />
+                                <asp:BoundField DataField="Cantidad" HeaderText="CANT." ItemStyle-Font-Bold="true" />
+                                <asp:BoundField DataField="PrecioUnitario" HeaderText="COSTO" DataFormatString="C$ {0:N2}" />
+                                <asp:BoundField DataField="Iva" HeaderText="IVA" DataFormatString="C$ {0:N2}" />
+                                <asp:BoundField DataField="PrecioTotal" HeaderText="SUBTOTAL" DataFormatString="C$ {0:N2}" ItemStyle-Font-Bold="true" />
+                                <asp:BoundField DataField="PrecioVenta" HeaderText="P. VENTA (Oficial)" DataFormatString="C$ {0:N2}" ItemStyle-ForeColor="#059669" ItemStyle-Font-Bold="true" />
+                                <asp:TemplateField>
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="btnDel" runat="server" CommandName="Borrar" CommandArgument='<%# Container.DataItemIndex %>' CssClass="btn-danger-action" ToolTip="Eliminar"><i class="fa-solid fa-trash"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
 
                     <div class="total-row">Total Compra: <asp:Label ID="lblTotal" runat="server" Text="C$ 0.00"></asp:Label></div>
                 </ContentTemplate>
@@ -325,7 +330,7 @@
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="grid-precios">
                             <div class="input-group-row" style="margin-bottom:0;">
                                 <span class="field-label">IVA (15%)</span>
                                 <asp:TextBox ID="txtIva" runat="server" CssClass="ui-input" ReadOnly="true" Text="0.00"></asp:TextBox>

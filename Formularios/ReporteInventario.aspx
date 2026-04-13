@@ -18,18 +18,28 @@
         .btn-print { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
         .btn-search { background: #0056b3; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
 
-        .table-rep { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-rep { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-rep th { background: #0056b3; color: white; padding: 12px; text-align: left; }
         .table-rep td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
         
         .stock-bajo { color: #dc3545; font-weight: bold; }
         .stock-ok { color: #28a745; font-weight: bold; }
         .img-prod { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc; }
+
+        @media (max-width: 768px) {
+            .panel-report { padding: 15px; }
+            .report-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-print { width: 100%; text-align: center; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .form-grp { width: 100%; min-width: auto !important; }
+            .btn-search { width: 100%; text-align: center; }
+        }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
+    <div style="padding: 20px; max-width: 1400px; margin: 0 auto; box-sizing: border-box;">
         <div class="panel-report">
             <div class="report-header">
                 <h2 style="margin:0; color:#333;"><i class="fa-solid fa-boxes-stacked"></i> Inventario Actual</h2>
@@ -65,33 +75,35 @@
                 </asp:DropDownList>
             </div>
 
-            <asp:GridView ID="gvInventario" runat="server" CssClass="table-rep" AutoGenerateColumns="False" AllowPaging="true" PageSize="10" OnPageIndexChanging="gvInventario_PageIndexChanging" EmptyDataText="No se encontraron productos activos.">
-                <Columns>
-                    <asp:TemplateField HeaderText="Img" ItemStyle-Width="50px">
-                        <ItemTemplate>
-                            <asp:Image ID="img" runat="server" CssClass="img-prod" ImageUrl='<%# string.IsNullOrEmpty(Eval("RutaImagen").ToString()) ? "~/Imagenes2/default.png" : Eval("RutaImagen") %>' />
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:BoundField DataField="Codigo" HeaderText="Código" />
-                    <asp:BoundField DataField="Categoria" HeaderText="Categoría" />
-                    <asp:TemplateField HeaderText="Producto">
-                        <ItemTemplate>
-                            <strong><%# Eval("Descripcion") %></strong><br />
-                            <small style="color:#666;"><%# Eval("Marca") %> <%# Eval("Modelo") %></small>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:TemplateField HeaderText="Stock">
-                        <ItemTemplate>
-                            <span class='<%# Convert.ToInt32(Eval("Stock")) < 5 ? "stock-bajo" : "stock-ok" %>'>
-                                <%# Eval("Stock") %>
-                            </span>
-                            <%# Convert.ToInt32(Eval("Stock")) < 5 ? "<i class='fa-solid fa-triangle-exclamation' style='color:#dc3545; margin-left:5px;'></i>" : "" %>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:BoundField DataField="UltimoCosto" HeaderText="Último Costo" DataFormatString="{0:C}" />
-                    <asp:BoundField DataField="PrecioVenta" HeaderText="Precio Venta" DataFormatString="{0:C}" />
-                </Columns>
-            </asp:GridView>
+            <div class="table-responsive">
+                <asp:GridView ID="gvInventario" runat="server" CssClass="table-rep" AutoGenerateColumns="False" AllowPaging="true" PageSize="10" OnPageIndexChanging="gvInventario_PageIndexChanging" EmptyDataText="No se encontraron productos activos.">
+                    <Columns>
+                        <asp:TemplateField HeaderText="Img" ItemStyle-Width="50px">
+                            <ItemTemplate>
+                                <asp:Image ID="img" runat="server" CssClass="img-prod" ImageUrl='<%# string.IsNullOrEmpty(Eval("RutaImagen").ToString()) ? "~/Imagenes2/default.png" : Eval("RutaImagen") %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="Codigo" HeaderText="Código" />
+                        <asp:BoundField DataField="Categoria" HeaderText="Categoría" />
+                        <asp:TemplateField HeaderText="Producto">
+                            <ItemTemplate>
+                                <strong><%# Eval("Descripcion") %></strong><br />
+                                <small style="color:#666;"><%# Eval("Marca") %> <%# Eval("Modelo") %></small>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Stock">
+                            <ItemTemplate>
+                                <span class='<%# Convert.ToInt32(Eval("Stock")) < 5 ? "stock-bajo" : "stock-ok" %>'>
+                                    <%# Eval("Stock") %>
+                                </span>
+                                <%# Convert.ToInt32(Eval("Stock")) < 5 ? "<i class='fa-solid fa-triangle-exclamation' style='color:#dc3545; margin-left:5px;'></i>" : "" %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="UltimoCosto" HeaderText="Último Costo" DataFormatString="{0:C}" />
+                        <asp:BoundField DataField="PrecioVenta" HeaderText="Precio Venta" DataFormatString="{0:C}" />
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
     </div>
 </asp:Content>

@@ -23,14 +23,25 @@
         .btn-print { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
         .btn-search { background: #0056b3; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
 
-        .table-rep { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-rep { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-rep th { background: #0056b3; color: white; padding: 12px; text-align: left; }
         .table-rep td { padding: 10px; border-bottom: 1px solid #eee; }
+
+        @media (max-width: 768px) {
+            .panel-report { padding: 15px; }
+            .report-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-print { width: 100%; text-align: center; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .form-grp { width: 100%; }
+            .input-std { width: 100%; box-sizing: border-box; }
+            .btn-search { width: 100%; text-align: center; }
+        }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
+    <div style="padding: 20px; max-width: 1400px; margin: 0 auto; box-sizing: border-box;">
         <div class="panel-report">
             <div class="report-header">
                 <h2 style="margin:0; color:#333;"><i class="fa-solid fa-chart-line"></i> Reporte de Ventas</h2>
@@ -69,16 +80,18 @@
                 </asp:DropDownList>
             </div>
 
-            <asp:GridView ID="gvReporte" runat="server" CssClass="table-rep" AutoGenerateColumns="False" AllowPaging="true" PageSize="10" OnPageIndexChanging="gvReporte_PageIndexChanging" EmptyDataText="No hay ventas en este periodo.">
-                <Columns>
-                    <asp:BoundField DataField="NumeroDocumento" HeaderText="Factura" />
-                    <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                    <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
-                    <asp:BoundField DataField="Vendedor" HeaderText="Vendedor" />
-                    <asp:BoundField DataField="TipoPago" HeaderText="Forma Pago" />
-                    <asp:BoundField DataField="Total" HeaderText="Monto Total" DataFormatString="{0:C}" ItemStyle-Font-Bold="true" />
-                </Columns>
-            </asp:GridView>
+            <div class="table-responsive">
+                <asp:GridView ID="gvReporte" runat="server" CssClass="table-rep" AutoGenerateColumns="False" AllowPaging="true" PageSize="10" OnPageIndexChanging="gvReporte_PageIndexChanging" EmptyDataText="No hay ventas en este periodo.">
+                    <Columns>
+                        <asp:BoundField DataField="NumeroDocumento" HeaderText="Factura" />
+                        <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
+                        <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
+                        <asp:BoundField DataField="Vendedor" HeaderText="Vendedor" />
+                        <asp:BoundField DataField="TipoPago" HeaderText="Forma Pago" />
+                        <asp:BoundField DataField="Total" HeaderText="Monto Total" DataFormatString="{0:C}" ItemStyle-Font-Bold="true" />
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
     </div>
 </asp:Content>

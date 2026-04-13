@@ -12,13 +12,14 @@
 
     <style>
         body {
-            background-color: #f0f2f5; /* Fondo gris claro como la imagen */
+            background-color: #f0f2f5;
             font-family: 'Poppins', sans-serif;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
+            box-sizing: border-box;
         }
 
         .login-card {
@@ -29,11 +30,11 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
+            box-sizing: border-box;
         }
 
-        /* Estilos del Logo */
         .brand-icon {
-            color: #FFC107; /* Color amarillo */
+            color: #FFC107;
             font-size: 50px;
             margin-bottom: 10px;
         }
@@ -44,11 +45,11 @@
             font-size: 1.5rem;
             margin-bottom: 30px;
         }
+        
         .brand-title span {
-            color: #FFC107; /* El 20/20 en amarillo */
+            color: #FFC107;
         }
 
-        /* Estilos de los Inputs para que parezcan a la imagen (fondo gris, sin borde) */
         .form-label-custom {
             font-size: 0.75rem;
             font-weight: 700;
@@ -70,6 +71,7 @@
             color: #495057;
             width: 100%;
             transition: all 0.3s;
+            box-sizing: border-box;
         }
 
         .form-control-custom:focus {
@@ -79,9 +81,8 @@
             outline: none;
         }
 
-        /* Botón Amarillo */
         .btn-custom {
-            background-color: #ffe082; /* Amarillo suave */
+            background-color: #ffe082;
             background: linear-gradient(to bottom, #ffe082, #ffd54f);
             color: #2c3e50;
             font-weight: 700;
@@ -101,7 +102,6 @@
             color: #000;
         }
 
-        /* Mensajes de Alerta */
         .alert-custom {
             border-radius: 8px;
             font-size: 0.9rem;
@@ -109,6 +109,7 @@
             margin-bottom: 20px;
             display: block;
         }
+        
         .alert-error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
         .alert-success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
 
@@ -119,9 +120,22 @@
             text-decoration: none;
             font-size: 0.9rem;
         }
+        
         .back-link:hover {
             color: #2c3e50;
             text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px;
+            }
+            .login-card {
+                padding: 30px 20px;
+            }
+            .brand-title {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>

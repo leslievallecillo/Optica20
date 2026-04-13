@@ -32,7 +32,8 @@
 
         .toolbar { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 20px; }
         
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
         .table-std thead th { background-color: #f1f3f5; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
         .table-std tbody td { padding: 10px; border-bottom: 1px solid #eee; }
 
@@ -49,10 +50,18 @@
         .btn-sm { padding: 4px 8px; font-size: 0.85rem; }
 
         .alert-info-custom { background-color: #e3f2fd; color: #0d47a1; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.9rem; text-align: center; border: 1px solid #bbdefb; }
+
+        @media (max-width: 768px) {
+            .container-fluid { padding: 10px !important; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar > div { width: 100% !important; min-width: auto !important; }
+            .btn-std { width: 100%; justify-content: center; margin-bottom: 5px; }
+            .toolbar > div > div { flex-direction: column; }
+        }
     </style>
 
     <script type="text/javascript">
-        // Navegación con Enter
         document.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 var target = e.target;
@@ -175,30 +184,32 @@
                         </div>
                     </div>
 
-                    <asp:GridView ID="gvTipoPago" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
-                        DataKeyNames="ID_TipoPago" AllowPaging="True" PageSize="10" 
-                        OnRowCommand="gvTipoPago_RowCommand" OnPageIndexChanging="gvTipoPago_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
-                        <Columns>
-                            <asp:BoundField DataField="ID_TipoPago" HeaderText="ID" ItemStyle-Width="60px" />
-                            <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
-                            <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="120px" />
-                            <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
-                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
-                                    </span>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="150px" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_TipoPago") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
-                                    <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_TipoPago") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                    <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_TipoPago") %>' CssClass="btn-std btn-sm btn-success" OnClientClick="return confirmarReactivar(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                        <PagerStyle CssClass="pagination" HorizontalAlign="Center" BackColor="#f8f9fa" />
-                    </asp:GridView>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvTipoPago" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
+                            DataKeyNames="ID_TipoPago" AllowPaging="True" PageSize="10" 
+                            OnRowCommand="gvTipoPago_RowCommand" OnPageIndexChanging="gvTipoPago_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
+                            <Columns>
+                                <asp:BoundField DataField="ID_TipoPago" HeaderText="ID" ItemStyle-Width="60px" />
+                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="120px" />
+                                <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
+                                            <%# Convert.ToBoolean(Eval("Estado")) ? "Activo" : "Inactivo" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="150px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_TipoPago") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
+                                        <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_TipoPago") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
+                                        <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_TipoPago") %>' CssClass="btn-std btn-sm btn-success" OnClientClick="return confirmarReactivar(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                            <PagerStyle CssClass="pagination" HorizontalAlign="Center" BackColor="#f8f9fa" />
+                        </asp:GridView>
+                    </div>
 
                     <asp:Panel ID="pnlMensajeGrid" runat="server" Visible="false" CssClass="alert-info-custom">
                         <i class="fa-solid fa-circle-info"></i> <asp:Label ID="lblMensajeGrid" runat="server"></asp:Label>
@@ -227,7 +238,7 @@
                         <asp:TextBox ID="txtFechaRegistro" runat="server" CssClass="form-control-formal" TextMode="Date" Enabled="false"></asp:TextBox>
                     </div>
 
-                    <div style="text-align:right; margin-top:20px;">
+                    <div style="text-align:right; margin-top:20px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
                         <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" OnClientClick="return confirmarGuardar(this);" />
                     </div>
