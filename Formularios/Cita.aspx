@@ -13,6 +13,15 @@
             --bg-light: #f8f9fa;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        .container-fluid {
+            padding: 20px;
+            width: 100%;
+        }
+
         .form-group-formal {
             margin-bottom: 25px;
             position: relative;
@@ -92,10 +101,18 @@
             display: flex;
             width: 100%;
             position: relative;
+            flex-wrap: wrap;
         }
+        
+        .input-group-formal .input-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+        
         .input-group-formal .form-control-formal {
             border-radius: 4px 0 0 4px;
         }
+        
         .input-group-formal .combo-append {
             width: 80px;
             border-radius: 0 4px 4px 0;
@@ -115,7 +132,7 @@
 
         .motivos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 10px;
         }
 
@@ -124,7 +141,7 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            padding: 6px 10px;
+            padding: 8px 10px;
             border-radius: 6px;
             transition: all 0.2s ease;
             background-color: #fff;
@@ -143,6 +160,7 @@
             cursor: pointer;
             accent-color: var(--color-primary);
             margin: 0;
+            flex-shrink: 0;
         }
 
         .motivo-item label {
@@ -152,6 +170,7 @@
             font-size: 0.9rem;
             color: #495057;
             flex: 1;
+            word-break: break-word;
         }
 
         .motivo-item label:hover {
@@ -192,7 +211,7 @@
         }
 
         .otros-texto {
-            margin-left: 28px;
+            margin-left: 0;
             display: none;
         }
 
@@ -228,9 +247,13 @@
             align-items: center;
             background-color: var(--bg-light);
             border-radius: 8px 8px 0 0;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .panel-body { padding: 25px; }
+        .panel-body { 
+            padding: 25px; 
+        }
 
         .toolbar {
             display: flex;
@@ -244,28 +267,114 @@
             margin-bottom: 20px;
         }
 
+        .toolbar > div {
+            flex: 1 1 150px;
+            min-width: 0;
+        }
+
         .form-grid-layout {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
-        .form-full-width { grid-column: 1 / -1; }
-
-        .table-std { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .table-std thead th { background-color: #f1f3f5; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
-        .table-std tbody td { padding: 10px; border-bottom: 1px solid #eee; }
         
-        .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .badge-active { background-color: #e8f5e9; color: #2e7d32; }
-        .badge-inactive { background-color: #ffebee; color: #c62828; }
+        .form-full-width { 
+            grid-column: 1 / -1; 
+        }
 
-        .btn-std { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem; transition: 0.2s; }
-        .btn-primary { background-color: var(--color-primary); color: white; }
-        .btn-success { background-color: #28a745; color: white; }
-        .btn-danger { background-color: var(--color-danger); color: white; }
-        .btn-secondary { background-color: #6c757d; color: white; }
-        .btn-info { background-color: #17a2b8; color: white; }
-        .btn-sm { padding: 4px 8px; font-size: 0.85rem; }
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+        }
+
+        .table-std { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.9rem; 
+            min-width: 800px;
+        }
+        
+        .table-std thead th { 
+            background-color: #f1f3f5; 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 2px solid #ddd; 
+            white-space: nowrap;
+        }
+        
+        .table-std tbody td { 
+            padding: 10px; 
+            border-bottom: 1px solid #eee; 
+        }
+        
+        .badge-status { 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            white-space: nowrap;
+        }
+        
+        .badge-active { 
+            background-color: #e8f5e9; 
+            color: #2e7d32; 
+        }
+        
+        .badge-inactive { 
+            background-color: #ffebee; 
+            color: #c62828; 
+        }
+
+        .btn-std { 
+            padding: 8px 16px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 5px; 
+            font-size: 0.9rem; 
+            transition: 0.2s; 
+            white-space: nowrap;
+        }
+        
+        .btn-primary { 
+            background-color: var(--color-primary); 
+            color: white; 
+        }
+        
+        .btn-success { 
+            background-color: #28a745; 
+            color: white; 
+        }
+        
+        .btn-danger { 
+            background-color: var(--color-danger); 
+            color: white; 
+        }
+        
+        .btn-secondary { 
+            background-color: #6c757d; 
+            color: white; 
+        }
+        
+        .btn-info { 
+            background-color: #17a2b8; 
+            color: white; 
+        }
+        
+        .btn-sm { 
+            padding: 4px 8px; 
+            font-size: 0.85rem; 
+        }
+
+        .btn-std:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
 
         .alert-info-custom {
             background-color: #e3f2fd;
@@ -278,20 +387,227 @@
             border: 1px solid #bbdefb;
         }
 
+        .pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .page-size-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
         /* Scrollbar personalizado */
         .motivos-container::-webkit-scrollbar {
             width: 6px;
         }
+        
         .motivos-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 3px;
         }
+        
         .motivos-container::-webkit-scrollbar-thumb {
             background: #c1c1c1;
             border-radius: 3px;
         }
+        
         .motivos-container::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .container-fluid {
+                padding: 15px;
+            }
+            
+            .panel-body {
+                padding: 20px;
+            }
+            
+            .form-grid-layout {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .motivos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 10px;
+            }
+            
+            .panel-header {
+                padding: 12px 15px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .panel-header h3 {
+                font-size: 1.2rem;
+            }
+            
+            .panel-body {
+                padding: 15px;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .toolbar > div {
+                width: 100%;
+            }
+            
+            .toolbar label {
+                margin-bottom: 5px;
+            }
+            
+            .toolbar > div:last-child > div {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .toolbar .btn-std {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .pagination-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .page-size-selector {
+                justify-content: space-between;
+            }
+            
+            .motivos-container {
+                padding: 12px;
+                max-height: 350px;
+            }
+            
+            .motivos-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .motivo-item {
+                padding: 10px;
+            }
+            
+            .input-group-formal {
+                flex-direction: column;
+            }
+            
+            .input-group-formal .form-control-formal {
+                border-radius: 4px 4px 0 0;
+            }
+            
+            .input-group-formal .combo-append {
+                width: 100%;
+                border-radius: 0 0 4px 4px;
+                border-left: 1px solid var(--color-border);
+                border-top: 0;
+            }
+            
+            .btn-sm {
+                padding: 6px 10px;
+            }
+            
+            .form-group-formal {
+                margin-bottom: 20px;
+            }
+            
+            .form-control-formal {
+                font-size: 16px; /* Previene zoom en iOS */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .panel-header h3 {
+                font-size: 1.1rem;
+            }
+            
+            .btn-std {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .badge-status {
+                padding: 3px 8px;
+                font-size: 0.7rem;
+            }
+            
+            .table-std {
+                font-size: 0.85rem;
+            }
+            
+            .table-std thead th,
+            .table-std tbody td {
+                padding: 8px;
+            }
+            
+            .alert-info-custom {
+                font-size: 0.85rem;
+                padding: 8px;
+            }
+            
+            .motivo-item label {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Mejoras para touch */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-std,
+            .form-control-formal,
+            select,
+            .motivo-item {
+                min-height: 44px;
+            }
+            
+            .btn-sm {
+                min-height: 36px;
+            }
+            
+            .motivo-item input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+            }
+        }
+
+        /* Ajustes para el grid en pantallas pequeñas */
+        @media (max-width: 640px) {
+            .table-responsive {
+                margin: 0 -15px;
+                padding: 0 15px;
+            }
+        }
+
+        /* Orientación landscape */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .motivos-container {
+                max-height: 200px;
+            }
         }
     </style>
 
@@ -356,6 +672,12 @@
 
         // Script para manejar los checkboxes de motivos
         document.addEventListener('DOMContentLoaded', function () {
+            // Ajustar título de página
+            var pageTitle = document.getElementById('pageTitle');
+            if (pageTitle) {
+                pageTitle.textContent = 'Gestión de Citas';
+            }
+
             var chkOtros = document.getElementById('<%= chkOtros.ClientID %>');
             var otrosTexto = document.querySelector('.otros-texto');
 
@@ -433,7 +755,7 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div class="container-fluid" style="padding: 20px;">
+    <div class="container-fluid">
         
         <asp:Panel ID="PanelListado" runat="server">
             <div class="panel-card">
@@ -444,11 +766,11 @@
                 <div class="panel-body">
                     
                     <div class="toolbar">
-                        <div style="flex-grow: 1; min-width: 200px;">
+                        <div style="min-width: 200px;">
                             <label class="lbl-formal">Búsqueda</label>
                             <asp:TextBox ID="txtBuscar" runat="server" CssClass="form-control-formal" placeholder="Motivo, Cliente..."></asp:TextBox>
                         </div>
-                        <div style="width: 150px;">
+                        <div style="min-width: 130px;">
                             <label class="lbl-formal">Estado</label>
                             <asp:DropDownList ID="ddlFiltroEstado" runat="server" CssClass="form-control-formal">
                                 <asp:ListItem Text="Todos" Value="-1"></asp:ListItem>
@@ -456,63 +778,75 @@
                                 <asp:ListItem Text="Cancelada" Value="0"></asp:ListItem>
                             </asp:DropDownList>
                         </div>
-                        <div style="width: 160px;">
+                        <div style="min-width: 140px;">
                             <label class="lbl-formal">Desde</label>
                             <asp:TextBox ID="txtFiltroFechaInicio" runat="server" TextMode="Date" CssClass="form-control-formal"></asp:TextBox>
                         </div>
-                        <div style="width: 160px;">
+                        <div style="min-width: 140px;">
                             <label class="lbl-formal">Hasta</label>
                             <asp:TextBox ID="txtFiltroFechaFin" runat="server" TextMode="Date" CssClass="form-control-formal"></asp:TextBox>
                         </div>
                         <div>
                             <label class="lbl-formal">&nbsp;</label>
-                            <div style="display: flex; gap: 10px;">
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                 <asp:Button ID="btnBuscar" runat="server" Text="Filtrar" CssClass="btn-std btn-primary" OnClick="btnBuscar_Click" />
                                 <asp:Button ID="btnMostrarTodo" runat="server" Text="Mostrar Todo" CssClass="btn-std btn-info" OnClick="btnMostrarTodo_Click" />
                             </div>
                         </div>
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-                        <div>
-                            Mostrar 
+                    <div class="pagination-controls">
+                        <div class="page-size-selector">
+                            <span>Mostrar</span>
                             <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged" 
-                                style="padding:5px; border-radius:4px; border:1px solid #ccc;">
+                                style="padding:5px; border-radius:4px; border:1px solid #ccc; width:auto; min-width:70px;">
                                 <asp:ListItem Value="10">10</asp:ListItem>
                                 <asp:ListItem Value="20">20</asp:ListItem>
                                 <asp:ListItem Value="50">50</asp:ListItem>
                                 <asp:ListItem Value="All">Todos</asp:ListItem>
                             </asp:DropDownList>
-                            registros
+                            <span>registros</span>
                         </div>
                     </div>
 
-                    <asp:GridView ID="gvCitas" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
-                        DataKeyNames="ID_Cita" AllowPaging="True" PageSize="10" 
-                        OnRowCommand="gvCitas_RowCommand" OnPageIndexChanging="gvCitas_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
-                        <Columns>
-                            <asp:BoundField DataField="ID_Cita" HeaderText="ID" ItemStyle-Width="50px" />
-                            <asp:BoundField DataField="NombreCliente" HeaderText="Cliente" />
-                            <asp:BoundField DataField="Fecha" HeaderText="Fecha Cita" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="120px" />
-                            <asp:BoundField DataField="Hora" HeaderText="Hora" ItemStyle-Width="100px" />
-                            <asp:BoundField DataField="Motivo" HeaderText="Motivo" />
-                            <asp:BoundField DataField="NombreUsuario" HeaderText="Atendido Por" />
-                            <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="100px" />
-                            <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
-                                        <%# Convert.ToBoolean(Eval("Estado")) ? "Activa" : "Cancelada" %>
-                                    </span>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="150px" ItemStyle-HorizontalAlign="Center">
-                                <ItemTemplate>
-                                    <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Cita") %>' CssClass="btn-std btn-sm btn-primary"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
-                                    <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Cita") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarCancelacion(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
+                    <div class="table-responsive">
+                        <asp:GridView ID="gvCitas" runat="server" CssClass="table-std" AutoGenerateColumns="False" 
+                            DataKeyNames="ID_Cita" AllowPaging="True" PageSize="10" 
+                            OnRowCommand="gvCitas_RowCommand" OnPageIndexChanging="gvCitas_PageIndexChanging" GridLines="None" ShowHeaderWhenEmpty="true">
+                            <Columns>
+                                <asp:BoundField DataField="ID_Cita" HeaderText="ID" ItemStyle-Width="50px" />
+                                <asp:BoundField DataField="NombreCliente" HeaderText="Cliente" />
+                                <asp:BoundField DataField="Fecha" HeaderText="Fecha Cita" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="120px" />
+                                <asp:BoundField DataField="Hora" HeaderText="Hora" ItemStyle-Width="100px" />
+                                <asp:BoundField DataField="Motivo" HeaderText="Motivo" />
+                                <asp:BoundField DataField="NombreUsuario" HeaderText="Atendido Por" />
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Registro" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="100px" />
+                                <asp:TemplateField HeaderText="Estado" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <span class='badge-status <%# Convert.ToBoolean(Eval("Estado")) ? "badge-active" : "badge-inactive" %>'>
+                                            <%# Convert.ToBoolean(Eval("Estado")) ? "Activa" : "Cancelada" %>
+                                        </span>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="120px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <div class="action-buttons">
+                                            <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Cita") %>' CssClass="btn-std btn-sm btn-primary" ToolTip="Editar"><i class="fa-solid fa-pen-to-square"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Cita") %>' CssClass="btn-std btn-sm btn-danger" OnClientClick="return confirmarCancelacion(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>' ToolTip="Cancelar"><i class="fa-solid fa-ban"></i></asp:LinkButton>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                            <EmptyDataTemplate>
+                                <tr>
+                                    <td colspan="9" style="text-align:center; padding:30px;">
+                                        <i class="fa-regular fa-calendar-xmark" style="font-size:2rem; color:#ccc; margin-bottom:10px;"></i>
+                                        <p>No se encontraron citas registradas</p>
+                                    </td>
+                                </tr>
+                            </EmptyDataTemplate>
+                        </asp:GridView>
+                    </div>
 
                     <asp:Panel ID="pnlMensajeGrid" runat="server" Visible="false" CssClass="alert-info-custom">
                         <i class="fa-solid fa-circle-info"></i> <asp:Label ID="lblMensajeGrid" runat="server"></asp:Label>
@@ -564,7 +898,7 @@
                         <div class="form-group-formal">
                             <label class="lbl-formal">Hora <span class="required-mark">*</span></label>
                             <div class="input-group-formal">
-                                <div class="input-wrapper" style="flex-grow:1;">
+                                <div class="input-wrapper">
                                     <asp:TextBox ID="txtHoraNum" runat="server" CssClass="form-control-formal" placeholder="00:00" MaxLength="5"></asp:TextBox>
                                     <i class="fa-solid fa-circle-exclamation input-error-icon"></i>
                                 </div>
@@ -671,7 +1005,7 @@
 
                     </div>
 
-                    <div style="text-align:right; margin-top:20px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <div style="text-align:right; margin-top:20px; border-top: 1px solid #eee; padding-top: 20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
                         <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" OnClientClick="return confirmarGuardar(this);" />
                     </div>

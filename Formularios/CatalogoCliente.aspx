@@ -5,7 +5,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <title>Catálogo de Clientes - Óptica 20/20</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <meta name="description" content="Catálogo de productos ópticos - Óptica 20/20" />
     
     <style>
@@ -45,6 +45,7 @@
             padding: 0 20px;
         }
 
+        /* Header Responsive */
         .encabezado {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
@@ -73,7 +74,8 @@
             align-items: center;
             justify-content: center;
             background: var(--color-acento);
-            box-shadow: 0 4px 10px rgba(253, 253, 150, 0.5); 
+            box-shadow: 0 4px 10px rgba(253, 253, 150, 0.5);
+            flex-shrink: 0;
         }
 
         .logo img {
@@ -86,6 +88,7 @@
             display: flex;
             gap: 5px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .boton-navegacion {
@@ -99,6 +102,7 @@
             transition: var(--transicion);
             border-radius: 50px;
             position: relative;
+            white-space: nowrap;
         }
 
         .boton-navegacion:hover {
@@ -120,6 +124,23 @@
             box-shadow: 0 6px 20px rgba(253, 253, 150, 0.6);
         }
 
+        /* Menú hamburguesa para móvil */
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--color-oscuro);
+            padding: 10px;
+            transition: var(--transicion);
+        }
+
+        .menu-toggle:hover {
+            color: var(--color-acento);
+        }
+
+        /* Banner Responsive */
         .banner-bienvenida {
             background: linear-gradient(135deg, rgba(47, 53, 66, 0.4), rgba(47, 53, 66, 0.2)), url('https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
@@ -155,6 +176,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Secciones Responsive */
         .seccion-productos {
             margin-bottom: 60px;
             padding: 20px 0;
@@ -183,6 +205,7 @@
             border-radius: 10px;
         }
 
+        /* Carrusel Responsive */
         .contenedor-carrusel {
             position: relative;
             padding: 0 20px;
@@ -203,6 +226,7 @@
             scroll-behavior: smooth;
             scrollbar-width: none;
             scroll-padding: 0 20px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .carrusel::-webkit-scrollbar { display: none; }
@@ -318,6 +342,7 @@
             border-radius: 10px;
         }
 
+        /* Servicios Responsive */
         .seccion-servicios {
             background: var(--color-blanco);
             padding: 80px 0;
@@ -363,6 +388,7 @@
             border-radius: 2px;
         }
 
+        /* Nosotros Responsive */
         .seccion-nosotros {
             background: var(--color-oscuro);
             color: var(--color-blanco);
@@ -411,6 +437,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
+        /* Contacto Responsive */
         .seccion-contacto {
             background: var(--color-blanco);
             padding: 60px 0;
@@ -449,6 +476,7 @@
             background: var(--color-acento);
             border-radius: 50%;
             margin-right: 10px;
+            flex-shrink: 0;
         }
 
         .boton-red-social {
@@ -471,6 +499,7 @@
             box-shadow: var(--sombra-suave);
         }
 
+        /* WhatsApp Button */
         .boton-whatsapp {
             position: fixed;
             bottom: 30px;
@@ -515,6 +544,7 @@
             100% { transform: scale(1.6); opacity: 0; }
         }
 
+        /* Modal Responsive */
         .modal-imagen {
             display: none;
             position: fixed;
@@ -527,6 +557,7 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(8px);
+            padding: 20px;
         }
 
         .modal-contenido {
@@ -548,6 +579,7 @@
             max-width: 100%;
             max-height: 85vh;
             border-radius: var(--radio-borde);
+            object-fit: contain;
         }
 
         .cerrar-modal {
@@ -560,6 +592,11 @@
             font-size: 2.5rem;
             cursor: pointer;
             transition: var(--transicion);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .cerrar-modal:hover {
@@ -601,14 +638,335 @@
             color: var(--color-oscuro);
         }
 
+        /* MEDIA QUERIES RESPONSIVE */
+
+        /* Tablets */
+        @media (max-width: 992px) {
+            .banner-bienvenida h1 {
+                font-size: 2.8rem;
+            }
+            
+            .banner-bienvenida p {
+                font-size: 1.2rem;
+            }
+            
+            .titulo-seccion {
+                font-size: 2rem;
+            }
+            
+            .item-carrusel {
+                flex: 0 0 280px;
+                min-width: 280px;
+            }
+            
+            .contenedor-servicios {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Móviles */
         @media (max-width: 768px) {
-            .contenedor-encabezado { flex-direction: column; gap: 15px; }
-            .navegacion-principal { flex-wrap: wrap; justify-content: center; }
-            .titulo-seccion { font-size: 1.8rem; }
-            .banner-bienvenida h1 { font-size: 2.2rem; }
-            .banner-bienvenida { border-radius: 0 0 20px 20px; }
-            .seccion-nosotros { margin: 20px 10px; border-radius: 20px; }
-            .boton-whatsapp { width: 55px; height: 55px; bottom: 20px; right: 20px; }
+            .contenedor {
+                padding: 0 15px;
+            }
+            
+            /* Header móvil */
+            .contenedor-encabezado {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .navegacion-principal {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .boton-navegacion {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .boton-iniciar-sesion {
+                padding: 8px 20px;
+            }
+            
+            /* Banner móvil */
+            .banner-bienvenida {
+                padding: 80px 0;
+                margin-bottom: 40px;
+                border-radius: 0 0 20px 20px;
+            }
+            
+            .banner-bienvenida h1 {
+                font-size: 2rem;
+                padding: 0 15px;
+            }
+            
+            .banner-bienvenida p {
+                font-size: 1rem;
+                padding: 0 15px;
+            }
+            
+            /* Secciones móvil */
+            .seccion-productos {
+                margin-bottom: 40px;
+                padding: 10px 0;
+            }
+            
+            .titulo-seccion {
+                font-size: 1.8rem;
+                margin-bottom: 35px;
+            }
+            
+            /* Carrusel móvil */
+            .contenedor-carrusel {
+                padding: 0 10px;
+            }
+            
+            .carrusel {
+                gap: 20px;
+                padding: 30px 10px;
+            }
+            
+            .item-carrusel {
+                flex: 0 0 250px;
+                min-width: 250px;
+            }
+            
+            .imagen-producto {
+                height: 200px;
+            }
+            
+            .info-producto {
+                padding: 20px;
+            }
+            
+            .info-producto h3 {
+                font-size: 1.1rem;
+            }
+            
+            .precio-producto {
+                font-size: 1rem;
+                padding: 5px 14px;
+            }
+            
+            .boton-carrusel {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .boton-anterior { left: -5px; }
+            .boton-siguiente { right: -5px; }
+            
+            /* Servicios móvil */
+            .seccion-servicios {
+                padding: 50px 0;
+            }
+            
+            .contenedor-servicios {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .item-servicio {
+                padding: 30px;
+            }
+            
+            .item-servicio h3 {
+                font-size: 1.3rem;
+            }
+            
+            /* Nosotros móvil */
+            .seccion-nosotros {
+                padding: 50px 0;
+                margin: 30px 10px;
+                border-radius: 20px;
+            }
+            
+            .titulo-seccion-nosotros {
+                font-size: 1.8rem;
+                margin-bottom: 35px;
+            }
+            
+            .contenedor-nosotros {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .item-nosotros {
+                padding: 25px;
+            }
+            
+            .item-nosotros h3 {
+                font-size: 1.3rem;
+            }
+            
+            /* Contacto móvil */
+            .seccion-contacto {
+                padding: 40px 0;
+            }
+            
+            .contenedor-contacto {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .info-contacto {
+                text-align: center;
+            }
+            
+            .lista-contacto li {
+                justify-content: center;
+            }
+            
+            .boton-red-social {
+                margin: 5px;
+            }
+            
+            /* WhatsApp móvil */
+            .boton-whatsapp {
+                width: 55px;
+                height: 55px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .boton-whatsapp svg {
+                width: 30px;
+                height: 30px;
+            }
+            
+            /* Modal móvil */
+            .modal-contenido {
+                max-width: 95%;
+            }
+            
+            .cerrar-modal {
+                top: -40px;
+                font-size: 2rem;
+            }
+            
+            .boton-modal {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Móviles pequeños */
+        @media (max-width: 480px) {
+            .contenedor-encabezado {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .navegacion-principal {
+                gap: 3px;
+            }
+            
+            .boton-navegacion {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .banner-bienvenida {
+                padding: 60px 0;
+            }
+            
+            .banner-bienvenida h1 {
+                font-size: 1.6rem;
+            }
+            
+            .banner-bienvenida p {
+                font-size: 0.9rem;
+            }
+            
+            .titulo-seccion {
+                font-size: 1.5rem;
+            }
+            
+            .item-carrusel {
+                flex: 0 0 220px;
+                min-width: 220px;
+            }
+            
+            .imagen-producto {
+                height: 180px;
+            }
+            
+            .info-producto {
+                padding: 15px;
+            }
+            
+            .info-producto h3 {
+                font-size: 1rem;
+            }
+            
+            .info-producto p {
+                font-size: 0.85rem;
+            }
+            
+            .precio-producto {
+                font-size: 0.9rem;
+                padding: 4px 12px;
+            }
+            
+            .item-servicio {
+                padding: 20px;
+            }
+            
+            .item-nosotros {
+                padding: 20px;
+            }
+            
+            .boton-whatsapp {
+                width: 50px;
+                height: 50px;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        /* Orientación landscape en móviles */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .banner-bienvenida {
+                padding: 40px 0;
+            }
+            
+            .modal-imagen-ampliada {
+                max-height: 70vh;
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .boton-navegacion,
+            .boton-carrusel,
+            .boton-modal,
+            .boton-whatsapp,
+            .boton-red-social {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .item-carrusel:hover {
+                transform: none;
+            }
+            
+            .item-servicio:hover {
+                transform: none;
+            }
+            
+            .item-nosotros:hover {
+                transform: none;
+            }
         }
     </style>
 </head>
@@ -1072,7 +1430,7 @@
             if (!primerItem) return;
 
             const anchoItem = primerItem.offsetWidth;
-            const margen = 30;
+            const margen = window.innerWidth <= 768 ? 20 : 30;
             const anchoTotalItem = anchoItem + margen;
 
             const cantidadItems = carrusel.children.length;
@@ -1144,7 +1502,7 @@
                     actualizarBarra();
                     actualizarVisibilidadBotones();
                 }
-            });
+            }, { passive: false });
 
             let startX, scrollLeft, isDown = false;
 
@@ -1177,7 +1535,7 @@
                 isDown = true;
                 startX = e.touches[0].pageX - carrusel.offsetLeft;
                 scrollLeft = carrusel.scrollLeft;
-            });
+            }, { passive: true });
 
             carrusel.addEventListener('touchend', () => {
                 isDown = false;
@@ -1188,7 +1546,7 @@
                 const x = e.touches[0].pageX - carrusel.offsetLeft;
                 const walk = (x - startX) * 2;
                 carrusel.scrollLeft = scrollLeft - walk;
-            });
+            }, { passive: true });
 
             window.addEventListener('resize', () => {
                 setTimeout(() => {
@@ -1404,6 +1762,195 @@
             document.addEventListener('DOMContentLoaded', inicializarTodasLasFuncionalidades);
         } else {
             inicializarTodasLasFuncionalidades();
+        }
+        function inicializarCarruselConBarra(carrusel) {
+            const contenedorCarrusel = carrusel.closest('.contenedor-carrusel');
+            const barraCarrusel = contenedorCarrusel.querySelector('.barra-carrusel');
+            const indicadorBarra = contenedorCarrusel.querySelector('.indicador-barra-carrusel');
+            const botonAnterior = contenedorCarrusel.querySelector('.boton-anterior');
+            const botonSiguiente = contenedorCarrusel.querySelector('.boton-siguiente');
+
+            const primerItem = carrusel.querySelector('.item-carrusel');
+            if (!primerItem) return;
+
+            // Obtener dimensiones reales
+            function obtenerDimensiones() {
+                const anchoItem = primerItem.offsetWidth;
+                const estiloComputado = window.getComputedStyle(carrusel);
+                const gap = parseInt(estiloComputado.columnGap) || parseInt(estiloComputado.gap) || 30;
+                const anchoTotalItem = anchoItem + gap;
+
+                const cantidadItems = carrusel.children.length;
+                const anchoTotalCarrusel = cantidadItems * anchoTotalItem;
+                const anchoVisible = carrusel.parentElement.clientWidth;
+                const maxDesplazamiento = Math.max(0, anchoTotalCarrusel - anchoVisible);
+
+                return { anchoTotalItem, maxDesplazamiento, anchoVisible };
+            }
+
+            let { anchoTotalItem, maxDesplazamiento, anchoVisible } = obtenerDimensiones();
+            let desplazamientoActual = 0;
+            let isScrolling = false;
+            let scrollTimeout;
+
+            function actualizarBarra() {
+                if (maxDesplazamiento > 0 && desplazamientoActual <= maxDesplazamiento) {
+                    const porcentaje = (desplazamientoActual / maxDesplazamiento) * 100;
+                    indicadorBarra.style.width = `${Math.min(100, Math.max(0, porcentaje))}%`;
+                } else {
+                    indicadorBarra.style.width = maxDesplazamiento > 0 ? '0%' : '100%';
+                }
+            }
+
+            function actualizarVisibilidadBotones() {
+                if (botonAnterior) {
+                    botonAnterior.style.opacity = desplazamientoActual <= 5 ? '0.5' : '1';
+                    botonAnterior.style.pointerEvents = desplazamientoActual <= 5 ? 'none' : 'auto';
+                }
+                if (botonSiguiente) {
+                    botonSiguiente.style.opacity = desplazamientoActual >= maxDesplazamiento - 5 ? '0.5' : '1';
+                    botonSiguiente.style.pointerEvents = desplazamientoActual >= maxDesplazamiento - 5 ? 'none' : 'auto';
+                }
+            }
+
+            function desplazarCarrusel(nuevaPosicion) {
+                if (isScrolling) return;
+
+                isScrolling = true;
+                desplazamientoActual = Math.max(0, Math.min(nuevaPosicion, maxDesplazamiento));
+
+                carrusel.scrollTo({
+                    left: desplazamientoActual,
+                    behavior: 'smooth'
+                });
+
+                actualizarBarra();
+                actualizarVisibilidadBotones();
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    isScrolling = false;
+                }, 400);
+            }
+
+            function desplazarUnItem(direccion) {
+                // En móvil, desplazar SOLO 1 item a la vez
+                // En desktop, desplazar 1 item también para mejor control
+                const desplazamiento = direccion * anchoTotalItem;
+                desplazarCarrusel(desplazamientoActual + desplazamiento);
+            }
+
+            if (botonAnterior) {
+                botonAnterior.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    desplazarUnItem(-1);
+                });
+            }
+
+            if (botonSiguiente) {
+                botonSiguiente.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    desplazarUnItem(1);
+                });
+            }
+
+            // Actualizar en scroll
+            carrusel.addEventListener('scroll', () => {
+                if (!isScrolling) {
+                    desplazamientoActual = carrusel.scrollLeft;
+                    actualizarBarra();
+                    actualizarVisibilidadBotones();
+                }
+            });
+
+            // Scroll con rueda del mouse (más suave)
+            carrusel.addEventListener('wheel', (evento) => {
+                if (evento.deltaY !== 0) {
+                    evento.preventDefault();
+                    const scrollAmount = evento.deltaY * 0.8; // Más suave
+                    desplazarCarrusel(desplazamientoActual + scrollAmount);
+                }
+            }, { passive: false });
+
+            // Drag para desktop y touch
+            let startX, scrollLeft, isDown = false;
+
+            carrusel.addEventListener('mousedown', (e) => {
+                isDown = true;
+                carrusel.style.cursor = 'grabbing';
+                startX = e.pageX - carrusel.offsetLeft;
+                scrollLeft = carrusel.scrollLeft;
+                isScrolling = false;
+            });
+
+            carrusel.addEventListener('mouseleave', () => {
+                isDown = false;
+                carrusel.style.cursor = 'grab';
+            });
+
+            carrusel.addEventListener('mouseup', () => {
+                isDown = false;
+                carrusel.style.cursor = 'grab';
+            });
+
+            carrusel.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - carrusel.offsetLeft;
+                const walk = (x - startX) * 1.5;
+                carrusel.scrollLeft = scrollLeft - walk;
+                desplazamientoActual = carrusel.scrollLeft;
+                actualizarBarra();
+                actualizarVisibilidadBotones();
+            });
+
+            // Touch events
+            carrusel.addEventListener('touchstart', (e) => {
+                isDown = true;
+                startX = e.touches[0].pageX - carrusel.offsetLeft;
+                scrollLeft = carrusel.scrollLeft;
+                isScrolling = false;
+            }, { passive: true });
+
+            carrusel.addEventListener('touchend', () => {
+                isDown = false;
+            });
+
+            carrusel.addEventListener('touchmove', (e) => {
+                if (!isDown) return;
+                const x = e.touches[0].pageX - carrusel.offsetLeft;
+                const walk = (x - startX) * 1.2;
+                carrusel.scrollLeft = scrollLeft - walk;
+                desplazamientoActual = carrusel.scrollLeft;
+                actualizarBarra();
+                actualizarVisibilidadBotones();
+            }, { passive: true });
+
+            // Recalcular en resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    const nuevasDimensiones = obtenerDimensiones();
+                    anchoTotalItem = nuevasDimensiones.anchoTotalItem;
+                    maxDesplazamiento = nuevasDimensiones.maxDesplazamiento;
+                    anchoVisible = nuevasDimensiones.anchoVisible;
+
+                    // Ajustar posición si es necesario
+                    if (desplazamientoActual > maxDesplazamiento) {
+                        desplazarCarrusel(maxDesplazamiento);
+                    }
+
+                    actualizarBarra();
+                    actualizarVisibilidadBotones();
+                }, 150);
+            });
+
+            // Inicializar
+            actualizarBarra();
+            actualizarVisibilidadBotones();
         }
     </script>
 </body>
