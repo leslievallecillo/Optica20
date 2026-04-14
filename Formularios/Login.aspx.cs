@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Web;
 using System.Web.Security;
@@ -13,24 +12,10 @@ namespace Optica.Formularios
 {
     public partial class Login : System.Web.UI.Page
     {
-        private class InfoBloqueo
-        {
-            public int Intentos { get; set; }
-            public DateTime FinBloqueo { get; set; }
-            public int MinutosPenalizacion { get; set; }
-
-            public InfoBloqueo()
-            {
-                Intentos = 0;
-                FinBloqueo = DateTime.MinValue;
-                MinutosPenalizacion = 1;
-            }
-        }
-
-        private static Dictionary<string, InfoBloqueo> rastreoIps = new Dictionary<string, InfoBloqueo>();
-
         protected void Page_Load(object sender, EventArgs e)
         {
+            VerificarBloqueo();
+
             if (!IsPostBack)
             {
                 if (Session["UsuarioID"] != null)
@@ -42,6 +27,26 @@ namespace Optica.Formularios
                 {
                     lblError.Text = "Su sesión fue cerrada por un administrador.";
                     lblError.Visible = true;
+                }
+            }
+        }
+
+        private void VerificarBloqueo()
+        {
+            HttpCookie cookie = Request.Cookies["LoginOpticaState"];
+            if (cookie != null && !string.IsNullOrEmpty(cookie["lockEnd"]))
+            {
+                long lockEndTicks;
+                if (long.TryParse(cookie["lockEnd"], out lockEndTicks))
+                {
+                    DateTime lockEnd = new DateTime(lockEndTicks);
+                    if (DateTime.Now < lockEnd)
+                    {
+                        int sec = (int)(lockEnd - DateTime.Now).TotalSeconds;
+                        lblError.Text = "Calculando tiempo restante...";
+                        lblError.Visible = true;
+                        ClientScript.RegisterStartupScript(this.GetType(), "BloqueoTimer", $"iniciarTemporizador({sec});", true);
+                    }
                 }
             }
         }
@@ -60,45 +65,68 @@ namespace Optica.Formularios
                 return;
             }
 
-            string ip = Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? Request.ServerVariables["REMOTE_ADDR"];
+            HttpCookie cookie = Request.Cookies["LoginOpticaState"] ?? new HttpCookie("LoginOpticaState");
+            cookie.Expires = DateTime.Now.AddDays(30);
 
-            if (!rastreoIps.ContainsKey(ip))
+            long lockEndTicks = 0;
+            if (!string.IsNullOrEmpty(cookie["lockEnd"]))
             {
-                rastreoIps[ip] = new InfoBloqueo();
+                long.TryParse(cookie["lockEnd"], out lockEndTicks);
             }
 
-            InfoBloqueo info = rastreoIps[ip];
+            DateTime lockEnd = new DateTime(lockEndTicks);
 
-            if (DateTime.Now < info.FinBloqueo)
+            if (DateTime.Now < lockEnd)
             {
-                TimeSpan restante = info.FinBloqueo - DateTime.Now;
-                lblError.Text = $"Sistema bloqueado. Intente en {Math.Ceiling(restante.TotalMinutes)} minuto(s).";
+                int sec = (int)(lockEnd - DateTime.Now).TotalSeconds;
+                lblError.Text = "Calculando tiempo restante...";
                 lblError.Visible = true;
+                ClientScript.RegisterStartupScript(this.GetType(), "BloqueoTimer", $"iniciarTemporizador({sec});", true);
                 return;
             }
 
             if (Autenticar(usuario, clave))
             {
-                rastreoIps.Remove(ip);
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(cookie);
                 Response.Redirect("Default.aspx", false);
             }
             else
             {
-                info.Intentos++;
+                int fails = 0;
+                int.TryParse(cookie["fails"], out fails);
 
-                if (info.Intentos >= 3)
+                int tier = 0;
+                int.TryParse(cookie["tier"], out tier);
+                if (tier == 0) tier = 1;
+
+                fails++;
+
+                if (fails >= 3)
                 {
-                    info.FinBloqueo = DateTime.Now.AddMinutes(info.MinutosPenalizacion);
-                    lblError.Text = $"Demasiados intentos fallidos. Sistema bloqueado por {info.MinutosPenalizacion} minuto(s).";
-                    info.MinutosPenalizacion++;
-                    info.Intentos = 0;
+                    int minutosBloqueo = (tier == 1) ? 1 : 3;
+                    lockEnd = DateTime.Now.AddMinutes(minutosBloqueo);
+
+                    cookie["lockEnd"] = lockEnd.Ticks.ToString();
+                    cookie["fails"] = "0";
+                    cookie["tier"] = "2";
+
+                    Response.Cookies.Add(cookie);
+
+                    int sec = (int)(lockEnd - DateTime.Now).TotalSeconds;
+                    lblError.Text = "Calculando tiempo restante...";
+                    lblError.Visible = true;
+                    ClientScript.RegisterStartupScript(this.GetType(), "BloqueoTimer", $"iniciarTemporizador({sec});", true);
                 }
                 else
                 {
-                    lblError.Text = "Usuario o contraseña incorrectos.";
-                }
+                    cookie["fails"] = fails.ToString();
+                    cookie["tier"] = tier.ToString();
+                    Response.Cookies.Add(cookie);
 
-                lblError.Visible = true;
+                    lblError.Text = $"Usuario o contraseña incorrectos. Intento {fails} de 3.";
+                    lblError.Visible = true;
+                }
             }
         }
 

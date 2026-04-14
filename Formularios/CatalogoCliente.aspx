@@ -12,8 +12,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
         :root {
-            --color-acento: #FDFD96; 
-            --color-acento-hover: #FDF876;
+            --color-acento: #D7C782; 
+            --color-acento-hover: #E1D5A6;
             --color-oscuro: #2f3542;
             --color-texto: #57606f;
             --color-fondo: #f1f2f6;
@@ -74,7 +74,7 @@
             align-items: center;
             justify-content: center;
             background: var(--color-acento);
-            box-shadow: 0 4px 10px rgba(253, 253, 150, 0.5);
+            box-shadow: 0 4px 10px rgba(215, 199, 130, 0.5);
             flex-shrink: 0;
         }
 
@@ -121,7 +121,7 @@
         .boton-iniciar-sesion:hover {
             background: var(--color-acento);
             color: var(--color-oscuro);
-            box-shadow: 0 6px 20px rgba(253, 253, 150, 0.6);
+            box-shadow: 0 6px 20px rgba(215, 199, 130, 0.6);
         }
 
         /* Menú hamburguesa para móvil */
@@ -286,7 +286,7 @@
             font-size: 1.1rem;
             padding: 6px 16px;
             border-radius: 50px;
-            box-shadow: 0 4px 10px rgba(253, 253, 150, 0.4);
+            box-shadow: 0 4px 10px rgba(215, 199, 130, 0.4);
             margin-top: auto;
             align-self: flex-start;
         }
@@ -1429,78 +1429,99 @@
             const primerItem = carrusel.querySelector('.item-carrusel');
             if (!primerItem) return;
 
-            const anchoItem = primerItem.offsetWidth;
-            const margen = window.innerWidth <= 768 ? 20 : 30;
-            const anchoTotalItem = anchoItem + margen;
+            function obtenerDimensiones() {
+                const anchoItem = primerItem.offsetWidth;
+                const estiloComputado = window.getComputedStyle(carrusel);
+                const gap = parseInt(estiloComputado.columnGap) || parseInt(estiloComputado.gap) || 30;
+                const anchoTotalItem = anchoItem + gap;
 
-            const cantidadItems = carrusel.children.length;
-            const anchoTotalCarrusel = cantidadItems * anchoTotalItem;
-            const anchoVisible = carrusel.parentElement.clientWidth;
+                const cantidadItems = carrusel.children.length;
+                const anchoTotalCarrusel = cantidadItems * anchoTotalItem;
+                const anchoVisible = carrusel.parentElement.clientWidth;
+                const maxDesplazamiento = Math.max(0, anchoTotalCarrusel - anchoVisible);
 
-            const maxDesplazamiento = Math.max(0, anchoTotalCarrusel - anchoVisible);
+                return { anchoTotalItem, maxDesplazamiento, anchoVisible };
+            }
 
+            let { anchoTotalItem, maxDesplazamiento, anchoVisible } = obtenerDimensiones();
             let desplazamientoActual = 0;
+            let isScrolling = false;
+            let scrollTimeout;
 
             function actualizarBarra() {
                 if (maxDesplazamiento > 0 && desplazamientoActual <= maxDesplazamiento) {
                     const porcentaje = (desplazamientoActual / maxDesplazamiento) * 100;
                     indicadorBarra.style.width = `${Math.min(100, Math.max(0, porcentaje))}%`;
                 } else {
-                    indicadorBarra.style.width = '100%';
+                    indicadorBarra.style.width = maxDesplazamiento > 0 ? '0%' : '100%';
                 }
             }
 
             function actualizarVisibilidadBotones() {
                 if (botonAnterior) {
-                    botonAnterior.style.display = desplazamientoActual <= 10 ? 'none' : 'flex';
+                    botonAnterior.style.opacity = desplazamientoActual <= 5 ? '0.5' : '1';
+                    botonAnterior.style.pointerEvents = desplazamientoActual <= 5 ? 'none' : 'auto';
                 }
                 if (botonSiguiente) {
-                    botonSiguiente.style.display = desplazamientoActual >= maxDesplazamiento - 10 ? 'none' : 'flex';
+                    botonSiguiente.style.opacity = desplazamientoActual >= maxDesplazamiento - 5 ? '0.5' : '1';
+                    botonSiguiente.style.pointerEvents = desplazamientoActual >= maxDesplazamiento - 5 ? 'none' : 'auto';
                 }
             }
 
             function desplazarCarrusel(nuevaPosicion) {
+                if (isScrolling) return;
+
+                isScrolling = true;
                 desplazamientoActual = Math.max(0, Math.min(nuevaPosicion, maxDesplazamiento));
+
                 carrusel.scrollTo({
                     left: desplazamientoActual,
                     behavior: 'smooth'
                 });
+
                 actualizarBarra();
-                setTimeout(actualizarVisibilidadBotones, 300);
+                actualizarVisibilidadBotones();
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    isScrolling = false;
+                }, 400);
             }
 
-            function desplazarPorItems(direccion) {
-                const itemsPorView = Math.max(1, Math.floor(anchoVisible / anchoTotalItem));
-                const desplazamiento = direccion * itemsPorView * anchoTotalItem;
+            function desplazarUnItem(direccion) {
+                const desplazamiento = direccion * anchoTotalItem;
                 desplazarCarrusel(desplazamientoActual + desplazamiento);
             }
 
             if (botonAnterior) {
-                botonAnterior.addEventListener('click', () => {
-                    desplazarPorItems(-1);
+                botonAnterior.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    desplazarUnItem(-1);
                 });
             }
 
             if (botonSiguiente) {
-                botonSiguiente.addEventListener('click', () => {
-                    desplazarPorItems(1);
+                botonSiguiente.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    desplazarUnItem(1);
                 });
             }
 
             carrusel.addEventListener('scroll', () => {
-                desplazamientoActual = carrusel.scrollLeft;
-                actualizarBarra();
-                actualizarVisibilidadBotones();
+                if (!isScrolling) {
+                    desplazamientoActual = carrusel.scrollLeft;
+                    actualizarBarra();
+                    actualizarVisibilidadBotones();
+                }
             });
 
             carrusel.addEventListener('wheel', (evento) => {
                 if (evento.deltaY !== 0) {
                     evento.preventDefault();
-                    const scrollAmount = evento.deltaY * 1.5;
-                    carrusel.scrollLeft += scrollAmount;
-                    desplazamientoActual = carrusel.scrollLeft;
-                    actualizarBarra();
-                    actualizarVisibilidadBotones();
+                    const scrollAmount = evento.deltaY * 0.8;
+                    desplazarCarrusel(desplazamientoActual + scrollAmount);
                 }
             }, { passive: false });
 
@@ -1511,6 +1532,7 @@
                 carrusel.style.cursor = 'grabbing';
                 startX = e.pageX - carrusel.offsetLeft;
                 scrollLeft = carrusel.scrollLeft;
+                isScrolling = false;
             });
 
             carrusel.addEventListener('mouseleave', () => {
@@ -1527,14 +1549,18 @@
                 if (!isDown) return;
                 e.preventDefault();
                 const x = e.pageX - carrusel.offsetLeft;
-                const walk = (x - startX) * 2;
+                const walk = (x - startX) * 1.5;
                 carrusel.scrollLeft = scrollLeft - walk;
+                desplazamientoActual = carrusel.scrollLeft;
+                actualizarBarra();
+                actualizarVisibilidadBotones();
             });
 
             carrusel.addEventListener('touchstart', (e) => {
                 isDown = true;
                 startX = e.touches[0].pageX - carrusel.offsetLeft;
                 scrollLeft = carrusel.scrollLeft;
+                isScrolling = false;
             }, { passive: true });
 
             carrusel.addEventListener('touchend', () => {
@@ -1544,15 +1570,29 @@
             carrusel.addEventListener('touchmove', (e) => {
                 if (!isDown) return;
                 const x = e.touches[0].pageX - carrusel.offsetLeft;
-                const walk = (x - startX) * 2;
+                const walk = (x - startX) * 1.2;
                 carrusel.scrollLeft = scrollLeft - walk;
+                desplazamientoActual = carrusel.scrollLeft;
+                actualizarBarra();
+                actualizarVisibilidadBotones();
             }, { passive: true });
 
+            let resizeTimeout;
             window.addEventListener('resize', () => {
-                setTimeout(() => {
-                    actualizarVisibilidadBotones();
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    const nuevasDimensiones = obtenerDimensiones();
+                    anchoTotalItem = nuevasDimensiones.anchoTotalItem;
+                    maxDesplazamiento = nuevasDimensiones.maxDesplazamiento;
+                    anchoVisible = nuevasDimensiones.anchoVisible;
+
+                    if (desplazamientoActual > maxDesplazamiento) {
+                        desplazarCarrusel(maxDesplazamiento);
+                    }
+
                     actualizarBarra();
-                }, 100);
+                    actualizarVisibilidadBotones();
+                }, 150);
             });
 
             actualizarBarra();
@@ -1762,195 +1802,6 @@
             document.addEventListener('DOMContentLoaded', inicializarTodasLasFuncionalidades);
         } else {
             inicializarTodasLasFuncionalidades();
-        }
-        function inicializarCarruselConBarra(carrusel) {
-            const contenedorCarrusel = carrusel.closest('.contenedor-carrusel');
-            const barraCarrusel = contenedorCarrusel.querySelector('.barra-carrusel');
-            const indicadorBarra = contenedorCarrusel.querySelector('.indicador-barra-carrusel');
-            const botonAnterior = contenedorCarrusel.querySelector('.boton-anterior');
-            const botonSiguiente = contenedorCarrusel.querySelector('.boton-siguiente');
-
-            const primerItem = carrusel.querySelector('.item-carrusel');
-            if (!primerItem) return;
-
-            // Obtener dimensiones reales
-            function obtenerDimensiones() {
-                const anchoItem = primerItem.offsetWidth;
-                const estiloComputado = window.getComputedStyle(carrusel);
-                const gap = parseInt(estiloComputado.columnGap) || parseInt(estiloComputado.gap) || 30;
-                const anchoTotalItem = anchoItem + gap;
-
-                const cantidadItems = carrusel.children.length;
-                const anchoTotalCarrusel = cantidadItems * anchoTotalItem;
-                const anchoVisible = carrusel.parentElement.clientWidth;
-                const maxDesplazamiento = Math.max(0, anchoTotalCarrusel - anchoVisible);
-
-                return { anchoTotalItem, maxDesplazamiento, anchoVisible };
-            }
-
-            let { anchoTotalItem, maxDesplazamiento, anchoVisible } = obtenerDimensiones();
-            let desplazamientoActual = 0;
-            let isScrolling = false;
-            let scrollTimeout;
-
-            function actualizarBarra() {
-                if (maxDesplazamiento > 0 && desplazamientoActual <= maxDesplazamiento) {
-                    const porcentaje = (desplazamientoActual / maxDesplazamiento) * 100;
-                    indicadorBarra.style.width = `${Math.min(100, Math.max(0, porcentaje))}%`;
-                } else {
-                    indicadorBarra.style.width = maxDesplazamiento > 0 ? '0%' : '100%';
-                }
-            }
-
-            function actualizarVisibilidadBotones() {
-                if (botonAnterior) {
-                    botonAnterior.style.opacity = desplazamientoActual <= 5 ? '0.5' : '1';
-                    botonAnterior.style.pointerEvents = desplazamientoActual <= 5 ? 'none' : 'auto';
-                }
-                if (botonSiguiente) {
-                    botonSiguiente.style.opacity = desplazamientoActual >= maxDesplazamiento - 5 ? '0.5' : '1';
-                    botonSiguiente.style.pointerEvents = desplazamientoActual >= maxDesplazamiento - 5 ? 'none' : 'auto';
-                }
-            }
-
-            function desplazarCarrusel(nuevaPosicion) {
-                if (isScrolling) return;
-
-                isScrolling = true;
-                desplazamientoActual = Math.max(0, Math.min(nuevaPosicion, maxDesplazamiento));
-
-                carrusel.scrollTo({
-                    left: desplazamientoActual,
-                    behavior: 'smooth'
-                });
-
-                actualizarBarra();
-                actualizarVisibilidadBotones();
-
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    isScrolling = false;
-                }, 400);
-            }
-
-            function desplazarUnItem(direccion) {
-                // En móvil, desplazar SOLO 1 item a la vez
-                // En desktop, desplazar 1 item también para mejor control
-                const desplazamiento = direccion * anchoTotalItem;
-                desplazarCarrusel(desplazamientoActual + desplazamiento);
-            }
-
-            if (botonAnterior) {
-                botonAnterior.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    desplazarUnItem(-1);
-                });
-            }
-
-            if (botonSiguiente) {
-                botonSiguiente.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    desplazarUnItem(1);
-                });
-            }
-
-            // Actualizar en scroll
-            carrusel.addEventListener('scroll', () => {
-                if (!isScrolling) {
-                    desplazamientoActual = carrusel.scrollLeft;
-                    actualizarBarra();
-                    actualizarVisibilidadBotones();
-                }
-            });
-
-            // Scroll con rueda del mouse (más suave)
-            carrusel.addEventListener('wheel', (evento) => {
-                if (evento.deltaY !== 0) {
-                    evento.preventDefault();
-                    const scrollAmount = evento.deltaY * 0.8; // Más suave
-                    desplazarCarrusel(desplazamientoActual + scrollAmount);
-                }
-            }, { passive: false });
-
-            // Drag para desktop y touch
-            let startX, scrollLeft, isDown = false;
-
-            carrusel.addEventListener('mousedown', (e) => {
-                isDown = true;
-                carrusel.style.cursor = 'grabbing';
-                startX = e.pageX - carrusel.offsetLeft;
-                scrollLeft = carrusel.scrollLeft;
-                isScrolling = false;
-            });
-
-            carrusel.addEventListener('mouseleave', () => {
-                isDown = false;
-                carrusel.style.cursor = 'grab';
-            });
-
-            carrusel.addEventListener('mouseup', () => {
-                isDown = false;
-                carrusel.style.cursor = 'grab';
-            });
-
-            carrusel.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - carrusel.offsetLeft;
-                const walk = (x - startX) * 1.5;
-                carrusel.scrollLeft = scrollLeft - walk;
-                desplazamientoActual = carrusel.scrollLeft;
-                actualizarBarra();
-                actualizarVisibilidadBotones();
-            });
-
-            // Touch events
-            carrusel.addEventListener('touchstart', (e) => {
-                isDown = true;
-                startX = e.touches[0].pageX - carrusel.offsetLeft;
-                scrollLeft = carrusel.scrollLeft;
-                isScrolling = false;
-            }, { passive: true });
-
-            carrusel.addEventListener('touchend', () => {
-                isDown = false;
-            });
-
-            carrusel.addEventListener('touchmove', (e) => {
-                if (!isDown) return;
-                const x = e.touches[0].pageX - carrusel.offsetLeft;
-                const walk = (x - startX) * 1.2;
-                carrusel.scrollLeft = scrollLeft - walk;
-                desplazamientoActual = carrusel.scrollLeft;
-                actualizarBarra();
-                actualizarVisibilidadBotones();
-            }, { passive: true });
-
-            // Recalcular en resize
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    const nuevasDimensiones = obtenerDimensiones();
-                    anchoTotalItem = nuevasDimensiones.anchoTotalItem;
-                    maxDesplazamiento = nuevasDimensiones.maxDesplazamiento;
-                    anchoVisible = nuevasDimensiones.anchoVisible;
-
-                    // Ajustar posición si es necesario
-                    if (desplazamientoActual > maxDesplazamiento) {
-                        desplazarCarrusel(maxDesplazamiento);
-                    }
-
-                    actualizarBarra();
-                    actualizarVisibilidadBotones();
-                }, 150);
-            });
-
-            // Inicializar
-            actualizarBarra();
-            actualizarVisibilidadBotones();
         }
     </script>
 </body>

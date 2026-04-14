@@ -195,6 +195,28 @@
             transform: scale(0.98);
         }
 
+        .btn-volver {
+            width: 100%;
+            padding: 16px;
+            margin-top: 15px;
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .btn-volver:hover {
+            background-color: var(--input-bg);
+            border-color: var(--text-muted);
+        }
+
         .footer-link {
             display: block;
             margin-top: 25px;
@@ -218,14 +240,16 @@
         .alert-error {
             color: #d32f2f;
             background-color: #ffebee;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 12px 15px;
+            border-radius: 6px;
             font-size: 13px;
             display: block;
             margin-top: 20px;
-            border-left: 3px solid #d32f2f;
+            border: 1px solid #ffcdd2;
+            border-left: 4px solid #d32f2f;
             text-align: left;
             animation: shake 0.4s ease-in-out;
+            box-sizing: border-box;
         }
 
         @keyframes shake {
@@ -247,6 +271,86 @@
 </head>
 <body>
     <form id="form1" runat="server">
+        
+        <script>
+            function togglePass() {
+                var x = document.getElementById('<%= txtClave.ClientID %>');
+                var icon = document.getElementById('eyeIcon');
+
+                icon.style.transform = "scale(0.8)";
+                setTimeout(() => icon.style.transform = "scale(1)", 150);
+
+                if (x.type === "password") {
+                    x.type = "text";
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    x.type = "password";
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+
+            function handleEnter(e, nextElementId) {
+                if (e.keyCode === 13) {
+                    e.preventDefault();
+                    if (nextElementId === 'btnLogin') {
+                        document.getElementById('<%= btnLogin.ClientID %>').click();
+                    } else {
+                        var nextInput = document.getElementById('<%= txtClave.ClientID %>');
+                        if (nextInput) {
+                            nextInput.focus();
+                        }
+                    }
+                }
+            }
+
+            function iniciarTemporizador(segundosRestantes) {
+                var btnLogin = document.getElementById('<%= btnLogin.ClientID %>');
+                var lblError = document.getElementById('<%= lblError.ClientID %>');
+
+                if (btnLogin) {
+                    btnLogin.disabled = true;
+                    btnLogin.style.opacity = '0.5';
+                    btnLogin.style.cursor = 'not-allowed';
+                    btnLogin.value = 'BLOQUEADO';
+                }
+
+                if (lblError) {
+                    lblError.style.display = 'block';
+                }
+
+                function actualizarContador() {
+                    if (segundosRestantes <= 0) {
+                        clearInterval(intervalo);
+                        if (btnLogin) {
+                            btnLogin.disabled = false;
+                            btnLogin.style.opacity = '1';
+                            btnLogin.style.cursor = 'pointer';
+                            btnLogin.value = 'INICIAR SESIÓN';
+                        }
+                        if (lblError) {
+                            lblError.style.display = 'none';
+                        }
+                    } else {
+                        var m = Math.floor(segundosRestantes / 60);
+                        var s = Math.floor(segundosRestantes % 60);
+
+                        var mFormat = m < 10 ? "0" + m : m;
+                        var sFormat = s < 10 ? "0" + s : s;
+
+                        if (lblError) {
+                            lblError.innerHTML = '<strong><i class="fas fa-lock"></i> Sistema bloqueado</strong><br/>Vuelve a intentar en: <strong>' + mFormat + ':' + sFormat + '</strong>';
+                        }
+                        segundosRestantes--;
+                    }
+                }
+
+                actualizarContador();
+                var intervalo = setInterval(actualizarContador, 1000);
+            }
+        </script>
+
         <div class="contenedor-login">
             
             <div class="logo-container">
@@ -268,6 +372,8 @@
             <asp:Label ID="lblError" runat="server" CssClass="alert-error" Visible="false"></asp:Label>
 
             <asp:Button ID="btnLogin" runat="server" CssClass="btn-login delay-btn form-group-anim" Text="INICIAR SESIÓN" OnClick="btnLogin_Click" />
+            <asp:Button ID="btnVolver" runat="server" CssClass="btn-volver delay-btn form-group-anim" Text="VOLVER AL CATÁLOGO" OnClientClick="window.location.href='CatalogoCliente.aspx'; return false;" />
+            
             <div class="text-center mt-3">
                 <a href="RecuperarContra.aspx" style="color: #666; text-decoration: none; font-size: 0.9rem;">
                     ¿Olvidaste tu contraseña?
@@ -275,39 +381,5 @@
             </div>
         </div>
     </form>
-
-    <script>
-        function togglePass() {
-            var x = document.getElementById('<%= txtClave.ClientID %>');
-            var icon = document.getElementById('eyeIcon');
-
-            icon.style.transform = "scale(0.8)";
-            setTimeout(() => icon.style.transform = "scale(1)", 150);
-
-            if (x.type === "password") {
-                x.type = "text";
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                x.type = "password";
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        function handleEnter(e, nextElementId) {
-            if (e.keyCode === 13) {
-                e.preventDefault();
-                if (nextElementId === 'btnLogin') {
-                    document.getElementById('<%= btnLogin.ClientID %>').click();
-                } else {
-                    var nextInput = document.getElementById('<%= txtClave.ClientID %>');
-                    if (nextInput) {
-                        nextInput.focus();
-                    }
-                }
-            }
-        }
-    </script>
 </body>
 </html>
