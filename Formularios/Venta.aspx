@@ -11,9 +11,9 @@
         .form-control-pos { width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.95rem; transition: all 0.2s; box-sizing: border-box; }
         .form-control-pos:focus { border-color: var(--c-primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15); }
         .form-control-pos[readonly] { background-color: #e9ecef; color: #495057; font-weight: bold; cursor: not-allowed; }
-        .is-invalid { border-color: var(--c-danger) !important; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right calc(0.375em + 0.1875rem) center; background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem); }
-        .error-msg { width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: var(--c-danger); font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .error-msg i { font-size: 1em; }
+        .is-invalid { border-color: var(--c-danger) !important; padding-right: 35px !important; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right calc(0.375em + 0.1875rem) center; background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem); }
+        .error-msg { width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: var(--c-danger); font-weight: 600; display: flex; align-items: flex-start; gap: 5px; }
+        .error-msg i { font-size: 1em; margin-top: 2px; }
         .pos-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
         .detail-section { background: #fcfcfc; border: 1px solid #e0e0e0; border-radius: 6px; padding: 20px; margin-top: 15px; border-left: 5px solid #ccc; }
         .active-prod { border-left-color: var(--c-success); }
@@ -182,7 +182,7 @@
                     </div>
                     <hr />
                     
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:20px; margin-top:20px;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-top:20px;">
                         <div>
                             <label style="font-weight:700; color:#0056b3;">El Adelanto (C$)</label>
                             <asp:TextBox ID="txtAdelanto" runat="server" CssClass="form-control-pos input-money" ReadOnly="true" Text="0.00"></asp:TextBox>
@@ -220,7 +220,7 @@
 
                 <asp:Panel ID="pnlSaldoLente" runat="server" CssClass="pay-box" Visible="false" style="background-color: #fff3cd; border-color: #ffe69c; margin-top: 15px;">
                     <h5 style="color:#856404; font-weight:bold; margin-top:0; margin-bottom: 15px;"><i class="fa-solid fa-scale-balanced"></i> Saldo pendiente</h5>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:20px;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
                         <div>
                             <label style="font-weight:700;">Estado de Pago</label>
                             <asp:DropDownList ID="ddlEstadoPagoVenta" runat="server" CssClass="form-control-pos" AutoPostBack="true" OnSelectedIndexChanged="Recalcular_Event">
