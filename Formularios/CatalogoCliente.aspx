@@ -25,948 +25,172 @@
             --fuente-principal: 'Poppins', sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: var(--fuente-principal);
-            color: var(--color-texto);
-            background-color: var(--color-fondo);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+        body { font-family: var(--fuente-principal); color: var(--color-texto); background-color: var(--color-fondo); line-height: 1.6; overflow-x: hidden; }
+        .contenedor { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .encabezado { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: var(--sombra-suave); position: sticky; top: 0; z-index: 1000; transition: var(--transicion); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .contenedor-encabezado { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
+        .logo { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--color-acento); box-shadow: 0 4px 10px rgba(215, 199, 130, 0.5); flex-shrink: 0; }
+        .logo img { width: 100%; height: 100%; object-fit: cover; }
+        .navegacion-principal { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+        .boton-navegacion { background: transparent; border: none; color: var(--color-oscuro); padding: 10px 18px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: var(--transicion); border-radius: 50px; position: relative; white-space: nowrap; }
+        .boton-navegacion:hover { background-color: rgba(47, 53, 66, 0.05); color: var(--color-oscuro); transform: translateY(-2px); }
+        .boton-iniciar-sesion { background: var(--color-oscuro); color: var(--color-blanco); padding: 10px 25px; box-shadow: 0 4px 15px rgba(47, 53, 66, 0.3); }
+        .boton-iniciar-sesion:hover { background: var(--color-acento); color: var(--color-oscuro); box-shadow: 0 6px 20px rgba(215, 199, 130, 0.6); }
+        .menu-toggle { display: none; background: transparent; border: none; font-size: 1.8rem; cursor: pointer; color: var(--color-oscuro); padding: 10px; transition: var(--transicion); }
+        .menu-toggle:hover { color: var(--color-acento); }
 
-        .contenedor {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .banner-bienvenida { background: linear-gradient(135deg, rgba(47, 53, 66, 0.4), rgba(47, 53, 66, 0.2)), url('https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center;  color: var(--color-blanco); text-align: center; padding: 120px 0;  margin-bottom: 60px; border-radius: 0 0 40px 40px; box-shadow: var(--sombra-moderna); position: relative; }
+        .banner-bienvenida h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; letter-spacing: -1px; animation: fadeInUp 0.8s ease-out; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
+        .banner-bienvenida p { font-size: 1.4rem; font-weight: 600; opacity: 0.95; animation: fadeInUp 0.8s ease-out 0.2s backwards; text-shadow: 0 2px 5px rgba(0,0,0,0.6); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Header Responsive */
-        .encabezado {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: var(--sombra-suave);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            transition: var(--transicion);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
+        .seccion-productos { margin-bottom: 60px; padding: 20px 0; }
+        .titulo-seccion { text-align: center; margin-bottom: 50px; color: var(--color-oscuro); font-size: 2.2rem; font-weight: 700; position: relative; display: inline-block; width: 100%; }
+        .titulo-seccion::after { content: ''; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); width: 60px; height: 6px; background: var(--color-acento); border-radius: 10px; }
 
-        .contenedor-encabezado {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-        }
-
-        .logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--color-acento);
-            box-shadow: 0 4px 10px rgba(215, 199, 130, 0.5);
-            flex-shrink: 0;
-        }
-
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .navegacion-principal {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .boton-navegacion {
-            background: transparent;
-            border: none;
-            color: var(--color-oscuro);
-            padding: 10px 18px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: var(--transicion);
-            border-radius: 50px;
-            position: relative;
-            white-space: nowrap;
-        }
-
-        .boton-navegacion:hover {
-            background-color: rgba(47, 53, 66, 0.05);
-            color: var(--color-oscuro);
-            transform: translateY(-2px);
-        }
-
-        .boton-iniciar-sesion {
-            background: var(--color-oscuro);
-            color: var(--color-blanco);
-            padding: 10px 25px;
-            box-shadow: 0 4px 15px rgba(47, 53, 66, 0.3);
-        }
-
-        .boton-iniciar-sesion:hover {
-            background: var(--color-acento);
-            color: var(--color-oscuro);
-            box-shadow: 0 6px 20px rgba(215, 199, 130, 0.6);
-        }
-
-        /* Menú hamburguesa para móvil */
-        .menu-toggle {
-            display: none;
-            background: transparent;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--color-oscuro);
-            padding: 10px;
-            transition: var(--transicion);
-        }
-
-        .menu-toggle:hover {
-            color: var(--color-acento);
-        }
-
-        /* Banner Responsive */
-        .banner-bienvenida {
-            background: linear-gradient(135deg, rgba(47, 53, 66, 0.4), rgba(47, 53, 66, 0.2)), url('https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center; 
-            color: var(--color-blanco);
-            text-align: center;
-            padding: 120px 0; 
-            margin-bottom: 60px;
-            border-radius: 0 0 40px 40px;
-            box-shadow: var(--sombra-moderna);
-            position: relative;
-        }
-
-        .banner-bienvenida h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            animation: fadeInUp 0.8s ease-out;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-        }
-
-        .banner-bienvenida p {
-            font-size: 1.4rem;
-            font-weight: 600;
-            opacity: 0.95;
-            animation: fadeInUp 0.8s ease-out 0.2s backwards;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Secciones Responsive */
-        .seccion-productos {
-            margin-bottom: 60px;
-            padding: 20px 0;
-        }
-
-        .titulo-seccion {
-            text-align: center;
-            margin-bottom: 50px;
-            color: var(--color-oscuro);
-            font-size: 2.2rem;
-            font-weight: 700;
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .titulo-seccion::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 6px;
-            background: var(--color-acento);
-            border-radius: 10px;
-        }
-
-        /* Carrusel Responsive */
-        .contenedor-carrusel {
-            position: relative;
-            padding: 0 20px;
-        }
-
-        .carrusel-wrapper {
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-
-        .carrusel {
-            display: flex;
-            gap: 30px;
-            padding: 40px 20px;
-            width: 100%;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            scrollbar-width: none;
-            scroll-padding: 0 20px;
-            -webkit-overflow-scrolling: touch;
-        }
-
+        .contenedor-carrusel { position: relative; padding: 0 20px; }
+        .carrusel-wrapper { display: flex; align-items: center; position: relative; }
+        .carrusel { display: flex; gap: 30px; padding: 40px 20px; width: 100%; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; scroll-padding: 0 20px; -webkit-overflow-scrolling: touch; }
         .carrusel::-webkit-scrollbar { display: none; }
+        .item-carrusel { flex: 0 0 300px; min-width: 300px; background-color: var(--color-blanco); border-radius: var(--radio-borde); box-shadow: var(--sombra-suave); overflow: hidden; transition: var(--transicion); border: 1px solid rgba(0,0,0,0.02); cursor: pointer; display: flex; flex-direction: column; }
+        .item-carrusel:hover { transform: translateY(-10px); box-shadow: var(--sombra-moderna); }
+        .imagen-producto { width: 100%; height: 240px; object-fit: cover; border-bottom: 1px solid rgba(0,0,0,0.03); }
+        .info-producto { padding: 25px; text-align: left; display: flex; flex-direction: column; flex-grow: 1; }
+        .info-producto h3 { color: var(--color-oscuro); font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+        .info-producto p { font-size: 0.95rem; color: var(--color-texto); margin-bottom: 15px; }
+        .precio-producto { display: inline-block; color: var(--color-oscuro); background: var(--color-acento); font-weight: 700; font-size: 1.1rem; padding: 6px 16px; border-radius: 50px; box-shadow: 0 4px 10px rgba(215, 199, 130, 0.4); margin-top: auto; align-self: flex-start; }
 
-        .item-carrusel {
-            flex: 0 0 300px;
-            min-width: 300px;
-            background-color: var(--color-blanco);
-            border-radius: var(--radio-borde);
-            box-shadow: var(--sombra-suave);
-            overflow: hidden;
-            transition: var(--transicion);
-            border: 1px solid rgba(0,0,0,0.02);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .item-carrusel:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--sombra-moderna);
-        }
-
-        .imagen-producto {
-            width: 100%;
-            height: 240px;
-            object-fit: cover;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-        }
-
-        .info-producto {
-            padding: 25px;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .info-producto h3 {
-            color: var(--color-oscuro);
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .info-producto p {
-            font-size: 0.95rem;
-            color: var(--color-texto);
-            margin-bottom: 15px;
-        }
-
-        .precio-producto {
-            display: inline-block;
-            color: var(--color-oscuro);
-            background: var(--color-acento);
-            font-weight: 700;
-            font-size: 1.1rem;
-            padding: 6px 16px;
-            border-radius: 50px;
-            box-shadow: 0 4px 10px rgba(215, 199, 130, 0.4);
-            margin-top: auto;
-            align-self: flex-start;
-        }
-
-        .boton-carrusel {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--color-blanco);
-            color: var(--color-oscuro);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            box-shadow: var(--sombra-moderna);
-            z-index: 10;
-            cursor: pointer;
-            transition: var(--transicion);
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .boton-carrusel:hover {
-            background: var(--color-acento);
-            color: var(--color-oscuro);
-            transform: translateY(-50%) scale(1.1);
-        }
-
+        .boton-carrusel { position: absolute; top: 50%; transform: translateY(-50%); background: var(--color-blanco); color: var(--color-oscuro); border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; box-shadow: var(--sombra-moderna); z-index: 10; cursor: pointer; transition: var(--transicion); display: flex !important; align-items: center; justify-content: center; }
+        .boton-carrusel:hover { background: var(--color-acento); color: var(--color-oscuro); transform: translateY(-50%) scale(1.1); }
         .boton-anterior { left: -10px; }
         .boton-siguiente { right: -10px; }
 
-        .contenedor-barra-carrusel {
-            display: flex;
-            justify-content: center;
-            padding: 10px 0;
-        }
+        .contenedor-barra-carrusel { display: flex; justify-content: center; padding: 10px 0; }
+        .barra-carrusel { width: 150px; height: 6px; background: #dfe4ea; border-radius: 10px; overflow: hidden; }
+        .indicador-barra-carrusel { height: 100%; background: var(--color-oscuro); width: 0%; transition: width 0.2s ease; border-radius: 10px; }
 
-        .barra-carrusel {
-            width: 150px;
-            height: 6px;
-            background: #dfe4ea;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        .seccion-servicios { background: var(--color-blanco); padding: 80px 0; position: relative; }
+        .contenedor-servicios { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .item-servicio { padding: 40px; background: var(--color-fondo); border-radius: var(--radio-borde); transition: var(--transicion); border: 1px solid transparent; }
+        .item-servicio:hover { background: var(--color-blanco); box-shadow: var(--sombra-moderna); border-color: var(--color-acento); transform: translateY(-5px); }
+        .item-servicio h3 { color: var(--color-oscuro); font-size: 1.5rem; margin-bottom: 15px; position: relative; display: inline-block; }
+        .item-servicio h3::after { content: ''; display: block; width: 40px; height: 4px; background: var(--color-acento); margin-top: 8px; border-radius: 2px; }
 
-        .indicador-barra-carrusel {
-            height: 100%;
-            background: var(--color-oscuro);
-            width: 0%;
-            transition: width 0.2s ease;
-            border-radius: 10px;
-        }
+        .seccion-nosotros { background: var(--color-oscuro); color: var(--color-blanco); padding: 80px 0; border-radius: 40px; margin: 40px 20px; }
+        .titulo-seccion-nosotros { text-align: center; margin-bottom: 50px; font-size: 2.2rem; font-weight: 700; color: var(--color-acento); }
+        .contenedor-nosotros { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; padding: 0 20px; }
+        .item-nosotros { text-align: center; padding: 30px; background: rgba(255, 255, 255, 0.05); border-radius: var(--radio-borde); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); transition: var(--transicion); }
+        .item-nosotros:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
+        .item-nosotros h3 { color: var(--color-acento); font-size: 1.5rem; margin-bottom: 15px; }
+        .item-nosotros p { color: rgba(255, 255, 255, 0.8); }
 
-        /* Servicios Responsive */
-        .seccion-servicios {
-            background: var(--color-blanco);
-            padding: 80px 0;
-            position: relative;
-        }
+        .seccion-contacto { background: var(--color-blanco); padding: 60px 0; border-top: 1px solid #eee; }
+        .contenedor-contacto { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; }
+        .info-contacto h3 { color: var(--color-oscuro); margin-bottom: 20px; font-size: 1.3rem; font-weight: 700; }
+        .lista-contacto { list-style: none; }
+        .lista-contacto li { margin-bottom: 12px; display: flex; align-items: center; color: var(--color-texto); }
+        .lista-contacto li::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--color-acento); border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+        .boton-red-social { display: inline-flex; align-items: center; background: var(--color-fondo); color: var(--color-oscuro); padding: 10px 20px; margin: 0 10px 10px 0; border-radius: 50px; text-decoration: none; font-weight: 600; transition: var(--transicion); }
+        .boton-red-social:hover { background: var(--color-oscuro); color: var(--color-acento); transform: translateY(-3px); box-shadow: var(--sombra-suave); }
 
-        .contenedor-servicios {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
+        .boton-whatsapp { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2000; cursor: pointer; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); transition: var(--transicion); border: 2px solid rgba(255, 255, 255, 0.2); }
+        .boton-whatsapp:hover { transform: scale(1.1); box-shadow: 0 15px 30px rgba(37, 211, 102, 0.6); }
+        .boton-whatsapp::before, .boton-whatsapp::after { content: ''; position: absolute; width: 100%; height: 100%; background: #25D366; border-radius: 50%; opacity: 0.5; z-index: -1; animation: pulse-onda 2s infinite; }
+        .boton-whatsapp::after { animation-delay: 0.5s; }
+        @keyframes pulse-onda { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.6); opacity: 0; } }
 
-        .item-servicio {
-            padding: 40px;
-            background: var(--color-fondo);
-            border-radius: var(--radio-borde);
-            transition: var(--transicion);
-            border: 1px solid transparent;
-        }
+        .modal-imagen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(47, 53, 66, 0.95); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
+        .modal-contenido { max-width: 90%; max-height: 90%; position: relative; border-radius: var(--radio-borde); box-shadow: 0 25px 50px rgba(0,0,0,0.3); animation: zoomIn 0.3s ease; }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-imagen-ampliada { display: block; max-width: 100%; max-height: 85vh; border-radius: var(--radio-borde); object-fit: contain; }
+        .cerrar-modal { position: absolute; top: -50px; right: 0; background: transparent; border: none; color: var(--color-blanco); font-size: 2.5rem; cursor: pointer; transition: var(--transicion); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .cerrar-modal:hover { color: var(--color-acento); transform: rotate(90deg); }
+        .controles-modal { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 20px; pointer-events: none; }
+        .boton-modal { background: rgba(255, 255, 255, 0.2); color: var(--color-blanco); border: 1px solid rgba(255, 255, 255, 0.3); width: 55px; height: 55px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; pointer-events: auto; transition: var(--transicion); backdrop-filter: blur(4px); }
+        .boton-modal:hover { background: var(--color-acento); border-color: var(--color-acento); color: var(--color-oscuro); }
 
-        .item-servicio:hover {
-            background: var(--color-blanco);
-            box-shadow: var(--sombra-moderna);
-            border-color: var(--color-acento);
-            transform: translateY(-5px);
-        }
-
-        .item-servicio h3 {
-            color: var(--color-oscuro);
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .item-servicio h3::after {
-            content: '';
-            display: block;
-            width: 40px;
-            height: 4px;
-            background: var(--color-acento);
-            margin-top: 8px;
-            border-radius: 2px;
-        }
-
-        /* Nosotros Responsive */
-        .seccion-nosotros {
-            background: var(--color-oscuro);
-            color: var(--color-blanco);
-            padding: 80px 0;
-            border-radius: 40px;
-            margin: 40px 20px;
-        }
-
-        .titulo-seccion-nosotros {
-            text-align: center;
-            margin-bottom: 50px;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--color-acento);
-        }
-
-        .contenedor-nosotros {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            padding: 0 20px;
-        }
-
-        .item-nosotros {
-            text-align: center;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--radio-borde);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transicion);
-        }
-
-        .item-nosotros:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-5px);
-        }
-
-        .item-nosotros h3 {
-            color: var(--color-acento);
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-
-        .item-nosotros p {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Contacto Responsive */
-        .seccion-contacto {
-            background: var(--color-blanco);
-            padding: 60px 0;
-            border-top: 1px solid #eee;
-        }
-
-        .contenedor-contacto {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-        }
-
-        .info-contacto h3 {
-            color: var(--color-oscuro);
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .lista-contacto {
-            list-style: none;
-        }
-
-        .lista-contacto li {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            color: var(--color-texto);
-        }
-        
-        .lista-contacto li::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--color-acento);
-            border-radius: 50%;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .boton-red-social {
-            display: inline-flex;
-            align-items: center;
-            background: var(--color-fondo);
-            color: var(--color-oscuro);
-            padding: 10px 20px;
-            margin: 0 10px 10px 0;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transicion);
-        }
-
-        .boton-red-social:hover {
-            background: var(--color-oscuro);
-            color: var(--color-acento);
-            transform: translateY(-3px);
-            box-shadow: var(--sombra-suave);
-        }
-
-        /* WhatsApp Button */
-        .boton-whatsapp {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            height: 65px;
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
-            transition: var(--transicion);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .boton-whatsapp:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 30px rgba(37, 211, 102, 0.6);
-        }
-
-        .boton-whatsapp::before, .boton-whatsapp::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: #25D366;
-            border-radius: 50%;
-            opacity: 0.5;
-            z-index: -1;
-            animation: pulse-onda 2s infinite;
-        }
-
-        .boton-whatsapp::after {
-            animation-delay: 0.5s;
-        }
-
-        @keyframes pulse-onda {
-            0% { transform: scale(1); opacity: 0.6; }
-            100% { transform: scale(1.6); opacity: 0; }
-        }
-
-        /* Modal Responsive */
-        .modal-imagen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(47, 53, 66, 0.95);
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(8px);
-            padding: 20px;
-        }
-
-        .modal-contenido {
-            max-width: 90%;
-            max-height: 90%;
-            position: relative;
-            border-radius: var(--radio-borde);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            animation: zoomIn 0.3s ease;
-        }
-
-        @keyframes zoomIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-imagen-ampliada {
-            display: block;
-            max-width: 100%;
-            max-height: 85vh;
-            border-radius: var(--radio-borde);
-            object-fit: contain;
-        }
-
-        .cerrar-modal {
-            position: absolute;
-            top: -50px;
-            right: 0;
-            background: transparent;
-            border: none;
-            color: var(--color-blanco);
-            font-size: 2.5rem;
-            cursor: pointer;
-            transition: var(--transicion);
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cerrar-modal:hover {
-            color: var(--color-acento);
-            transform: rotate(90deg);
-        }
-
-        .controles-modal {
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            transform: translateY(-50%);
-            padding: 0 20px;
-            pointer-events: none;
-        }
-
-        .boton-modal {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--color-blanco);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: auto;
-            transition: var(--transicion);
-            backdrop-filter: blur(4px);
-        }
-
-        .boton-modal:hover {
-            background: var(--color-acento);
-            border-color: var(--color-acento);
-            color: var(--color-oscuro);
-        }
-
-        /* MEDIA QUERIES RESPONSIVE */
-
-        /* Tablets */
         @media (max-width: 992px) {
-            .banner-bienvenida h1 {
-                font-size: 2.8rem;
-            }
-            
-            .banner-bienvenida p {
-                font-size: 1.2rem;
-            }
-            
-            .titulo-seccion {
-                font-size: 2rem;
-            }
-            
-            .item-carrusel {
-                flex: 0 0 280px;
-                min-width: 280px;
-            }
-            
-            .contenedor-servicios {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .banner-bienvenida h1 { font-size: 2.8rem; }
+            .banner-bienvenida p { font-size: 1.2rem; }
+            .titulo-seccion { font-size: 2rem; }
+            .item-carrusel { flex: 0 0 280px; min-width: 280px; }
+            .contenedor-servicios { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* Móviles */
         @media (max-width: 768px) {
-            .contenedor {
-                padding: 0 15px;
-            }
-            
-            /* Header móvil */
-            .contenedor-encabezado {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-            
-            .logo {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .navegacion-principal {
-                justify-content: center;
-                width: 100%;
-            }
-            
-            .boton-navegacion {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .boton-iniciar-sesion {
-                padding: 8px 20px;
-            }
-            
-            /* Banner móvil */
-            .banner-bienvenida {
-                padding: 80px 0;
-                margin-bottom: 40px;
-                border-radius: 0 0 20px 20px;
-            }
-            
-            .banner-bienvenida h1 {
-                font-size: 2rem;
-                padding: 0 15px;
-            }
-            
-            .banner-bienvenida p {
-                font-size: 1rem;
-                padding: 0 15px;
-            }
-            
-            /* Secciones móvil */
-            .seccion-productos {
-                margin-bottom: 40px;
-                padding: 10px 0;
-            }
-            
-            .titulo-seccion {
-                font-size: 1.8rem;
-                margin-bottom: 35px;
-            }
-            
-            /* Carrusel móvil */
-            .contenedor-carrusel {
-                padding: 0 10px;
-            }
-            
-            .carrusel {
-                gap: 20px;
-                padding: 30px 10px;
-            }
-            
-            .item-carrusel {
-                flex: 0 0 250px;
-                min-width: 250px;
-            }
-            
-            .imagen-producto {
-                height: 200px;
-            }
-            
-            .info-producto {
-                padding: 20px;
-            }
-            
-            .info-producto h3 {
-                font-size: 1.1rem;
-            }
-            
-            .precio-producto {
-                font-size: 1rem;
-                padding: 5px 14px;
-            }
-            
-            .boton-carrusel {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-            
+            .contenedor { padding: 0 15px; }
+            .contenedor-encabezado { flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .logo { width: 50px; height: 50px; }
+            .navegacion-principal { justify-content: center; width: 100%; }
+            .boton-navegacion { padding: 8px 12px; font-size: 0.8rem; }
+            .boton-iniciar-sesion { padding: 8px 20px; }
+            .banner-bienvenida { padding: 80px 0; margin-bottom: 40px; border-radius: 0 0 20px 20px; }
+            .banner-bienvenida h1 { font-size: 2rem; padding: 0 15px; }
+            .banner-bienvenida p { font-size: 1rem; padding: 0 15px; }
+            .seccion-productos { margin-bottom: 40px; padding: 10px 0; }
+            .titulo-seccion { font-size: 1.8rem; margin-bottom: 35px; }
+            .contenedor-carrusel { padding: 0 10px; }
+            .carrusel { gap: 20px; padding: 30px 10px; }
+            .item-carrusel { flex: 0 0 250px; min-width: 250px; }
+            .imagen-producto { height: 200px; }
+            .info-producto { padding: 20px; }
+            .info-producto h3 { font-size: 1.1rem; }
+            .precio-producto { font-size: 1rem; padding: 5px 14px; }
+            .boton-carrusel { width: 40px; height: 40px; font-size: 1.2rem; }
             .boton-anterior { left: -5px; }
             .boton-siguiente { right: -5px; }
-            
-            /* Servicios móvil */
-            .seccion-servicios {
-                padding: 50px 0;
-            }
-            
-            .contenedor-servicios {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .item-servicio {
-                padding: 30px;
-            }
-            
-            .item-servicio h3 {
-                font-size: 1.3rem;
-            }
-            
-            /* Nosotros móvil */
-            .seccion-nosotros {
-                padding: 50px 0;
-                margin: 30px 10px;
-                border-radius: 20px;
-            }
-            
-            .titulo-seccion-nosotros {
-                font-size: 1.8rem;
-                margin-bottom: 35px;
-            }
-            
-            .contenedor-nosotros {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            
-            .item-nosotros {
-                padding: 25px;
-            }
-            
-            .item-nosotros h3 {
-                font-size: 1.3rem;
-            }
-            
-            /* Contacto móvil */
-            .seccion-contacto {
-                padding: 40px 0;
-            }
-            
-            .contenedor-contacto {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .info-contacto {
-                text-align: center;
-            }
-            
-            .lista-contacto li {
-                justify-content: center;
-            }
-            
-            .boton-red-social {
-                margin: 5px;
-            }
-            
-            /* WhatsApp móvil */
-            .boton-whatsapp {
-                width: 55px;
-                height: 55px;
-                bottom: 20px;
-                right: 20px;
-            }
-            
-            .boton-whatsapp svg {
-                width: 30px;
-                height: 30px;
-            }
-            
-            /* Modal móvil */
-            .modal-contenido {
-                max-width: 95%;
-            }
-            
-            .cerrar-modal {
-                top: -40px;
-                font-size: 2rem;
-            }
-            
-            .boton-modal {
-                width: 45px;
-                height: 45px;
-                font-size: 1.2rem;
-            }
+            .seccion-servicios { padding: 50px 0; }
+            .contenedor-servicios { grid-template-columns: 1fr; gap: 20px; }
+            .item-servicio { padding: 30px; }
+            .item-servicio h3 { font-size: 1.3rem; }
+            .seccion-nosotros { padding: 50px 0; margin: 30px 10px; border-radius: 20px; }
+            .titulo-seccion-nosotros { font-size: 1.8rem; margin-bottom: 35px; }
+            .contenedor-nosotros { grid-template-columns: 1fr; gap: 25px; }
+            .item-nosotros { padding: 25px; }
+            .item-nosotros h3 { font-size: 1.3rem; }
+            .seccion-contacto { padding: 40px 0; }
+            .contenedor-contacto { grid-template-columns: 1fr; gap: 30px; }
+            .info-contacto { text-align: center; }
+            .lista-contacto li { justify-content: center; }
+            .boton-red-social { margin: 5px; }
+            .boton-whatsapp { width: 55px; height: 55px; bottom: 20px; right: 20px; }
+            .boton-whatsapp svg { width: 30px; height: 30px; }
+            .modal-contenido { max-width: 95%; }
+            .cerrar-modal { top: -40px; font-size: 2rem; }
+            .boton-modal { width: 45px; height: 45px; font-size: 1.2rem; }
         }
 
-        /* Móviles pequeños */
         @media (max-width: 480px) {
-            .contenedor-encabezado {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .navegacion-principal {
-                gap: 3px;
-            }
-            
-            .boton-navegacion {
-                padding: 6px 10px;
-                font-size: 0.75rem;
-            }
-            
-            .banner-bienvenida {
-                padding: 60px 0;
-            }
-            
-            .banner-bienvenida h1 {
-                font-size: 1.6rem;
-            }
-            
-            .banner-bienvenida p {
-                font-size: 0.9rem;
-            }
-            
-            .titulo-seccion {
-                font-size: 1.5rem;
-            }
-            
-            .item-carrusel {
-                flex: 0 0 220px;
-                min-width: 220px;
-            }
-            
-            .imagen-producto {
-                height: 180px;
-            }
-            
-            .info-producto {
-                padding: 15px;
-            }
-            
-            .info-producto h3 {
-                font-size: 1rem;
-            }
-            
-            .info-producto p {
-                font-size: 0.85rem;
-            }
-            
-            .precio-producto {
-                font-size: 0.9rem;
-                padding: 4px 12px;
-            }
-            
-            .item-servicio {
-                padding: 20px;
-            }
-            
-            .item-nosotros {
-                padding: 20px;
-            }
-            
-            .boton-whatsapp {
-                width: 50px;
-                height: 50px;
-                bottom: 15px;
-                right: 15px;
-            }
+            .contenedor-encabezado { flex-direction: column; gap: 15px; }
+            .navegacion-principal { gap: 3px; }
+            .boton-navegacion { padding: 6px 10px; font-size: 0.75rem; }
+            .banner-bienvenida { padding: 60px 0; }
+            .banner-bienvenida h1 { font-size: 1.6rem; }
+            .banner-bienvenida p { font-size: 0.9rem; }
+            .titulo-seccion { font-size: 1.5rem; }
+            .item-carrusel { flex: 0 0 220px; min-width: 220px; }
+            .imagen-producto { height: 180px; }
+            .info-producto { padding: 15px; }
+            .info-producto h3 { font-size: 1rem; }
+            .info-producto p { font-size: 0.85rem; }
+            .precio-producto { font-size: 0.9rem; padding: 4px 12px; }
+            .item-servicio { padding: 20px; }
+            .item-nosotros { padding: 20px; }
+            .boton-whatsapp { width: 50px; height: 50px; bottom: 15px; right: 15px; }
         }
 
-        /* Orientación landscape en móviles */
         @media (max-height: 500px) and (orientation: landscape) {
-            .banner-bienvenida {
-                padding: 40px 0;
-            }
-            
-            .modal-imagen-ampliada {
-                max-height: 70vh;
-            }
+            .banner-bienvenida { padding: 40px 0; }
+            .modal-imagen-ampliada { max-height: 70vh; }
         }
 
-        /* Touch improvements */
         @media (hover: none) and (pointer: coarse) {
-            .boton-navegacion,
-            .boton-carrusel,
-            .boton-modal,
-            .boton-whatsapp,
-            .boton-red-social {
-                min-height: 44px;
-                min-width: 44px;
-            }
-            
-            .item-carrusel:hover {
-                transform: none;
-            }
-            
-            .item-servicio:hover {
-                transform: none;
-            }
-            
-            .item-nosotros:hover {
-                transform: none;
-            }
+            .boton-navegacion, .boton-carrusel, .boton-modal, .boton-whatsapp, .boton-red-social { min-height: 44px; min-width: 44px; }
+            .item-carrusel:hover { transform: none; }
+            .item-servicio:hover { transform: none; }
+            .item-nosotros:hover { transform: none; }
         }
     </style>
 </head>
@@ -975,7 +199,7 @@
         <header class="encabezado">
             <div class="contenedor contenedor-encabezado">
                 <div class="logo">
-                    <img src="https://i.postimg.cc/3R3WcxSb/565834681-122104982919051438-2227136986678388589-n.jpg" alt="Logo Óptica 20/20" />
+                    <img src="https://i.postimg.cc/c1QY31mY/FB-IMG-1781671016736.jpg" alt="Logo Óptica 20/20" />
                 </div>
                 <nav class="navegacion-principal">
                     <button type="button" class="boton-navegacion" data-destino="inicio">Inicio</button>
@@ -1003,118 +227,18 @@
                     <div class="carrusel-wrapper">
                         <button type="button" class="boton-carrusel boton-anterior" aria-label="Productos anteriores">‹</button>
                         <div class="carrusel">
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/fTVQDQ1t/482227101-1225782765688346-4806162349532487136-n.jpg" alt="Gafas de sol elegantes" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Modelo Elegante</h3>
-                                    <p>Diseño sofisticado y contemporáneo</p>
-                                    <p class="precio-producto">1,250 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/QxFZhZvT/482248740-1223813572551932-6722378466185511964-n.jpg" alt="Lentes de contacto premium" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Estilo Moderno</h3>
-                                    <p>Combinación perfecta de estilo y funcionalidad</p>
-                                    <p class="precio-producto">950 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/281NrNgL/482356989-1223813462551943-7479586171370107020-n.jpg" alt="Armazón moderno" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Clásico Renovado</h3>
-                                    <p>Elegancia atemporal con toques actuales</p>
-                                    <p class="precio-producto">1,100 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/vH4wbwCn/483495198-1226320645634558-860129064186916301-n.jpg" alt="Gafas deportivas" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Línea Deportiva</h3>
-                                    <p>Resistencia y comodidad para el día a día</p>
-                                    <p class="precio-producto">1,350 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/FsYXNXwV/483544623-1226320878967868-8400093132161779239-n.jpg" alt="Lentes progresivos" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Colección Profesional</h3>
-                                    <p>Calidad superior para exigentes</p>
-                                    <p class="precio-producto">1,480 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/SNnbkbHG/483585756-1226320725634550-8862451075328906735-n.jpg" alt="Armazón clásico" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Edición Exclusiva</h3>
-                                    <p>Diseños únicos y limitados</p>
-                                    <p class="precio-producto">1,500 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/zXyY8Y4j/483644632-1226320668967889-7830895286049002351-n.jpg" alt="Gafas de lectura" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Línea Juvenil</h3>
-                                    <p>Estilo fresco y contemporáneo</p>
-                                    <p class="precio-producto">850 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/8P7gNgxt/483689313-1226320655634557-2636047504425909700-n.jpg" alt="Lentes fotocromáticos" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Serie Premium</h3>
-                                    <p>Materiales de primera calidad</p>
-                                    <p class="precio-producto">1,420 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/9FDHCHsN/483750862-1226320618967894-3712141176161226576-n.jpg" alt="Gafas de sol polarizadas" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Estilo Urbano</h3>
-                                    <p>Perfecto para la vida en la ciudad</p>
-                                    <p class="precio-producto">1,150 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/pX3bd1tZ/483756760-1226320638967892-829219867726579543-n.jpg" alt="Armazón delgado" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Diseño Minimalista</h3>
-                                    <p>Simplicidad y elegancia</p>
-                                    <p class="precio-producto">980 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/WbxL4fP7/483881154-1226320675634555-6463586443229687539-n.jpg" alt="Gafas de diseño exclusivo" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Colección Especial</h3>
-                                    <p>Diseños únicos y sofisticados</p>
-                                    <p class="precio-producto">1,320 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/m2Kfr6Gd/484086818-1226320658967890-7147918652393669857-n.jpg" alt="Lentes avanzados" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Tecnología Avanzada</h3>
-                                    <p>Innovación en cada detalle</p>
-                                    <p class="precio-producto">1,450 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/TYBMPHXs/484391365-1226320855634537-440404630056424173-n.jpg" alt="Armazón premium" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Línea Premium</h3>
-                                    <p>Excelencia en materiales y diseño</p>
-                                    <p class="precio-producto">1,380 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/CL9TK6VX/484827014-1228233862109903-7275058775321645130-n.jpg" alt="Gafas exclusivas" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Edición Limitada</h3>
-                                    <p>Exclusividad y distinción</p>
-                                    <p class="precio-producto">1,490 C$</p>
-                                </div>
-                            </div>
+                            <asp:Repeater ID="rptDestacados" runat="server">
+                                <ItemTemplate>
+                                    <div class="item-carrusel">
+                                        <img src='<%# Eval("UrlImagen") %>' alt='<%# Eval("Titulo") %>' class="imagen-producto" />
+                                        <div class="info-producto">
+                                            <h3><%# Eval("Titulo") %></h3>
+                                            <p><%# Eval("Descripcion") %></p>
+                                            <p class="precio-producto"><%# Eval("Precio") %></p>
+                                        </div>
+                                    </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </div>
                         <button type="button" class="boton-carrusel boton-siguiente" aria-label="Productos siguientes">›</button>
                     </div>
@@ -1134,54 +258,18 @@
                     <div class="carrusel-wrapper">
                         <button type="button" class="boton-carrusel boton-anterior" aria-label="Promociones anteriores">‹</button>
                         <div class="carrusel">
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/fL7T7QMS/Imagen-de-Whats-App-2025-10-14-a-las-19-13-12-6459ea72.jpg" alt="Promoción 2x1 en Lentes" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>25% de Descuento</h3>
-                                    <p>Oferta por tiempo limitado</p>
-                                    <p class="precio-producto">¡Aprovecha!</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/d11T61KM/Imagen-de-Whats-App-2025-11-25-a-las-00-43-30-1ecb2d45.jpg" alt="Promoción de tiempo limitado" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Noviembre de Descuentos</h3>
-                                    <p>¡Black November!</p>
-                                    <p class="precio-producto">¡No te lo pierdas!</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/tTdCdG9Y/Imagen-de-Whats-App-2025-10-14-a-las-19-13-12-96917001.jpg" alt="Promoción lentes antireflejantes" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Lentes Antireflejantes</h3>
-                                    <p>Incluidos sin costo extra</p>
-                                    <p class="precio-producto">Oferta Especial</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/xCGTGV9q/Imagen-de-Whats-App-2025-10-14-a-las-19-13-13-2c6befc7.jpg" alt="Promoción armazón + lentes" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Armazón + Lentes</h3>
-                                    <p>Paquete completo con descuento</p>
-                                    <p class="precio-producto">Promoción Única</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/63V5VxBL/Imagen-de-Whats-App-2025-10-14-a-las-19-13-13-377fd2ae.jpg" alt="Promoción descuento flash" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Agenda tu cita!!</h3>
-                                    <p>Aros y Lentes de calidad</p>
-                                    <p class="precio-producto">Oferta especial</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/4dvNvRXp/Imagen-de-Whats-App-2025-10-14-a-las-19-13-13-3d051c04.jpg" alt="Promoción oferta especial" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Oferta Especial</h3>
-                                    <p>Promoción única en el año</p>
-                                    <p class="precio-producto">¡Aprovecha!</p>
-                                </div>
-                            </div>
+                            <asp:Repeater ID="rptPromociones" runat="server">
+                                <ItemTemplate>
+                                    <div class="item-carrusel">
+                                        <img src='<%# Eval("UrlImagen") %>' alt='<%# Eval("Titulo") %>' class="imagen-producto" />
+                                        <div class="info-producto">
+                                            <h3><%# Eval("Titulo") %></h3>
+                                            <p><%# Eval("Descripcion") %></p>
+                                            <p class="precio-producto"><%# Eval("Precio") %></p>
+                                        </div>
+                                    </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </div>
                         <button type="button" class="boton-carrusel boton-siguiente" aria-label="Promociones siguientes">›</button>
                     </div>
@@ -1201,54 +289,18 @@
                     <div class="carrusel-wrapper">
                         <button type="button" class="boton-carrusel boton-anterior" aria-label="Productos anteriores">‹</button>
                         <div class="carrusel">
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/8P29GJhK/482245018-1227572832176006-1185012952606077339-n.jpg" alt="Estuches protectores" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Estuches Protectores</h3>
-                                    <p>Protección para tus lentes</p>
-                                    <p class="precio-producto">100 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/jdpmTwz8/484651026-1227572695509353-2697301033878687274-n.jpg" alt="Paños de limpieza" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Paños de limpieza</h3>
-                                    <p>Protección para tus lentes</p>
-                                    <p class="precio-producto">80 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/GhWVR8kq/486634760-9319761944797255-6559080241553875123-n.jpg" alt="Líquidos limpiadores" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Cordones de goma</h3>
-                                    <p>Accesorios duraderos</p>
-                                    <p class="precio-producto">120 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/8PJ9xBr2/486687753-9319761901463926-3473734583352377489-n.jpg" alt="Repuestos y accesorios" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Lens Cleaner 50 ml</h3>
-                                    <p>Limpieza profunda y segura</p>
-                                    <p class="precio-producto">60 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/xTzp6fWR/487395781-9319761884797261-4733334968885936139-n.jpg" alt="Kits de mantenimiento" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Paños ANTI-FOG</h3>
-                                    <p>Cuidado completo para tus lentes</p>
-                                    <p class="precio-producto">60 C$</p>
-                                </div>
-                            </div>
-                            <div class="item-carrusel">
-                                <img src="https://i.postimg.cc/SNM1gSwd/487519953-9319761938130589-1020548120835486089-n.jpg" alt="Accesorios especializados" class="imagen-producto" />
-                                <div class="info-producto">
-                                    <h3>Retenedores de gomas</h3>
-                                    <p>Soluciones específicas para necesidades visuales</p>
-                                    <p class="precio-producto">160 C$</p>
-                                </div>
-                            </div>
+                            <asp:Repeater ID="rptOtros" runat="server">
+                                <ItemTemplate>
+                                    <div class="item-carrusel">
+                                        <img src='<%# Eval("UrlImagen") %>' alt='<%# Eval("Titulo") %>' class="imagen-producto" />
+                                        <div class="info-producto">
+                                            <h3><%# Eval("Titulo") %></h3>
+                                            <p><%# Eval("Descripcion") %></p>
+                                            <p class="precio-producto"><%# Eval("Precio") %></p>
+                                        </div>
+                                    </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </div>
                         <button type="button" class="boton-carrusel boton-siguiente" aria-label="Productos siguientes">›</button>
                     </div>
@@ -1393,9 +445,9 @@
         const botonModalAnterior = document.querySelector('.boton-modal-anterior');
         const botonModalSiguiente = document.querySelector('.boton-modal-siguiente');
 
-        const imagenesProductos = [];
-        const imagenesPromociones = [];
-        const imagenesOtrosProductos = [];
+        let imagenesProductos = [];
+        let imagenesPromociones = [];
+        let imagenesOtrosProductos = [];
 
         let imagenesActuales = [];
         let indiceImagenActual = 0;
@@ -1662,6 +714,10 @@
             const itemsProductos = document.querySelectorAll('#productos .item-carrusel');
             const itemsPromociones = document.querySelectorAll('#promociones .item-carrusel');
             const itemsOtrosProductos = document.querySelectorAll('#otros-productos .item-carrusel');
+
+            imagenesProductos = [];
+            imagenesPromociones = [];
+            imagenesOtrosProductos = [];
 
             itemsProductos.forEach((item, indice) => {
                 const imagen = item.querySelector('.imagen-producto');

@@ -133,11 +133,13 @@
   <ItemGroup>
     <Content Include="Formularios\Categoria.aspx" />
     <Content Include="Formularios\Cita.aspx" />
+    <Content Include="Formularios\ConfigurarCatalogo.aspx" />
     <Content Include="Formularios\Empresa.aspx" />
     <Content Include="Formularios\Entrega.aspx" />
     <Content Include="Formularios\Garantias.aspx" />
     <Content Include="Formularios\HistorialVentas.aspx" />
     <Content Include="Formularios\Kardex.aspx" />
+    <Content Include="Formularios\Perfil.aspx" />
     <Content Include="Formularios\Productos.aspx" />
     <Content Include="Formularios\Proveedor.aspx" />
     <Content Include="Formularios\CatalogoCliente.aspx" />
@@ -148,6 +150,7 @@
     <Content Include="Formularios\Expediente.aspx" />
     <Content Include="Formularios\GestionCompras.aspx" />
     <Content Include="Formularios\GestionUsuarios.aspx" />
+    <Content Include="Formularios\Reclamos.aspx" />
     <Content Include="Formularios\RecuperarContra.aspx" />
     <Content Include="Formularios\RegistrarCompra.aspx" />
     <Content Include="Formularios\ReporteCompra.aspx" />
@@ -183,6 +186,13 @@
     <Compile Include="Formularios\Cita.aspx.designer.cs">
       <DependentUpon>Cita.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Formularios\ConfigurarCatalogo.aspx.cs">
+      <DependentUpon>ConfigurarCatalogo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Formularios\ConfigurarCatalogo.aspx.designer.cs">
+      <DependentUpon>ConfigurarCatalogo.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Formularios\Empresa.aspx.cs">
       <DependentUpon>Empresa.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -217,6 +227,13 @@
     </Compile>
     <Compile Include="Formularios\Kardex.aspx.designer.cs">
       <DependentUpon>Kardex.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Formularios\Perfil.aspx.cs">
+      <DependentUpon>Perfil.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Formularios\Perfil.aspx.designer.cs">
+      <DependentUpon>Perfil.aspx</DependentUpon>
     </Compile>
     <Compile Include="Formularios\Productos.aspx.cs">
       <DependentUpon>Productos.aspx</DependentUpon>
@@ -287,6 +304,13 @@
     </Compile>
     <Compile Include="Formularios\GestionUsuarios.aspx.designer.cs">
       <DependentUpon>GestionUsuarios.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Formularios\Reclamos.aspx.cs">
+      <DependentUpon>Reclamos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Formularios\Reclamos.aspx.designer.cs">
+      <DependentUpon>Reclamos.aspx</DependentUpon>
     </Compile>
     <Compile Include="Formularios\RecuperarContra.aspx.cs">
       <DependentUpon>RecuperarContra.aspx</DependentUpon>

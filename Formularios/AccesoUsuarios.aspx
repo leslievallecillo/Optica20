@@ -17,6 +17,7 @@
             text-align: center;
             border-left: 4px solid #667eea;
             transition: transform 0.3s ease;
+           
         }
 
         .card:hover {
@@ -147,18 +148,7 @@
             color: #721c24;
         }
 
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            min-width: 35px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
+        /* Se eliminó la clase .user-avatar para quitar los cuadros azules */
 
         .last-connection {
             font-size: 0.85em;
@@ -196,27 +186,6 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-
-        /* Animación para las tarjetas */
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card {
-            animation: slideInUp 0.5s ease-out forwards;
-            opacity: 0;
-        }
-
-        .card:nth-child(1) { animation-delay: 0.1s; }
-        .card:nth-child(2) { animation-delay: 0.2s; }
-        .card:nth-child(3) { animation-delay: 0.3s; }
 
         /* Responsive para tablets */
         @media (max-width: 992px) {
@@ -319,13 +288,6 @@
                 padding: 8px 10px;
             }
             
-            .user-avatar {
-                width: 30px;
-                height: 30px;
-                min-width: 30px;
-                font-size: 0.9em;
-            }
-            
             .btn-danger {
                 padding: 4px 8px;
                 font-size: 0.75em;
@@ -420,17 +382,14 @@
                 <Columns>
                     <asp:TemplateField HeaderText="Usuario">
                         <ItemTemplate>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="user-avatar">
-                                    <asp:Literal ID="ltIniciales" runat="server" />
+                            <div>
+                                <asp:Literal ID="ltIniciales" runat="server" Visible="false" />
+                                
+                                <div style="font-weight: bold; font-size: 1.05em; color: #333;">
+                                    <%# Eval("Nombres") %> <%# Eval("Apellidos") %>
                                 </div>
-                                <div>
-                                    <div style="font-weight: bold;">
-                                        <%# Eval("Nombres") %> <%# Eval("Apellidos") %>
-                                    </div>
-                                    <div style="font-size: 0.85em; color: #666;">
-                                        <%# Eval("Correo") %>
-                                    </div>
+                                <div style="font-size: 0.85em; color: #666; margin-top: 2px;">
+                                    <%# Eval("Correo") %>
                                 </div>
                             </div>
                         </ItemTemplate>

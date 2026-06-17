@@ -68,6 +68,12 @@
         .form-full-width { grid-column: 1 / -1; }
         textarea.form-control-std { height: auto; }
 
+        .kpi-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .kpi-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
+        .kpi-box .icon { font-size: 35px; color: rgba(0,0,0,0.1); }
+        .kpi-box h3 { margin: 0; font-size: 26px; color: #333; }
+        .kpi-box p { margin: 0; color: #6c757d; font-weight: 600; font-size: 14px; text-transform: uppercase; }
+
         @media (max-width: 768px) {
             .container-fluid { padding: 10px; }
             .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
@@ -251,6 +257,31 @@
         </div>
 
         <asp:Panel ID="PanelListado" runat="server">
+            
+            <div class="kpi-dashboard">
+                <div class="kpi-box" style="border-left: 5px solid #ffc107;">
+                    <div>
+                        <p>Solicitados</p>
+                        <h3><asp:Label ID="lblDashSolicitado" runat="server" Text="0"></asp:Label></h3>
+                    </div>
+                    <i class="fa-solid fa-hourglass-start icon"></i>
+                </div>
+                <div class="kpi-box" style="border-left: 5px solid #17a2b8;">
+                    <div>
+                        <p>En Proceso</p>
+                        <h3><asp:Label ID="lblDashProceso" runat="server" Text="0"></asp:Label></h3>
+                    </div>
+                    <i class="fa-solid fa-gears icon"></i>
+                </div>
+                <div class="kpi-box" style="border-left: 5px solid #28a745;">
+                    <div>
+                        <p>Terminados</p>
+                        <h3><asp:Label ID="lblDashTerminado" runat="server" Text="0"></asp:Label></h3>
+                    </div>
+                    <i class="fa-solid fa-check-circle icon"></i>
+                </div>
+            </div>
+
             <div class="panel-card">
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-box-open"></i> Listado de Entregas</h3>
@@ -309,6 +340,7 @@
                             <Columns>
                                 <asp:BoundField DataField="ID_Entrega" HeaderText="ID" ItemStyle-Width="60px" />
                                 <asp:BoundField DataField="NumeroDocumento" HeaderText="Doc. Venta" ItemStyle-Font-Bold="true" />
+                                <asp:BoundField DataField="EstadoLente" HeaderText="Estado Lente" />
                                 <asp:BoundField DataField="Fecha" HeaderText="Fecha Entrega" DataFormatString="{0:dd/MM/yyyy}" ItemStyle-Width="110px" />
                                 <asp:BoundField DataField="Responsable" HeaderText="Responsable" />
                                 <asp:BoundField DataField="Observaciones" HeaderText="Observaciones" />
@@ -387,6 +419,18 @@
                             <small class="help-text">Máx 1 semana a futuro.</small>
                             <asp:Label ID="errFechaEntrega" runat="server" CssClass="error-text" Visible="false"></asp:Label>
                         </div>
+                        
+                        <div>
+                            <label class="lbl-std">Estado del Lente <span class="required-asterisk">*</span></label>
+                            <asp:DropDownList ID="ddlEstadoLente" runat="server" CssClass="form-control-std" AutoPostBack="true" OnSelectedIndexChanged="ddlEstadoLente_SelectedIndexChanged">
+                                <asp:ListItem Value="Solicitado">Solicitado</asp:ListItem>
+                                <asp:ListItem Value="En Proceso">En Proceso</asp:ListItem>
+                                <asp:ListItem Value="Terminado">Terminado</asp:ListItem>
+                            </asp:DropDownList>
+                            <div id="divNotificar" runat="server" visible="false" style="margin-top: 10px;">
+                                <asp:Button ID="btnEnviarNotificacion" runat="server" Text="Notificar Cliente (Email)" CssClass="btn-std btn-info" OnClick="btnEnviarNotificacion_Click" OnClientClick="return confirm('¿Enviar correo al cliente notificando que su lente está terminado?');" CausesValidation="false" />
+                            </div>
+                        </div>
 
                         <div class="form-full-width">
                             <label class="lbl-std">Observaciones <span class="required-asterisk">*</span></label>
@@ -404,7 +448,7 @@
                     </div>
 
                     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
-                        <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" />
+                        <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="btn-std btn-secondary" OnClick="btnCancelar_Click" CausesValidation="false" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn-std btn-success" OnClick="btnGuardar_Click" OnClientClick="return confirmarGuardar(this);" />
                     </div>
                 </div>

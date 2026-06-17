@@ -37,7 +37,6 @@
         .input-group-row { margin-bottom: 15px; }
         .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         
-        /* Contenedor responsive para la tabla */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
         .table-clean { width: 100%; border-collapse: collapse; white-space: nowrap; }
@@ -57,7 +56,6 @@
         
         .swal-image-zoom { max-width: 600px !important; max-height: 80vh !important; object-fit: contain; border-radius: 8px; }
 
-        /* --- MEDIA QUERIES RESPONSIVE --- */
         @media (max-width: 768px) {
             .empresa-wrapper { padding: 15px; }
             .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
@@ -250,7 +248,7 @@
                         </div>
 
                         <div style="text-align: right; margin-top: 20px;">
-                            <asp:Button ID="btnGuardar" runat="server" Text="Guardar Producto" CssClass="btn-primary-action" OnClick="btnGuardar_Click" />
+                            <asp:Button ID="btnGuardar" runat="server" Text="Guardar Producto" CssClass="btn-primary-action" OnClick="btnGuardar_Click" OnClientClick="Swal.fire({title: 'Subiendo...', text: 'Por favor, espere.', allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); }});" />
                         </div>
                     </ContentTemplate>
                     <Triggers>

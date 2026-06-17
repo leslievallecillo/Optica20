@@ -3,6 +3,8 @@ using System.Data;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net;
+using System.Net.Mail;
 using MySql.Data.MySqlClient;
 using Optica.Clases;
 
@@ -14,8 +16,8 @@ namespace Optica.Formularios
         {
             if (!IsPostBack)
             {
-                txtFiltroFechaInicio.Text = DateTime.Now.AddMonths(-2).ToString("yyyy-MM-dd");
-                txtFiltroFechaFin.Text = DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd");
+                txtFiltroFechaInicio.Text = "";
+                txtFiltroFechaFin.Text = "";
 
                 CargarCombos();
                 CargarDatos();
@@ -66,14 +68,46 @@ namespace Optica.Formularios
             catch (Exception ex) { MostrarMensaje("Error cargando combos: " + ex.Message, "error"); }
         }
 
-        private void CargarDatos()
+        private void CargarDashboardLentes()
         {
+            lblDashSolicitado.Text = "0";
+            lblDashProceso.Text = "0";
+            lblDashTerminado.Text = "0";
+
             try
             {
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = @"SELECT e.ID_Entrega, e.ID_Venta, e.Fecha, e.Responsable, e.Observaciones, e.FechaRegistro, e.Estado, v.NumeroDocumento 
+                    string sql = "SELECT EstadoLente, COUNT(*) as Total FROM Entrega WHERE Estado = 1 GROUP BY EstadoLente";
+                    MySqlCommand cmd = new MySqlCommand(sql, con);
+                    using (MySqlDataReader r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            string estado = r["EstadoLente"].ToString();
+                            string total = r["Total"].ToString();
+
+                            if (estado == "Solicitado") lblDashSolicitado.Text = total;
+                            else if (estado == "En Proceso") lblDashProceso.Text = total;
+                            else if (estado == "Terminado") lblDashTerminado.Text = total;
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void CargarDatos()
+        {
+            CargarDashboardLentes();
+
+            try
+            {
+                using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
+                {
+                    con.Open();
+                    string query = @"SELECT e.ID_Entrega, e.ID_Venta, e.Fecha, e.Responsable, e.Observaciones, e.FechaRegistro, e.Estado, e.EstadoLente, v.NumeroDocumento 
                                      FROM Entrega e 
                                      INNER JOIN Venta v ON e.ID_Venta = v.ID_Venta 
                                      WHERE 1=1 ";
@@ -92,8 +126,12 @@ namespace Optica.Formularios
                     MySqlCommand cmd = new MySqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@Busq", "%" + txtBuscar.Text.Trim() + "%");
                     cmd.Parameters.AddWithValue("@Estado", ddlFiltroEstado.SelectedValue);
-                    cmd.Parameters.AddWithValue("@FecIni", ConvertirFechaMySQL(txtFiltroFechaInicio.Text));
-                    cmd.Parameters.AddWithValue("@FecFin", ConvertirFechaMySQL(txtFiltroFechaFin.Text));
+
+                    if (!string.IsNullOrEmpty(txtFiltroFechaInicio.Text) && !string.IsNullOrEmpty(txtFiltroFechaFin.Text))
+                    {
+                        cmd.Parameters.AddWithValue("@FecIni", ConvertirFechaMySQL(txtFiltroFechaInicio.Text));
+                        cmd.Parameters.AddWithValue("@FecFin", ConvertirFechaMySQL(txtFiltroFechaFin.Text));
+                    }
 
                     MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -145,6 +183,130 @@ namespace Optica.Formularios
             if (ddlPageSize.SelectedValue == "All") gvEntregas.AllowPaging = false;
             else { gvEntregas.AllowPaging = true; gvEntregas.PageSize = int.Parse(ddlPageSize.SelectedValue); }
             CargarDatos();
+        }
+
+        protected void ddlEstadoLente_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ddlEstadoLente.SelectedValue == "Terminado")
+            {
+                divNotificar.Visible = true;
+            }
+            else
+            {
+                divNotificar.Visible = false;
+            }
+        }
+
+        protected void btnEnviarNotificacion_Click(object sender, EventArgs e)
+        {
+            if (ddlVenta.SelectedValue == "0" || string.IsNullOrEmpty(ddlVenta.SelectedValue))
+            {
+                MostrarMensaje("Debe seleccionar una venta primero.", "warning");
+                return;
+            }
+
+            string idVenta = ddlVenta.SelectedValue;
+            string correoDestino = "";
+            string nombreCliente = "";
+
+            using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
+            {
+                try
+                {
+                    con.Open();
+                    string sql = @"SELECT c.Correo, COALESCE(cn.Nombre, cj.NombreEmpresa, 'Cliente') as Nombre
+                                   FROM Venta v
+                                   INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
+                                   LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                   LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                   WHERE v.ID_Venta = @ID_Venta";
+                    using (MySqlCommand cmd = new MySqlCommand(sql, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ID_Venta", idVenta);
+                        using (MySqlDataReader r = cmd.ExecuteReader())
+                        {
+                            if (r.Read())
+                            {
+                                correoDestino = r["Correo"].ToString();
+                                nombreCliente = r["Nombre"].ToString();
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MostrarMensaje("Error al buscar cliente: " + ex.Message, "error");
+                    return;
+                }
+            }
+
+            if (string.IsNullOrEmpty(correoDestino))
+            {
+                MostrarMensaje("El cliente seleccionado no tiene un correo registrado en el sistema.", "error");
+                return;
+            }
+
+            if (EnviarNotificacionEmail(correoDestino, nombreCliente))
+            {
+                MostrarMensaje("Notificación enviada exitosamente al cliente.", "success");
+            }
+            else
+            {
+                MostrarMensaje("Error al enviar el correo. Verifique la conexión o las credenciales.", "error");
+            }
+        }
+
+        private bool EnviarNotificacionEmail(string destino, string nombre)
+        {
+            try
+            {
+                string correoEmisor = "zelayaomeany6@gmail.com";
+                string claveAplicacion = "gptmcunrlsoafdka";
+
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress(correoEmisor, "Óptica 20/20");
+                mail.To.Add(destino);
+                mail.Subject = "¡Tus lentes están listos para retirar!";
+                mail.Body = $@"
+                    <div style='background:#f4f6f9; padding:20px; font-family:sans-serif;'>
+                        <div style='background:#fff; padding:30px; border-radius:8px; border-top: 5px solid #0056b3; max-width:500px; margin:auto;'>
+                            <h2 style='color:#333; text-align:center;'>¡Tus lentes están listos!</h2>
+                            <p>Hola <strong>{nombre}</strong>,</p>
+                            <p>Te informamos que tus lentes ya se encuentran <strong>terminados</strong> y listos para ser retirados.</p>
+                            <p>Puedes pasar a recogerlos en nuestra sucursal dentro de los siguientes horarios:</p>
+                            
+                            <hr style='border:1px solid #eee; margin:20px 0;' />
+                            
+                            <h4 style='color:#0056b3; margin-bottom:5px;'>Dirección</h4>
+                            <p style='margin-top:0; color:#555;'>Av. Principal #123 Colonia Centro Managua, Nicaragua</p>
+                            
+                            <h4 style='color:#0056b3; margin-bottom:5px;'>Horarios</h4>
+                            <p style='margin-top:0; color:#555;'>
+                                Lunes a Viernes: 8:00 AM - 6:00 PM<br/>
+                                Sábados: 8:00 AM - 2:00 PM<br/>
+                                Domingos: Cerrado
+                            </p>
+                            
+                            <h4 style='color:#0056b3; margin-bottom:5px;'>Contacto</h4>
+                            <p style='margin-top:0; color:#555;'>
+                                Teléfono: (505) 2233-4455<br/>
+                                WhatsApp: (505) 8877-6655<br/>
+                                Email: info@optica2020.com
+                            </p>
+                        </div>
+                    </div>";
+                mail.IsBodyHtml = true;
+
+                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+                smtp.Credentials = new NetworkCredential(correoEmisor, claveAplicacion);
+                smtp.EnableSsl = true;
+                smtp.Send(mail);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         protected void btnGestorResponsable_Click(object sender, EventArgs e)
@@ -242,20 +404,21 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDEntrega.Value))
                     {
-                        string sql = @"INSERT INTO Entrega (ID_Venta, Fecha, Responsable, Observaciones, FechaRegistro, Estado) 
-                                       VALUES (@Venta, @Fecha, @Resp, @Obs, CURRENT_DATE, 1)";
+                        string sql = @"INSERT INTO Entrega (ID_Venta, Fecha, Responsable, Observaciones, FechaRegistro, Estado, EstadoLente) 
+                                       VALUES (@Venta, @Fecha, @Resp, @Obs, CURRENT_DATE, 1, @EstLente)";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Venta", ddlVenta.SelectedValue);
                         cmd.Parameters.AddWithValue("@Fecha", ConvertirFechaMySQL(txtFechaEntrega.Text));
                         cmd.Parameters.AddWithValue("@Resp", ddlResponsable.SelectedValue);
                         cmd.Parameters.AddWithValue("@Obs", txtObservaciones.Text.Trim());
+                        cmd.Parameters.AddWithValue("@EstLente", ddlEstadoLente.SelectedValue);
                         cmd.ExecuteNonQuery();
                         MostrarMensaje("Entrega registrada exitosamente.", "success");
                     }
                     else
                     {
                         string sql = @"UPDATE Entrega SET ID_Venta=@Venta, Fecha=@Fecha, Responsable=@Resp, 
-                                       Observaciones=@Obs, FechaRegistro=@FecReg 
+                                       Observaciones=@Obs, FechaRegistro=@FecReg, EstadoLente=@EstLente 
                                        WHERE ID_Entrega=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Venta", ddlVenta.SelectedValue);
@@ -263,6 +426,7 @@ namespace Optica.Formularios
                         cmd.Parameters.AddWithValue("@Resp", ddlResponsable.SelectedValue);
                         cmd.Parameters.AddWithValue("@Obs", txtObservaciones.Text.Trim());
                         cmd.Parameters.AddWithValue("@FecReg", ConvertirFechaMySQL(txtFechaRegistro.Text));
+                        cmd.Parameters.AddWithValue("@EstLente", ddlEstadoLente.SelectedValue);
                         cmd.Parameters.AddWithValue("@ID", hfIDEntrega.Value);
                         cmd.ExecuteNonQuery();
                         MostrarMensaje("Entrega actualizada exitosamente.", "success");
@@ -316,6 +480,16 @@ namespace Optica.Formularios
                         }
 
                         txtObservaciones.Text = r["Observaciones"].ToString();
+
+                        if (r["EstadoLente"] != DBNull.Value)
+                        {
+                            string est = r["EstadoLente"].ToString();
+                            if (ddlEstadoLente.Items.FindByValue(est) != null)
+                            {
+                                ddlEstadoLente.SelectedValue = est;
+                            }
+                        }
+                        ddlEstadoLente_SelectedIndexChanged(null, null);
 
                         if (r["FechaRegistro"] != DBNull.Value)
                             txtFechaRegistro.Text = Convert.ToDateTime(r["FechaRegistro"]).ToString("yyyy-MM-dd");
@@ -449,6 +623,8 @@ namespace Optica.Formularios
             txtObservaciones.Text = "";
             txtFechaEntrega.Text = "";
             txtFechaRegistro.Text = "";
+            ddlEstadoLente.SelectedIndex = 0;
+            divNotificar.Visible = false;
             LimpiarErrores();
         }
 

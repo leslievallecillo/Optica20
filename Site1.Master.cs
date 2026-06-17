@@ -5,7 +5,7 @@ using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using MySql.Data.MySqlClient;
-using Optica.Clases; // Asegúrate de que esta referencia exista
+using Optica.Clases;
 
 namespace Optica
 {
@@ -13,34 +13,25 @@ namespace Optica
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // 1. EVITAR BUCLE INFINITO
             bool esLogin = Request.Url.AbsoluteUri.ToLower().Contains("/formularios/login.aspx");
             if (esLogin) return;
 
-            // 2. SEGURIDAD: Validar sesión
             if (Session["UsuarioID"] == null)
             {
                 Response.Redirect("~/Formularios/Login.aspx");
                 return;
             }
 
-            // 3. CONFIGURACIÓN DE CACHÉ
             Response.Cache.SetCacheability(HttpCacheability.NoCache);
             Response.Cache.SetExpires(DateTime.UtcNow.AddHours(-1));
             Response.Cache.SetNoStore();
 
             if (!IsPostBack)
             {
-                // Cargar nombre y aplicar seguridad visual
                 CargarInfoUsuarioYPermisos();
-
-                // "LATIDO": Actualizar presencia
                 ActualizarUltimaConexion();
-
-                // VALIDACIÓN BD
                 ValidarSiSesionSigueActivaEnBD();
 
-                // LIMPIEZA AUTOMÁTICA
                 if (DateTime.Now.Second % 10 == 0)
                 {
                     LimpiarSesionesInactivas();
@@ -48,9 +39,6 @@ namespace Optica
             }
         }
 
-        // ================================================================
-        // MÉTODO PRINCIPAL: CARGAR DATOS Y APLICAR PERMISOS
-        // ================================================================
         private void CargarInfoUsuarioYPermisos()
         {
             if (Session["UsuarioID"] == null) return;
@@ -59,13 +47,14 @@ namespace Optica
             string nombre = "Usuario";
             string apellido = "";
             string rol = "";
+            string avatar = "";
 
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 try
                 {
                     con.Open();
-                    string sql = "SELECT Nombres, Apellidos, Rol FROM Usuario WHERE ID_Usuario = @uid";
+                    string sql = "SELECT Nombres, Apellidos, Rol, Avatar FROM Usuario WHERE ID_Usuario = @uid";
                     using (MySqlCommand cmd = new MySqlCommand(sql, con))
                     {
                         cmd.Parameters.AddWithValue("@uid", idUsuario);
@@ -76,6 +65,7 @@ namespace Optica
                                 nombre = reader["Nombres"].ToString();
                                 apellido = reader["Apellidos"].ToString();
                                 rol = reader["Rol"].ToString();
+                                avatar = reader["Avatar"] != DBNull.Value ? reader["Avatar"].ToString() : "";
                             }
                         }
                     }
@@ -86,13 +76,20 @@ namespace Optica
                 }
             }
 
-            // 1. Mostrar datos en el menú lateral
             lblUsuarioNombre.InnerText = nombre + " " + apellido;
             lblUsuarioRol.InnerText = rol;
 
-            // 2. APLICAR LÓGICA DE ROLES (OCULTAR/MOSTRAR MENÚS)
+            string defaultAvatar = "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortFlat&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light";
 
-            // Primero ocultamos todo por seguridad
+            avatar = avatar != null ? avatar.Trim() : "";
+
+            if (avatar.Contains("avataaars.io") && avatar.Length < 130)
+            {
+                avatar = defaultAvatar;
+            }
+
+            imgUserAvatar.Src = string.IsNullOrEmpty(avatar) || !avatar.StartsWith("http") ? defaultAvatar : avatar;
+
             liGabinete.Visible = false;
             liVentas.Visible = false;
             liCompras.Visible = false;
@@ -102,11 +99,9 @@ namespace Optica
             liConfiguracion.Visible = false;
             liAccesos.Visible = false;
 
-            // Activamos según el rol exacto de la base de datos
             switch (rol)
             {
                 case "Administrador":
-                    // El Admin ve TODO
                     liGabinete.Visible = true;
                     liVentas.Visible = true;
                     liCompras.Visible = true;
@@ -118,37 +113,26 @@ namespace Optica
                     break;
 
                 case "Administrador Financiero":
-                    // Ve compras, reportes, productos y proveedores
                     liCompras.Visible = true;
                     liProductos.Visible = true;
-                    liContactos.Visible = true; // Para proveedores
+                    liContactos.Visible = true;
                     liReportes.Visible = true;
-                    liVentas.Visible = true; // Solo para ver historial, no anular (controlar dentro de la pág)
+                    liVentas.Visible = true;
                     break;
 
                 case "Vendedor":
-                    // Ve ventas, clientes y productos (inventario)
                     liVentas.Visible = true;
                     liProductos.Visible = true;
-                    liContactos.Visible = true; // Para clientes
+                    liContactos.Visible = true;
                     break;
 
                 case "Optometrista":
-                    // Ve gabinete y productos (lentes)
                     liGabinete.Visible = true;
                     liProductos.Visible = true;
-                    liContactos.Visible = true; // Para ver pacientes/clientes
-                    break;
-
-                default:
-                    // Rol desconocido: Solo verá "Inicio" (que no tiene ID ni runat=server)
+                    liContactos.Visible = true;
                     break;
             }
         }
-
-        // ================================================================
-        // MÉTODOS DE SESIÓN (Mantener tal cual los tenías)
-        // ================================================================
 
         protected void btnCerrarSesion_Click(object sender, EventArgs e)
         {

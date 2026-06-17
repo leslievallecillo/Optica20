@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Web.UI;
-using System.Web.Script.Serialization; // Para convertir arrays a JSON para el gráfico
+using System.Web.Script.Serialization;
 using MySql.Data.MySqlClient;
 using Optica.Clases;
 
@@ -9,7 +9,6 @@ namespace Optica.Formularios
 {
     public partial class Default : System.Web.UI.Page
     {
-        // Variables para enviar datos al JavaScript
         public string JsonVentas = "[]";
         public string JsonCompras = "[]";
 
@@ -17,10 +16,44 @@ namespace Optica.Formularios
         {
             if (!IsPostBack)
             {
+                EstablecerSaludo();
                 CargarKPIs();
                 CargarGrafico();
                 CargarTablas();
             }
+        }
+
+        private void EstablecerSaludo()
+        {
+            int hora = DateTime.Now.Hour;
+            string saludo = "Buenos días";
+
+            if (hora >= 12 && hora < 19)
+                saludo = "Buenas tardes";
+            else if (hora >= 19 || hora < 5)
+                saludo = "Buenas noches";
+
+            string nombre = "Usuario";
+            if (Session["UsuarioID"] != null)
+            {
+                using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
+                {
+                    try
+                    {
+                        con.Open();
+                        MySqlCommand cmd = new MySqlCommand("SELECT Nombres FROM Usuario WHERE ID_Usuario = @uid", con);
+                        cmd.Parameters.AddWithValue("@uid", Session["UsuarioID"]);
+                        object res = cmd.ExecuteScalar();
+                        if (res != null)
+                        {
+                            nombre = res.ToString().Split(' ')[0];
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            lblSaludo.Text = $"{saludo}, {nombre}";
         }
 
         private void CargarKPIs()
@@ -31,8 +64,6 @@ namespace Optica.Formularios
                 {
                     con.Open();
 
-                    // 1. Inventario Neto (Stock * Último Precio Venta registrado en compras)
-                    // Nota: Si no hay precio en compra, asume 0.
                     string sqlInv = @"SELECT 
                                         SUM(p.Stock) as StockTotal,
                                         SUM(p.Stock * IFNULL((SELECT PrecioVenta FROM DetalleCompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0)) as ValorNeto
@@ -48,7 +79,6 @@ namespace Optica.Formularios
                         }
                     }
 
-                    // 2. Ventas (Año Actual)
                     string sqlVentas = @"SELECT 
                                             COUNT(*) as Cantidad,
                                             SUM(
@@ -67,7 +97,6 @@ namespace Optica.Formularios
                         }
                     }
 
-                    // 3. Compras (Año Actual)
                     string sqlCompras = @"SELECT 
                                             COUNT(*) as Cantidad,
                                             SUM((SELECT IFNULL(SUM(PrecioTotal),0) FROM DetalleCompra WHERE ID_Compra=c.ID_Compra)) as Total
@@ -83,7 +112,6 @@ namespace Optica.Formularios
                         }
                     }
 
-                    // 4. Clientes Totales
                     string sqlCli = "SELECT COUNT(*) FROM Clientes WHERE Estado = 1";
                     MySqlCommand cmdCli = new MySqlCommand(sqlCli, con);
                     lblClientesTotal.Text = cmdCli.ExecuteScalar().ToString();
@@ -102,7 +130,6 @@ namespace Optica.Formularios
                     decimal[] ventasMensuales = new decimal[12];
                     decimal[] comprasMensuales = new decimal[12];
 
-                    // Ventas por mes
                     string qV = @"SELECT MONTH(Fecha) as Mes, 
                                   SUM(
                                     (SELECT IFNULL(SUM(Subtotal),0) FROM DetalleVentaProducto WHERE ID_Venta=v.ID_Venta) + 
@@ -120,7 +147,6 @@ namespace Optica.Formularios
                         }
                     }
 
-                    // Compras por mes
                     string qC = @"SELECT MONTH(Fecha) as Mes, 
                                   SUM((SELECT IFNULL(SUM(PrecioTotal),0) FROM DetalleCompra WHERE ID_Compra=c.ID_Compra)) as Total
                                   FROM Compra c WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1 GROUP BY MONTH(Fecha)";
@@ -151,7 +177,6 @@ namespace Optica.Formularios
                 {
                     con.Open();
 
-                    // Próximas 5 Citas (En lugar de Ventas)
                     string sqlC = @"SELECT cit.Fecha, cit.Hora, cit.Motivo,
                                     CASE 
                                         WHEN c.TipoCliente = 'Natural' THEN CONCAT(cn.Nombre, ' ', cn.Apellido)
@@ -170,7 +195,6 @@ namespace Optica.Formularios
                     gvCitasProximas.DataSource = dtC;
                     gvCitasProximas.DataBind();
 
-                    // Productos con Menos Stock (En lugar de Nuevos Productos)
                     string sqlP = @"SELECT p.Descripcion, p.Marca, p.Modelo, p.RutaImagen, p.Stock
                                     FROM Producto p
                                     WHERE p.Estado = 1

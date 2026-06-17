@@ -13,9 +13,8 @@ namespace Optica.Compras
         {
             if (!IsPostBack)
             {
-                // Filtro inicial
-                txtF1.Text = DateTime.Now.AddDays(-60).ToString("yyyy-MM-dd");
-                txtF2.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                txtF1.Text = "";
+                txtF2.Text = "";
                 CargarDatos();
             }
         }
@@ -30,18 +29,23 @@ namespace Optica.Compras
                     string sql = @"SELECT c.ID_Compra, c.NumeroCompra, p.RazonSocial as Proveedor, c.Fecha, c.Estado, 
                                    (SELECT IFNULL(SUM(PrecioTotal),0) FROM DetalleCompra WHERE ID_Compra=c.ID_Compra) as Total 
                                    FROM Compra c INNER JOIN Proveedor p ON c.ID_Proveedor=p.ID_Proveedor 
-                                   WHERE (c.Fecha BETWEEN @F1 AND @F2)";
+                                   WHERE 1=1";
 
                     if (txtBuscar.Text != "") sql += " AND c.NumeroCompra LIKE @B";
                     if (ddlEstado.SelectedValue != "-1") sql += " AND c.Estado=@E";
+                    if (txtF1.Text != "" && txtF2.Text != "") sql += " AND (c.Fecha BETWEEN @F1 AND @F2)";
 
                     sql += " ORDER BY c.ID_Compra DESC";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@F1", txtF1.Text + " 00:00:00");
-                    cmd.Parameters.AddWithValue("@F2", txtF2.Text + " 23:59:59");
                     cmd.Parameters.AddWithValue("@B", "%" + txtBuscar.Text + "%");
                     cmd.Parameters.AddWithValue("@E", ddlEstado.SelectedValue);
+
+                    if (txtF1.Text != "" && txtF2.Text != "")
+                    {
+                        cmd.Parameters.AddWithValue("@F1", txtF1.Text + " 00:00:00");
+                        cmd.Parameters.AddWithValue("@F2", txtF2.Text + " 23:59:59");
+                    }
 
                     DataTable dt = new DataTable(); new MySqlDataAdapter(cmd).Fill(dt);
                     gvCompras.DataSource = dt; gvCompras.DataBind();
@@ -56,8 +60,8 @@ namespace Optica.Compras
         {
             txtBuscar.Text = "";
             ddlEstado.SelectedValue = "-1";
-            txtF1.Text = DateTime.Now.AddDays(-60).ToString("yyyy-MM-dd");
-            txtF2.Text = DateTime.Now.ToString("yyyy-MM-dd");
+            txtF1.Text = "";
+            txtF2.Text = "";
             CargarDatos();
         }
 
@@ -78,11 +82,11 @@ namespace Optica.Compras
             }
             else if (e.CommandName == "Anular")
             {
-                CambiarEstadoCompra(idCompra, 0); // Anular (Resta)
+                CambiarEstadoCompra(idCompra, 0);
             }
             else if (e.CommandName == "Reactivar")
             {
-                CambiarEstadoCompra(idCompra, 1); // Reactivar (Suma y actualiza precio)
+                CambiarEstadoCompra(idCompra, 1);
             }
         }
 
@@ -95,7 +99,6 @@ namespace Optica.Compras
 
                 try
                 {
-                    // CORRECCIÓN AQUÍ: Se añade PrecioVenta a la consulta
                     string sqlItems = "SELECT ID_Producto, Cantidad, PrecioVenta FROM DetalleCompra WHERE ID_Compra = @ID";
                     MySqlCommand cmdItems = new MySqlCommand(sqlItems, con, tr);
                     cmdItems.Parameters.AddWithValue("@ID", idCompra);
@@ -110,19 +113,16 @@ namespace Optica.Compras
                             int idProd = Convert.ToInt32(item["ID_Producto"]);
                             int cant = Convert.ToInt32(item["Cantidad"]);
 
-                            // Validamos que el precio no venga nulo de la BD
                             decimal precioVentaHist = item["PrecioVenta"] != DBNull.Value ? Convert.ToDecimal(item["PrecioVenta"]) : 0;
 
                             string sqlStock = "";
 
                             if (nuevoEstado == 0)
                             {
-                                // Si anulamos, solo restamos el stock
                                 sqlStock = "UPDATE Producto SET Stock = Stock - @Cant WHERE ID_Producto = @IDP";
                             }
                             else if (nuevoEstado == 1)
                             {
-                                // Si reactivamos, sumamos el stock y actualizamos el precio
                                 sqlStock = "UPDATE Producto SET Stock = Stock + @Cant, Precio = @PrecioV WHERE ID_Producto = @IDP";
                             }
 
@@ -132,7 +132,6 @@ namespace Optica.Compras
                                 cmdUpd.Parameters.AddWithValue("@Cant", cant);
                                 cmdUpd.Parameters.AddWithValue("@IDP", idProd);
 
-                                // Si el estado es 1 (Reactivar), pasamos el parámetro del precio
                                 if (nuevoEstado == 1)
                                 {
                                     cmdUpd.Parameters.AddWithValue("@PrecioV", precioVentaHist);

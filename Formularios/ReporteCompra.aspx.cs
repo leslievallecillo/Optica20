@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Data;
-using System.IO; // Para MemoryStream
+using System.IO;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using MySql.Data.MySqlClient;
 using Optica.Clases;
-using iTextSharp.text; // iTextSharp
-using iTextSharp.text.pdf; // iTextSharp PDF
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace Optica.Reportes
 {
@@ -17,8 +17,8 @@ namespace Optica.Reportes
         {
             if (!IsPostBack)
             {
-                txtF1.Text = DateTime.Now.ToString("yyyy-MM-01");
-                txtF2.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                txtF1.Text = "";
+                txtF2.Text = "";
                 CargarReporte();
             }
         }
@@ -30,7 +30,6 @@ namespace Optica.Reportes
                 try
                 {
                     con.Open();
-                    // Tu consulta original
                     string sql = @"
                         SELECT 
                             c.NumeroCompra, 
@@ -45,13 +44,22 @@ namespace Optica.Reportes
                         FROM Compra c
                         INNER JOIN Proveedor p ON c.ID_Proveedor = p.ID_Proveedor
                         INNER JOIN Usuario u ON c.ID_Usuario = u.ID_Usuario
-                        WHERE c.Estado = 1 
-                          AND c.Fecha BETWEEN @F1 AND @F2
-                        ORDER BY c.Fecha DESC";
+                        WHERE c.Estado = 1 ";
+
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                    {
+                        sql += " AND c.Fecha BETWEEN @F1 AND @F2 ";
+                    }
+
+                    sql += " ORDER BY c.Fecha DESC";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@F1", txtF1.Text + " 00:00:00");
-                    cmd.Parameters.AddWithValue("@F2", txtF2.Text + " 23:59:59");
+
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                    {
+                        cmd.Parameters.AddWithValue("@F1", txtF1.Text + " 00:00:00");
+                        cmd.Parameters.AddWithValue("@F2", txtF2.Text + " 23:59:59");
+                    }
 
                     DataTable dt = new DataTable();
                     new MySqlDataAdapter(cmd).Fill(dt);
@@ -70,7 +78,6 @@ namespace Optica.Reportes
                 }
                 catch (Exception ex)
                 {
-                    // Usamos SweetAlert para el error
                     ScriptManager.RegisterStartupScript(this, GetType(), "err", $"Swal.fire('Error', '{ex.Message}', 'error');", true);
                 }
             }
@@ -81,7 +88,6 @@ namespace Optica.Reportes
             CargarReporte();
         }
 
-        // --- NUEVA FUNCIONALIDAD: GENERAR PDF ---
         protected void btnPdf_Click(object sender, EventArgs e)
         {
             try
@@ -92,7 +98,6 @@ namespace Optica.Reportes
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    // Misma consulta para asegurar consistencia
                     string sql = @"
                         SELECT 
                             c.NumeroCompra, 
@@ -107,20 +112,32 @@ namespace Optica.Reportes
                         FROM Compra c
                         INNER JOIN Proveedor p ON c.ID_Proveedor = p.ID_Proveedor
                         INNER JOIN Usuario u ON c.ID_Usuario = u.ID_Usuario
-                        WHERE c.Estado = 1 
-                          AND c.Fecha BETWEEN @F1 AND @F2
-                        ORDER BY c.Fecha DESC";
+                        WHERE c.Estado = 1 ";
+
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                    {
+                        sql += " AND c.Fecha BETWEEN @F1 AND @F2 ";
+                    }
+
+                    sql += " ORDER BY c.Fecha DESC";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@F1", txtF1.Text + " 00:00:00");
-                    cmd.Parameters.AddWithValue("@F2", txtF2.Text + " 23:59:59");
+
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                    {
+                        cmd.Parameters.AddWithValue("@F1", txtF1.Text + " 00:00:00");
+                        cmd.Parameters.AddWithValue("@F2", txtF2.Text + " 23:59:59");
+                    }
 
                     DataTable dt = new DataTable();
                     new MySqlDataAdapter(cmd).Fill(dt);
 
-                    // Llamamos a la clase helper para Compras
                     ReportePdfCompra helper = new ReportePdfCompra(rutaLogo);
-                    byte[] pdfBytes = helper.GenerarReporte(dt, txtF1.Text, txtF2.Text);
+
+                    string fInicio = string.IsNullOrEmpty(txtF1.Text) ? "Inicio" : txtF1.Text;
+                    string fFin = string.IsNullOrEmpty(txtF2.Text) ? "Actualidad" : txtF2.Text;
+
+                    byte[] pdfBytes = helper.GenerarReporte(dt, fInicio, fFin);
 
                     Response.Clear();
                     Response.ContentType = "application/pdf";
@@ -136,7 +153,6 @@ namespace Optica.Reportes
         }
     }
 
-    // --- CLASE HELPER PARA PDF DE COMPRAS ---
     public class ReportePdfCompra
     {
         private string _rutaLogo;
@@ -159,7 +175,6 @@ namespace Optica.Reportes
                 PdfWriter writer = PdfWriter.GetInstance(doc, ms);
                 doc.Open();
 
-                // 1. Encabezado
                 PdfPTable header = new PdfPTable(2);
                 header.WidthPercentage = 100;
                 header.SetWidths(new float[] { 1f, 4f });
@@ -201,10 +216,9 @@ namespace Optica.Reportes
                 doc.Add(header);
                 doc.Add(new Paragraph("\n"));
 
-                // 2. Tabla de Datos
-                PdfPTable table = new PdfPTable(5); // 5 Columnas
+                PdfPTable table = new PdfPTable(5);
                 table.WidthPercentage = 100;
-                table.SetWidths(new float[] { 1.5f, 1.5f, 3f, 2f, 1.5f }); // Anchos relativos
+                table.SetWidths(new float[] { 1.5f, 1.5f, 3f, 2f, 1.5f });
 
                 string[] heads = { "DOC N°", "FECHA", "PROVEEDOR", "USUARIO", "TOTAL" };
                 foreach (string h in heads)
@@ -236,7 +250,6 @@ namespace Optica.Reportes
                     alternate = !alternate;
                 }
 
-                // Fila de Total Final
                 PdfPCell cTotalLabel = new PdfPCell(new Phrase("TOTAL PERIODO:", FontFactory.GetFont(FontFactory.HELVETICA, 9, Font.BOLD, _black)));
                 cTotalLabel.Colspan = 4;
                 cTotalLabel.HorizontalAlignment = Element.ALIGN_RIGHT;
@@ -246,7 +259,7 @@ namespace Optica.Reportes
                 PdfPCell cTotalValue = new PdfPCell(new Phrase(granTotal.ToString("C"), FontFactory.GetFont(FontFactory.HELVETICA, 9, Font.BOLD, _black)));
                 cTotalValue.HorizontalAlignment = Element.ALIGN_RIGHT;
                 cTotalValue.Padding = 5;
-                cTotalValue.BackgroundColor = _gold; // Resaltado dorado
+                cTotalValue.BackgroundColor = _gold;
                 table.AddCell(cTotalValue);
 
                 doc.Add(table);

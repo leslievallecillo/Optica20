@@ -11,97 +11,70 @@ namespace Optica.Formularios
 {
 
 
-    public partial class Default
+    public partial class Perfil
     {
 
         /// <summary>
-        /// Control lblSaludo.
+        /// Control imgAvatarActual.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSaludo;
+        protected global::System.Web.UI.WebControls.Image imgAvatarActual;
 
         /// <summary>
-        /// Control lblInvNeto.
+        /// Control lblRol.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblInvNeto;
+        protected global::System.Web.UI.WebControls.Label lblRol;
 
         /// <summary>
-        /// Control lblStock.
+        /// Control txtNombres.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblStock;
+        protected global::System.Web.UI.WebControls.TextBox txtNombres;
 
         /// <summary>
-        /// Control lblVentasTotal.
+        /// Control txtApellidos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblVentasTotal;
+        protected global::System.Web.UI.WebControls.TextBox txtApellidos;
 
         /// <summary>
-        /// Control lblVentasCount.
+        /// Control txtCorreo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblVentasCount;
+        protected global::System.Web.UI.WebControls.TextBox txtCorreo;
 
         /// <summary>
-        /// Control lblComprasTotal.
+        /// Control hfAvatarSeleccionado.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblComprasTotal;
+        protected global::System.Web.UI.WebControls.HiddenField hfAvatarSeleccionado;
 
         /// <summary>
-        /// Control lblComprasCount.
+        /// Control btnGuardar.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblComprasCount;
-
-        /// <summary>
-        /// Control lblClientesTotal.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblClientesTotal;
-
-        /// <summary>
-        /// Control gvCitasProximas.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvCitasProximas;
-
-        /// <summary>
-        /// Control rptProductos.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptProductos;
+        protected global::System.Web.UI.WebControls.Button btnGuardar;
     }
 }

@@ -1,4 +1,5 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="Optica.Site1" %>
+﻿
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="Optica.Site1" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -232,32 +233,69 @@
         }
 
         .user-info {
-            padding: 20px; text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            background: rgba(0,0,0,0.2);
-            margin-top: auto;
+            padding: 15px 10px !important; 
+            text-align: center !important;
+            border-top: 1px solid rgba(255,255,255,0.05) !important;
+            background: rgba(0,0,0,0.2) !important;
+            margin-top: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
-        .user-avatar i { 
-            font-size: 35px;
-            color: var(--accent-color); 
-            margin-bottom: 8px; 
-            transition: transform 0.3s;
+        
+        .user-avatar {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin-bottom: 8px !important;
+            width: 100% !important;
         }
-        .user-info:hover .user-avatar i { transform: scale(1.2) rotate(10deg); }
-        .user-name { color: #fff; font-weight: 600; font-size: 14px; margin: 0; }
-        .user-role { color: var(--sidebar-text); font-size: 11px; margin-bottom: 12px; }
+
+        .user-avatar a {
+            display: inline-flex !important;
+            justify-content: center !important;
+            margin: 0 auto !important;
+        }
+        
+        .avatar-img {
+            width: 50px !important;
+            height: 50px !important;
+            min-width: 50px !important;
+            min-height: 50px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 2px solid var(--accent-color) !important;
+            transition: transform 0.3s !important;
+            background-color: #fff !important;
+            display: block !important;
+        }
+        
+        .user-info:hover .avatar-img { transform: scale(1.1) rotate(5deg) !important; }
+        .sidebar.collapsed .avatar-img { width: 35px !important; height: 35px !important; min-width: 35px !important; min-height: 35px !important; }
+        
+        .user-details {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+        }
+
+        .user-name { color: #fff !important; font-weight: 600 !important; font-size: 14px !important; margin: 0 !important; text-align: center !important; }
+        .user-role { color: var(--sidebar-text) !important; font-size: 11px !important; margin-bottom: 5px !important; text-align: center !important; }
         
         .logout-btn {
-            background: linear-gradient(45deg, #d32f2f, #b71c1c);
-            color: white; border: none; padding: 10px 15px;
-            border-radius: 20px; font-size: 12px; cursor: pointer;
-            width: 100%; transition: 0.3s;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, #d32f2f, #b71c1c) !important;
+            color: white !important; border: none !important; padding: 10px 15px !important;
+            border-radius: 20px !important; font-size: 12px !important; cursor: pointer !important;
+            width: 100% !important; transition: 0.3s !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.5px !important;
         }
 
         .sidebar.collapsed .user-details, 
-        .sidebar.collapsed .logout-btn { display: none; }
+        .sidebar.collapsed .logout-btn { display: none !important; }
         
         .main-content {
             flex: 1; margin-left: var(--sidebar-width);
@@ -288,15 +326,8 @@
             background: rgba(0,0,0,0.05);
         }
 
-        #pageTitle { font-size: 1.3rem; font-weight: 600; color: #1e1e2d; margin: 0; }
+        #pageTitle { font-size: 1.4rem; font-weight: 600; color: #1e1e2d; margin: 0; }
         .content-area { padding: 30px; flex: 1; }
-
-        <% if (Request.Url.AbsoluteUri.ToLower().Contains("login.aspx")) { %>
-            .sidebar, .content-header { display: none !important; }
-            .main-content { margin-left: 0 !important; }
-            .content-area { padding: 0 !important; }
-            body { background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%) !important; }
-        <% } %>
 
         @media (max-width: 768px) {
             .sidebar { 
@@ -315,62 +346,18 @@
             .content-header { padding: 0 15px; } 
             .content-area { padding: 15px; } 
         }
-        .user-info {
-    padding: 15px 10px;
-    text-align: center;
-}
-
-.user-avatar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.user-avatar i {
-    font-size: 30px; /* tamaño controlado */
-    color: var(--accent-color);
-}
-
-/* 🔥 CLAVE: cuando está colapsado */
-.sidebar.collapsed .user-avatar i {
-    font-size: 26px; /* más pequeño para que no se deforme */
-}
-
-/* Evitar que crezca raro */
-.sidebar.collapsed .user-info {
-    padding: 10px 5px;
-}
-
-/* Asegurar que todo esté centrado */
-.sidebar.collapsed .user-avatar {
-    margin: 0 auto;
-}
-
-/* 🔥 FIX DEFINITIVO PARA EL SIDEBAR */
-.sidebar .user-avatar {
-    width: auto !important;
-    height: auto !important;
-    min-width: auto !important;
-    background: none !important;
-    display: block !important;
-}
-
-.sidebar .user-avatar i {
-    font-size: 35px !important;
-    color: var(--accent-color) !important;
-}
-
-/* Cuando está colapsado */
-.sidebar.collapsed .user-avatar {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-}
-
-.sidebar.collapsed .user-avatar i {
-    font-size: 28px !important;
-}
     </style>
+
+    <asp:PlaceHolder ID="phLoginStyles" runat="server">
+        <style>
+            <% if (Request.Url.AbsoluteUri.ToLower().Contains("login.aspx")) { %>
+                .sidebar, .content-header { display: none !important; }
+                .main-content { margin-left: 0 !important; }
+                .content-area { padding: 0 !important; }
+                body { background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%) !important; }
+            <% } %>
+        </style>
+    </asp:PlaceHolder>
 
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
@@ -417,6 +404,7 @@
                                 <li><a href="/Formularios/Venta.aspx"><i class="fas fa-cart-plus"></i> Nueva Venta</a></li>
                                 <li><a href="/Formularios/Entrega.aspx"><i class="fas fa-truck-fast"></i> Entregas</a></li>
                                 <li><a href="/Formularios/Garantias.aspx"><i class="fas fa-shield-halved"></i> Garantías</a></li>
+                                <li><a href="/Formularios/Reclamos.aspx"><i class="fas fa-triangle-exclamation"></i> Reclamos</a></li>
                             </ul>
                         </li>
 
@@ -482,6 +470,7 @@
                                 <li><a href="/Formularios/Empresa.aspx"><i class="fas fa-building"></i> Datos Empresa</a></li>
                                 <li><a href="/Formularios/TipoDocumento.aspx"><i class="fas fa-file-contract"></i> Tipos Documento</a></li>
                                 <li><a href="/Formularios/TipoPago.aspx"><i class="fas fa-credit-card"></i> Tipos de Pago</a></li>
+                                <li><a href="/Formularios/ConfigurarCatalogo.aspx"><i class="fas fa-images"></i> Catálogo Web</a></li>
                             </ul>
                         </li>
 
@@ -500,10 +489,17 @@
                 </nav>
 
                 <div class="user-info">
-                    <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
+                    <div class="user-avatar">
+                        <a href="/Formularios/Perfil.aspx" title="Editar Perfil">
+                            <img id="imgUserAvatar" runat="server" class="avatar-img" alt="Avatar" src="" />
+                        </a>
+                    </div>
                     <div class="user-details">
                         <p class="user-name" id="lblUsuarioNombre" runat="server">Usuario</p>
                         <p class="user-role" id="lblUsuarioRol" runat="server">En Línea</p>
+                        <a href="/Formularios/Perfil.aspx" style="color: #17a2b8; font-size: 12px; text-decoration: none; display: inline-block; margin-bottom: 12px;">
+                            <i class="fas fa-user-edit"></i> Editar Perfil
+                        </a>
                     </div>
                     <asp:Button ID="btnCerrarSesion" runat="server" CssClass="logout-btn" Text="Salir" OnClick="btnCerrarSesion_Click" />
                 </div>
@@ -584,3 +580,5 @@
     </form>
 </body>
 </html>
+
+

@@ -270,7 +270,7 @@
             if (guardando) return true;
             Swal.fire({
                 title: '¿Desea guardar los cambios?',
-                text: "Se actualizará la información de la empresa.",
+                text: "Se subirá la imagen y se actualizará la información de la empresa.",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3b82f6',
@@ -280,6 +280,17 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     guardando = true;
+
+                    Swal.fire({
+                        title: 'Subiendo imagen...',
+                        text: 'Por favor, espere un momento.',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
                     sender.click();
                 }
             });

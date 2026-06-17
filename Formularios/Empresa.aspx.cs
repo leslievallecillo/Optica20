@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using MySql.Data.MySqlClient;
 using Optica.Clases;
@@ -68,12 +71,11 @@ namespace Optica.Formularios
                             lblNombreCard.Text = "Optica 20/20";
                             lblCorreoCard.Text = dr["Correo"].ToString();
 
-                            string rutaLogo = "~/Uploads/Logos/empresa_" + EMPRESA_DEFAULT_ID + ".png";
-                            if (File.Exists(Server.MapPath(rutaLogo)))
+                            string logoUrl = dr["LogoRuta"] != DBNull.Value ? dr["LogoRuta"].ToString() : "";
+                            if (!string.IsNullOrEmpty(logoUrl))
                             {
-                                string rutaConCache = rutaLogo + "?t=" + DateTime.Now.Ticks;
-                                imgLogoCard.ImageUrl = rutaConCache;
-                                imgLogoPreview.ImageUrl = rutaConCache;
+                                imgLogoCard.ImageUrl = logoUrl;
+                                imgLogoPreview.ImageUrl = logoUrl;
                             }
                         }
                         else
@@ -121,7 +123,6 @@ namespace Optica.Formularios
                 return false;
             }
 
-            // Verificar patrón: 13 números + 1 letra
             if (!Regex.IsMatch(ruc, @"^\d{13}[A-Z]$"))
             {
                 MostrarError(errRUC, "Formato incorrecto (13 números seguidos de una letra).");
@@ -186,14 +187,61 @@ namespace Optica.Formularios
             ScriptManager.RegisterStartupScript(this, GetType(), "Toast", $"Swal.fire('Empresa', '{texto}', '{icono}');", true);
         }
 
+        private string SubirImagenAHosting(byte[] archivoBytes)
+        {
+            try
+            {
+                using (WebClient wc = new WebClient())
+                {
+                    wc.Headers.Add("Authorization", "Client-ID 546c25a59c58ad7");
+                    System.Collections.Specialized.NameValueCollection req = new System.Collections.Specialized.NameValueCollection();
+                    req.Add("image", Convert.ToBase64String(archivoBytes));
+                    byte[] response = wc.UploadValues("https://api.imgur.com/3/image", "POST", req);
+                    string json = Encoding.UTF8.GetString(response);
+
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    dynamic data = js.Deserialize<dynamic>(json);
+                    return data["data"]["link"];
+                }
+            }
+            catch { return null; }
+        }
+
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             if (!ValidarFormulario()) return;
 
             string nombreFijo = "Optica 20/20";
             string telefonoFinal = "505" + txtTelefono.Text.Trim();
+            string nuevaUrlLogo = null;
 
-            GuardarLogo();
+            if (fuLogo.HasFile)
+            {
+                string ext = Path.GetExtension(fuLogo.FileName).ToLower();
+                if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
+                {
+                    if (fuLogo.PostedFile.ContentLength <= 5 * 1024 * 1024)
+                    {
+                        nuevaUrlLogo = SubirImagenAHosting(fuLogo.FileBytes);
+
+                        if (string.IsNullOrEmpty(nuevaUrlLogo))
+                        {
+                            MostrarMensaje("Ocurrió un error al subir la imagen al servidor remoto.", "error");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        MostrarMensaje("La imagen no debe superar los 5MB.", "warning");
+                        return;
+                    }
+                }
+                else
+                {
+                    MostrarMensaje("Formato de imagen inválido. Solo se admiten .png, .jpg y .jpeg", "warning");
+                    return;
+                }
+            }
 
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
@@ -213,13 +261,17 @@ namespace Optica.Formularios
                                   Nombre = @Nombre, 
                                   RUC = @RUC, 
                                   Telefono = @Telefono, 
-                                  Correo = @Correo 
-                                  WHERE ID_Empresa = @ID";
+                                  Correo = @Correo";
+                        if (!string.IsNullOrEmpty(nuevaUrlLogo))
+                        {
+                            query += ", LogoRuta = @LogoRuta";
+                        }
+                        query += " WHERE ID_Empresa = @ID";
                     }
                     else
                     {
-                        query = @"INSERT INTO Empresa (ID_Empresa, Nombre, RUC, Telefono, Correo, Estado, FechaRegistro) 
-                                  VALUES (@ID, @Nombre, @RUC, @Telefono, @Correo, 1, CURRENT_DATE)";
+                        query = @"INSERT INTO Empresa (ID_Empresa, Nombre, RUC, Telefono, Correo, Estado, FechaRegistro, LogoRuta) 
+                                  VALUES (@ID, @Nombre, @RUC, @Telefono, @Correo, 1, CURRENT_DATE, @LogoRuta)";
                     }
 
                     MySqlCommand cmd = new MySqlCommand(query, con);
@@ -229,36 +281,20 @@ namespace Optica.Formularios
                     cmd.Parameters.AddWithValue("@Telefono", telefonoFinal);
                     cmd.Parameters.AddWithValue("@Correo", txtCorreo.Text.Trim());
 
+                    if (!string.IsNullOrEmpty(nuevaUrlLogo) || existe == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@LogoRuta", nuevaUrlLogo ?? "https://i.postimg.cc/3R3WcxSb/565834681-122104982919051438-2227136986678388589-n.jpg");
+                    }
+
                     cmd.ExecuteNonQuery();
 
                     CargarDatosEmpresa();
-                    MostrarMensaje("Información actualizada correctamente.", "success");
+                    MostrarMensaje("Información y logo actualizados correctamente en la nube.", "success");
                 }
                 catch (Exception ex)
                 {
                     MostrarMensaje("Error al guardar: " + ex.Message, "error");
                 }
-            }
-        }
-
-        private void GuardarLogo()
-        {
-            if (fuLogo.HasFile)
-            {
-                string ext = Path.GetExtension(fuLogo.FileName).ToLower();
-                if (ext != ".png" && ext != ".jpg" && ext != ".jpeg") return;
-
-                if (fuLogo.PostedFile.ContentLength > 5 * 1024 * 1024) return;
-
-                string rutaFolder = Server.MapPath("~/Uploads/Logos/");
-                if (!Directory.Exists(rutaFolder)) Directory.CreateDirectory(rutaFolder);
-
-                string nombreArchivo = "empresa_" + EMPRESA_DEFAULT_ID + ".png";
-                string rutaFull = Path.Combine(rutaFolder, nombreArchivo);
-
-                if (File.Exists(rutaFull)) File.Delete(rutaFull);
-
-                fuLogo.SaveAs(rutaFull);
             }
         }
     }

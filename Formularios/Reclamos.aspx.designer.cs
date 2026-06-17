@@ -11,53 +11,17 @@ namespace Optica.Formularios
 {
 
 
-    public partial class Entrega
+    public partial class Reclamos
     {
 
         /// <summary>
-        /// Control PanelListado.
+        /// Control pnlListadoReclamos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel PanelListado;
-
-        /// <summary>
-        /// Control lblDashSolicitado.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDashSolicitado;
-
-        /// <summary>
-        /// Control lblDashProceso.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDashProceso;
-
-        /// <summary>
-        /// Control lblDashTerminado.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDashTerminado;
-
-        /// <summary>
-        /// Control btnNuevo.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnNuevo;
+        protected global::System.Web.UI.WebControls.Panel pnlListadoReclamos;
 
         /// <summary>
         /// Control txtBuscar.
@@ -96,13 +60,13 @@ namespace Optica.Formularios
         protected global::System.Web.UI.WebControls.TextBox txtFiltroFechaFin;
 
         /// <summary>
-        /// Control btnBuscar.
+        /// Control btnFiltrar.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnBuscar;
+        protected global::System.Web.UI.WebControls.Button btnFiltrar;
 
         /// <summary>
         /// Control btnMostrarTodo.
@@ -123,13 +87,13 @@ namespace Optica.Formularios
         protected global::System.Web.UI.WebControls.DropDownList ddlPageSize;
 
         /// <summary>
-        /// Control gvEntregas.
+        /// Control gvReclamos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvEntregas;
+        protected global::System.Web.UI.WebControls.GridView gvReclamos;
 
         /// <summary>
         /// Control pnlMensajeGrid.
@@ -150,201 +114,120 @@ namespace Optica.Formularios
         protected global::System.Web.UI.WebControls.Label lblMensajeGrid;
 
         /// <summary>
-        /// Control PanelMantenimiento.
+        /// Control pnlMantReclamo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel PanelMantenimiento;
+        protected global::System.Web.UI.WebControls.Panel pnlMantReclamo;
 
         /// <summary>
-        /// Control lblTituloAccion.
+        /// Control hfIDReclamo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTituloAccion;
+        protected global::System.Web.UI.WebControls.HiddenField hfIDReclamo;
 
         /// <summary>
-        /// Control hfIDEntrega.
+        /// Control lblGarantiaRef.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfIDEntrega;
+        protected global::System.Web.UI.WebControls.Label lblGarantiaRef;
 
         /// <summary>
-        /// Control hfActionResponsable.
+        /// Control lblFechaReclamo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfActionResponsable;
+        protected global::System.Web.UI.WebControls.Label lblFechaReclamo;
 
         /// <summary>
-        /// Control hfValorResponsable.
+        /// Control lblResponsable.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfValorResponsable;
+        protected global::System.Web.UI.WebControls.Label lblResponsable;
 
         /// <summary>
-        /// Control hfOldResponsable.
+        /// Control lblMotivo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfOldResponsable;
+        protected global::System.Web.UI.WebControls.Label lblMotivo;
 
         /// <summary>
-        /// Control btnGestorResponsable.
+        /// Control txtSolucion.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGestorResponsable;
+        protected global::System.Web.UI.WebControls.TextBox txtSolucion;
 
         /// <summary>
-        /// Control ddlVenta.
+        /// Control errSolucion.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlVenta;
+        protected global::System.Web.UI.WebControls.Label errSolucion;
 
         /// <summary>
-        /// Control errVenta.
+        /// Control ddlEstadoReclamo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label errVenta;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEstadoReclamo;
 
         /// <summary>
-        /// Control ddlResponsable.
+        /// Control txtFechaSolucion.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlResponsable;
+        protected global::System.Web.UI.WebControls.TextBox txtFechaSolucion;
 
         /// <summary>
-        /// Control errResponsable.
+        /// Control errFechaSolucion.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label errResponsable;
+        protected global::System.Web.UI.WebControls.Label errFechaSolucion;
 
         /// <summary>
-        /// Control txtFechaEntrega.
+        /// Control btnCancelarR.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFechaEntrega;
+        protected global::System.Web.UI.WebControls.Button btnCancelarR;
 
         /// <summary>
-        /// Control errFechaEntrega.
+        /// Control btnGuardarR.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label errFechaEntrega;
-
-        /// <summary>
-        /// Control ddlEstadoLente.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlEstadoLente;
-
-        /// <summary>
-        /// Control divNotificar.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divNotificar;
-
-        /// <summary>
-        /// Control btnEnviarNotificacion.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEnviarNotificacion;
-
-        /// <summary>
-        /// Control txtObservaciones.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtObservaciones;
-
-        /// <summary>
-        /// Control errObservaciones.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label errObservaciones;
-
-        /// <summary>
-        /// Control txtFechaRegistro.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFechaRegistro;
-
-        /// <summary>
-        /// Control errFechaRegistro.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label errFechaRegistro;
-
-        /// <summary>
-        /// Control btnCancelar.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancelar;
-
-        /// <summary>
-        /// Control btnGuardar.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGuardar;
+        protected global::System.Web.UI.WebControls.Button btnGuardarR;
     }
 }

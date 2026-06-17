@@ -132,7 +132,10 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="dashboard-wrapper">
         
-        <h1 class="dash-header">Panel de Control <small>Versión 6.3</small></h1>
+        <h1 class="dash-header">
+            <asp:Label ID="lblSaludo" runat="server" style="display: block; font-weight: 600; color: #0056b3; font-size: 1.2em; margin-bottom: 5px;"></asp:Label>
+            Panel de Control <small>Versión 6.3</small>
+        </h1>
 
         <div class="top-row">
             <div class="chart-section">
@@ -261,8 +264,7 @@
                             label: 'Compras',
                             backgroundColor: '#f39c12',
                             borderColor: '#f39c12',
-                            data: dataCompras,
-                            hidden: true
+                            data: dataCompras
                         }
                     ]
                 },

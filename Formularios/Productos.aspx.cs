@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Net;
+using System.Text;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using MySql.Data.MySqlClient;
@@ -145,6 +148,12 @@ namespace Optica.Formularios
 
             string nuevaRuta = GuardarImagenProducto();
 
+            if (fuImagen.HasFile && string.IsNullOrEmpty(nuevaRuta))
+            {
+                MostrarMensaje("Error al subir la imagen o formato inválido (solo .png, .jpg, .jpeg).", "error");
+                return;
+            }
+
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
@@ -209,14 +218,22 @@ namespace Optica.Formularios
                 if (ext != ".png" && ext != ".jpg" && ext != ".jpeg") return null;
                 if (fuImagen.PostedFile.ContentLength > 5 * 1024 * 1024) return null;
 
-                string rutaFolder = Server.MapPath("~/Uploads/Productos/");
-                if (!Directory.Exists(rutaFolder)) Directory.CreateDirectory(rutaFolder);
+                try
+                {
+                    using (WebClient wc = new WebClient())
+                    {
+                        wc.Headers.Add("Authorization", "Client-ID 546c25a59c58ad7");
+                        System.Collections.Specialized.NameValueCollection req = new System.Collections.Specialized.NameValueCollection();
+                        req.Add("image", Convert.ToBase64String(fuImagen.FileBytes));
+                        byte[] response = wc.UploadValues("https://api.imgur.com/3/image", "POST", req);
+                        string json = Encoding.UTF8.GetString(response);
 
-                string nombreArchivo = "prod_" + DateTime.Now.Ticks + ext;
-                string rutaFull = Path.Combine(rutaFolder, nombreArchivo);
-
-                fuImagen.SaveAs(rutaFull);
-                return "~/Uploads/Productos/" + nombreArchivo;
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+                        dynamic data = js.Deserialize<dynamic>(json);
+                        return data["data"]["link"];
+                    }
+                }
+                catch { return null; }
             }
             return null;
         }
@@ -260,10 +277,21 @@ namespace Optica.Formularios
                     txtFechaReg.Text = Convert.ToDateTime(dr["FechaRegistro"]).ToString("yyyy-MM-dd");
 
                     string rutaDB = dr["RutaImagen"].ToString();
-                    if (!string.IsNullOrEmpty(rutaDB) && File.Exists(Server.MapPath(rutaDB)))
+                    if (!string.IsNullOrEmpty(rutaDB))
                     {
-                        string rutaConCache = rutaDB + "?t=" + DateTime.Now.Ticks;
-                        imgProductoPreview.ImageUrl = rutaConCache;
+                        if (rutaDB.StartsWith("http"))
+                        {
+                            imgProductoPreview.ImageUrl = rutaDB;
+                        }
+                        else if (File.Exists(Server.MapPath(rutaDB)))
+                        {
+                            string rutaConCache = rutaDB + "?t=" + DateTime.Now.Ticks;
+                            imgProductoPreview.ImageUrl = rutaConCache;
+                        }
+                        else
+                        {
+                            imgProductoPreview.ImageUrl = "~/Images/default-product.png";
+                        }
                     }
                     else
                     {

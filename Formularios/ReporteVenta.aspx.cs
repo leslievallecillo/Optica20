@@ -17,8 +17,8 @@ namespace Optica.Reportes
         {
             if (!IsPostBack)
             {
-                txtF1.Text = DateTime.Now.ToString("yyyy-MM-01");
-                txtF2.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                txtF1.Text = "";
+                txtF2.Text = "";
                 CargarReporte();
             }
         }
@@ -45,12 +45,19 @@ namespace Optica.Reportes
                         INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
                         INNER JOIN Usuario u ON v.ID_Usuario = u.ID_Usuario
                         INNER JOIN TipoPago tp ON v.ID_TipoPago = tp.ID_TipoPago
-                        WHERE v.Estado = 1 AND v.Fecha BETWEEN @F1 AND @F2
-                        ORDER BY v.Fecha DESC";
+                        WHERE v.Estado = 1 ";
+
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                        sql += " AND v.Fecha BETWEEN @F1 AND @F2 ";
+
+                    sql += " ORDER BY v.Fecha DESC";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@F1", txtF1.Text);
-                    cmd.Parameters.AddWithValue("@F2", txtF2.Text);
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                    {
+                        cmd.Parameters.AddWithValue("@F1", txtF1.Text);
+                        cmd.Parameters.AddWithValue("@F2", txtF2.Text);
+                    }
 
                     DataTable dt = new DataTable();
                     new MySqlDataAdapter(cmd).Fill(dt);
@@ -107,18 +114,29 @@ namespace Optica.Reportes
                         INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
                         INNER JOIN Usuario u ON v.ID_Usuario = u.ID_Usuario
                         INNER JOIN TipoPago tp ON v.ID_TipoPago = tp.ID_TipoPago
-                        WHERE v.Estado = 1 AND v.Fecha BETWEEN @F1 AND @F2
-                        ORDER BY v.Fecha DESC";
+                        WHERE v.Estado = 1 ";
+
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                        sql += " AND v.Fecha BETWEEN @F1 AND @F2 ";
+
+                    sql += " ORDER BY v.Fecha DESC";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@F1", txtF1.Text);
-                    cmd.Parameters.AddWithValue("@F2", txtF2.Text);
+                    if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
+                    {
+                        cmd.Parameters.AddWithValue("@F1", txtF1.Text);
+                        cmd.Parameters.AddWithValue("@F2", txtF2.Text);
+                    }
 
                     DataTable dt = new DataTable();
                     new MySqlDataAdapter(cmd).Fill(dt);
 
                     ReportePdfVentas helper = new ReportePdfVentas(rutaLogo);
-                    byte[] pdfBytes = helper.GenerarReporte(dt, txtF1.Text, txtF2.Text);
+
+                    string f1 = string.IsNullOrEmpty(txtF1.Text) ? "Inicio" : txtF1.Text;
+                    string f2 = string.IsNullOrEmpty(txtF2.Text) ? "Actualidad" : txtF2.Text;
+
+                    byte[] pdfBytes = helper.GenerarReporte(dt, f1, f2);
 
                     Response.Clear();
                     Response.ContentType = "application/pdf";
@@ -143,17 +161,14 @@ namespace Optica.Reportes
         private BaseColor _black = new BaseColor(0, 0, 0);
         private BaseColor _lightGray = new BaseColor(240, 240, 240);
 
-        public ReportePdfVentas(string rutaLogo)
-        {
-            _rutaLogo = rutaLogo;
-        }
+        public ReportePdfVentas(string rutaLogo) { _rutaLogo = rutaLogo; }
 
         public byte[] GenerarReporte(DataTable dt, string f1, string f2)
         {
             using (MemoryStream ms = new MemoryStream())
             {
                 Document doc = new Document(PageSize.LETTER, 30, 30, 30, 30);
-                PdfWriter writer = PdfWriter.GetInstance(doc, ms);
+                PdfWriter.GetInstance(doc, ms);
                 doc.Open();
 
                 PdfPTable header = new PdfPTable(2);
@@ -161,36 +176,18 @@ namespace Optica.Reportes
                 header.SetWidths(new float[] { 1f, 4f });
 
                 PdfPCell cLogo = new PdfPCell();
-                cLogo.BackgroundColor = _bgDark;
-                cLogo.Border = Rectangle.NO_BORDER;
-                cLogo.Padding = 10;
-                cLogo.VerticalAlignment = Element.ALIGN_MIDDLE;
+                cLogo.BackgroundColor = _bgDark; cLogo.Border = Rectangle.NO_BORDER; cLogo.Padding = 10;
                 if (!string.IsNullOrEmpty(_rutaLogo))
                 {
-                    try
-                    {
-                        iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(_rutaLogo);
-                        img.ScaleToFit(50, 50);
-                        cLogo.AddElement(img);
-                    }
-                    catch { }
+                    try { iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(_rutaLogo); img.ScaleToFit(50, 50); cLogo.AddElement(img); } catch { }
                 }
                 header.AddCell(cLogo);
 
                 PdfPCell cTitle = new PdfPCell();
-                cTitle.BackgroundColor = _bgDark;
-                cTitle.Border = Rectangle.NO_BORDER;
-                cTitle.VerticalAlignment = Element.ALIGN_MIDDLE;
-                cTitle.PaddingRight = 10;
-
-                Font fTitle = FontFactory.GetFont(FontFactory.HELVETICA, 16, Font.BOLD, _gold);
-                Font fSub = FontFactory.GetFont(FontFactory.HELVETICA, 10, Font.NORMAL, _white);
-
-                Paragraph p1 = new Paragraph("ÓPTICA 20/20", fTitle); p1.Alignment = Element.ALIGN_RIGHT;
-                Paragraph p2 = new Paragraph("REPORTE DE VENTAS", fSub); p2.Alignment = Element.ALIGN_RIGHT;
-                Paragraph p3 = new Paragraph($"Periodo: {f1} al {f2}", fSub); p3.Alignment = Element.ALIGN_RIGHT;
-
-                cTitle.AddElement(p1); cTitle.AddElement(p2); cTitle.AddElement(p3);
+                cTitle.BackgroundColor = _bgDark; cTitle.Border = Rectangle.NO_BORDER; cTitle.PaddingRight = 10;
+                cTitle.AddElement(new Paragraph("ÓPTICA 20/20", FontFactory.GetFont(FontFactory.HELVETICA, 16, Font.BOLD, _gold)));
+                cTitle.AddElement(new Paragraph("REPORTE DE VENTAS", FontFactory.GetFont(FontFactory.HELVETICA, 10, Font.NORMAL, _white)));
+                cTitle.AddElement(new Paragraph($"Periodo: {f1} al {f2}", FontFactory.GetFont(FontFactory.HELVETICA, 10, Font.NORMAL, _white)));
                 header.AddCell(cTitle);
 
                 doc.Add(header);
@@ -204,9 +201,7 @@ namespace Optica.Reportes
                 foreach (string h in heads)
                 {
                     PdfPCell c = new PdfPCell(new Phrase(h, FontFactory.GetFont(FontFactory.HELVETICA, 9, Font.BOLD, _white)));
-                    c.BackgroundColor = _bgDark;
-                    c.HorizontalAlignment = Element.ALIGN_CENTER;
-                    c.Padding = 5;
+                    c.BackgroundColor = _bgDark; c.HorizontalAlignment = Element.ALIGN_CENTER; c.Padding = 5;
                     table.AddCell(c);
                 }
 
@@ -225,21 +220,14 @@ namespace Optica.Reportes
                     AddCell(table, r["Cliente"].ToString(), fRow, bg);
                     AddCell(table, r["TipoPago"].ToString(), fRow, bg);
                     AddCell(table, tot.ToString("C"), fRow, bg, Element.ALIGN_RIGHT);
-
                     alternate = !alternate;
                 }
 
                 PdfPCell cTotalLabel = new PdfPCell(new Phrase("TOTAL GENERAL", FontFactory.GetFont(FontFactory.HELVETICA, 9, Font.BOLD, _white)));
-                cTotalLabel.Colspan = 4;
-                cTotalLabel.BackgroundColor = _bgDark;
-                cTotalLabel.HorizontalAlignment = Element.ALIGN_RIGHT;
-                cTotalLabel.Padding = 5;
+                cTotalLabel.Colspan = 4; cTotalLabel.BackgroundColor = _bgDark; cTotalLabel.HorizontalAlignment = Element.ALIGN_RIGHT; cTotalLabel.Padding = 5;
                 table.AddCell(cTotalLabel);
-
                 PdfPCell cTotalVal = new PdfPCell(new Phrase(granTotal.ToString("C"), FontFactory.GetFont(FontFactory.HELVETICA, 9, Font.BOLD, _white)));
-                cTotalVal.BackgroundColor = _bgDark;
-                cTotalVal.HorizontalAlignment = Element.ALIGN_RIGHT;
-                cTotalVal.Padding = 5;
+                cTotalVal.BackgroundColor = _bgDark; cTotalVal.HorizontalAlignment = Element.ALIGN_RIGHT; cTotalVal.Padding = 5;
                 table.AddCell(cTotalVal);
 
                 doc.Add(table);
@@ -251,10 +239,7 @@ namespace Optica.Reportes
         private void AddCell(PdfPTable t, string txt, Font f, BaseColor bg, int align = Element.ALIGN_LEFT)
         {
             PdfPCell c = new PdfPCell(new Phrase(txt, f));
-            c.BackgroundColor = bg;
-            c.HorizontalAlignment = align;
-            c.Padding = 4;
-            c.BorderColor = _bgDark;
+            c.BackgroundColor = bg; c.HorizontalAlignment = align; c.Padding = 4; c.BorderColor = _bgDark;
             t.AddCell(c);
         }
     }

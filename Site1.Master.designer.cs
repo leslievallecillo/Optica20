@@ -15,6 +15,15 @@ namespace Optica
     {
 
         /// <summary>
+        /// Control phLoginStyles.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phLoginStyles;
+
+        /// <summary>
         /// Control head.
         /// </summary>
         /// <remarks>
@@ -103,6 +112,15 @@ namespace Optica
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAccesos;
+
+        /// <summary>
+        /// Control imgUserAvatar.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlImage imgUserAvatar;
 
         /// <summary>
         /// Control lblUsuarioNombre.
