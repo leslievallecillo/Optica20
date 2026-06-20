@@ -434,8 +434,9 @@
             inicializarTodasLasFuncionalidades();
         });
 
+        // ✅ SOLO ESTO SE CAMBIÓ: Ruta absoluta a Login.aspx
         function redirigirLogin() {
-            window.location.href = 'Login.aspx';
+            window.location.href = '/Formularios/Login.aspx';
         }
 
         const carruseles = document.querySelectorAll('.carrusel');

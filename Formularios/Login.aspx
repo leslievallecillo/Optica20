@@ -210,6 +210,9 @@
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(10px);
+            display: block;
+            text-align: center;
+            text-decoration: none;
         }
 
         .btn-volver:hover {
@@ -372,7 +375,13 @@
             <asp:Label ID="lblError" runat="server" CssClass="alert-error" Visible="false"></asp:Label>
 
             <asp:Button ID="btnLogin" runat="server" CssClass="btn-login delay-btn form-group-anim" Text="INICIAR SESIÓN" OnClick="btnLogin_Click" />
-            <asp:Button ID="btnVolver" runat="server" CssClass="btn-volver delay-btn form-group-anim" Text="VOLVER AL CATÁLOGO" OnClientClick="window.location.href='CatalogoCliente.aspx'; return false;" />
+            
+            <!-- ✅ SOLO ESTO SE CAMBIÓ: Ruta absoluta a CatalogoCliente.aspx -->
+            <asp:HyperLink ID="lnkVolver" runat="server" 
+                NavigateUrl="~/Formularios/CatalogoCliente.aspx" 
+                CssClass="btn-volver delay-btn form-group-anim">
+                VOLVER AL CATÁLOGO
+            </asp:HyperLink>
             
             <div class="text-center mt-3">
                 <a href="RecuperarContra.aspx" style="color: #666; text-decoration: none; font-size: 0.9rem;">
