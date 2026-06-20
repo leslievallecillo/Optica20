@@ -38,12 +38,12 @@ namespace Optica.Reportes
                             CONCAT(u.Nombres, ' ', u.Apellidos) AS Usuario,
                             (
                                 SELECT IFNULL(SUM(PrecioTotal), 0) 
-                                FROM DetalleCompra 
+                                FROM detallecompra 
                                 WHERE ID_Compra = c.ID_Compra AND Estado = 1
                             ) AS Total
-                        FROM Compra c
-                        INNER JOIN Proveedor p ON c.ID_Proveedor = p.ID_Proveedor
-                        INNER JOIN Usuario u ON c.ID_Usuario = u.ID_Usuario
+                        FROM compra c
+                        INNER JOIN proveedor p ON c.ID_Proveedor = p.ID_Proveedor
+                        INNER JOIN usuario u ON c.ID_Usuario = u.ID_Usuario
                         WHERE c.Estado = 1 ";
 
                     if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
@@ -106,12 +106,12 @@ namespace Optica.Reportes
                             CONCAT(u.Nombres, ' ', u.Apellidos) AS Usuario,
                             (
                                 SELECT IFNULL(SUM(PrecioTotal), 0) 
-                                FROM DetalleCompra 
+                                FROM detallecompra 
                                 WHERE ID_Compra = c.ID_Compra AND Estado = 1
                             ) AS Total
-                        FROM Compra c
-                        INNER JOIN Proveedor p ON c.ID_Proveedor = p.ID_Proveedor
-                        INNER JOIN Usuario u ON c.ID_Usuario = u.ID_Usuario
+                        FROM compra c
+                        INNER JOIN proveedor p ON c.ID_Proveedor = p.ID_Proveedor
+                        INNER JOIN usuario u ON c.ID_Usuario = u.ID_Usuario
                         WHERE c.Estado = 1 ";
 
                     if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))

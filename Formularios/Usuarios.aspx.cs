@@ -39,8 +39,8 @@ namespace Optica.AdministrarAccesos
                             u.Rol, 
                             u.Estado,
                             i.NombreUsuario
-                        FROM Usuario u
-                        LEFT JOIN InicioSesion i ON u.ID_Usuario = i.ID_Usuario
+                        FROM usuario u
+                        LEFT JOIN iniciosesion i ON u.ID_Usuario = i.ID_Usuario
                         WHERE 1=1";
 
                     // Filtros dinámicos
@@ -205,7 +205,7 @@ namespace Optica.AdministrarAccesos
                 {
                     // 1. Insertar en Tabla Usuario
                     string queryUsuario = @"
-                        INSERT INTO Usuario (Nombres, Apellidos, Correo, Telefono, Rol, FechaRegistro, Estado)
+                        INSERT INTO usuario (Nombres, Apellidos, Correo, Telefono, Rol, FechaRegistro, Estado)
                         VALUES (@Nombres, @Apellidos, @Correo, @Telefono, @Rol, CURDATE(), 1)";
 
                     long idGenerado;
@@ -223,7 +223,7 @@ namespace Optica.AdministrarAccesos
 
                     // 2. Insertar en Tabla InicioSesion
                     string queryLogin = @"
-                        INSERT INTO InicioSesion (ID_Usuario, NombreUsuario, Clave, Estado)
+                        INSERT INTO iniciosesion (ID_Usuario, NombreUsuario, Clave, Estado)
                         VALUES (@ID, @Usuario, @ClaveHash, 1)";
 
                     using (MySqlCommand cmd = new MySqlCommand(queryLogin, conexion, transaccion))
@@ -263,7 +263,7 @@ namespace Optica.AdministrarAccesos
                 {
                     // 1. Actualizar Usuario
                     string queryUsuario = @"
-                        UPDATE Usuario 
+                        UPDATE usuario 
                         SET Nombres=@Nombres, Apellidos=@Apellidos, Correo=@Correo, Telefono=@Telefono, Rol=@Rol
                         WHERE ID_Usuario=@ID";
 
@@ -280,7 +280,7 @@ namespace Optica.AdministrarAccesos
 
                     // 2. Actualizar Login (Solo si hay nueva contraseña o cambio de usuario)
                     // Nota: Normalmente el NombreUsuario no se edita, pero aquí lo permitimos.
-                    string queryLogin = "UPDATE InicioSesion SET NombreUsuario=@Usuario";
+                    string queryLogin = "UPDATE iniciosesion SET NombreUsuario=@Usuario";
 
                     if (!string.IsNullOrEmpty(txtClave.Text))
                     {
@@ -326,8 +326,8 @@ namespace Optica.AdministrarAccesos
                 conexion.Open();
                 string query = @"
                     SELECT u.Nombres, u.Apellidos, u.Correo, u.Telefono, u.Rol, i.NombreUsuario
-                    FROM Usuario u
-                    LEFT JOIN InicioSesion i ON u.ID_Usuario = i.ID_Usuario
+                    FROM usuario u
+                    LEFT JOIN iniciosesion i ON u.ID_Usuario = i.ID_Usuario
                     WHERE u.ID_Usuario = @ID";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conexion))
@@ -375,8 +375,8 @@ namespace Optica.AdministrarAccesos
                 try
                 {
                     // Actualizar ambas tablas
-                    string q1 = "UPDATE Usuario SET Estado=@Est WHERE ID_Usuario=@ID";
-                    string q2 = "UPDATE InicioSesion SET Estado=@Est WHERE ID_Usuario=@ID";
+                    string q1 = "UPDATE usuario SET Estado=@Est WHERE ID_Usuario=@ID";
+                    string q2 = "UPDATE iniciosesion SET Estado=@Est WHERE ID_Usuario=@ID";
 
                     using (MySqlCommand cmd = new MySqlCommand(q1, conexion, transaccion))
                     {

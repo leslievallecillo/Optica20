@@ -23,7 +23,7 @@ namespace Optica
                     {
                         con.Open();
                         // 1. Cerrar esta sesión específica en la BD
-                        string sql1 = "UPDATE SesionUsuario SET Estado='Cerrada', FechaFin=NOW() WHERE SessionID=@Sid";
+                        string sql1 = "UPDATE sesionusuario SET Estado='Cerrada', FechaFin=NOW() WHERE SessionID=@Sid";
                         using (MySqlCommand cmd = new MySqlCommand(sql1, con))
                         {
                             cmd.Parameters.AddWithValue("@Sid", sid);
@@ -31,7 +31,7 @@ namespace Optica
                         }
 
                         // 2. Poner al usuario como Offline inmediatamente
-                        string sql2 = "UPDATE Usuario SET EnLinea=0 WHERE ID_Usuario=@Uid";
+                        string sql2 = "UPDATE usuario SET EnLinea=0 WHERE ID_Usuario=@Uid";
                         using (MySqlCommand cmd = new MySqlCommand(sql2, con))
                         {
                             cmd.Parameters.AddWithValue("@Uid", uid);

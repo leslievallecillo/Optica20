@@ -43,11 +43,11 @@ namespace Optica.Formularios
 
                     string qClientes = @"SELECT c.ID_Cliente, 
                                         CASE 
-                                            WHEN c.TipoCliente = 'Natural' THEN (SELECT CONCAT(Nombre, ' ', Apellido) FROM ClienteNatural WHERE ID_Cliente = c.ID_Cliente)
-                                            WHEN c.TipoCliente = 'Juridico' THEN (SELECT NombreEmpresa FROM ClienteJuridico WHERE ID_Cliente = c.ID_Cliente)
+                                            WHEN c.TipoCliente = 'Natural' THEN (SELECT CONCAT(Nombre, ' ', Apellido) FROM clientenatural WHERE ID_Cliente = c.ID_Cliente)
+                                            WHEN c.TipoCliente = 'Juridico' THEN (SELECT NombreEmpresa FROM clientejuridico WHERE ID_Cliente = c.ID_Cliente)
                                             ELSE 'Cliente Sin Datos'
                                         END as NombreDisplay
-                                        FROM Clientes c 
+                                        FROM clientes c 
                                         WHERE c.Estado = 1 
                                         ORDER BY NombreDisplay ASC";
 
@@ -61,7 +61,7 @@ namespace Optica.Formularios
                     ddlCliente.DataBind();
                     ddlCliente.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
 
-                    string qUsuarios = "SELECT ID_Usuario, Nombres FROM Usuario WHERE Estado = 1 ORDER BY Nombres ASC";
+                    string qUsuarios = "SELECT ID_Usuario, Nombres FROM usuario WHERE Estado = 1 ORDER BY Nombres ASC";
                     MySqlDataAdapter daU = new MySqlDataAdapter(qUsuarios, con);
                     DataTable dtU = new DataTable();
                     daU.Fill(dtU);
@@ -93,11 +93,11 @@ namespace Optica.Formularios
                                         ELSE '---'
                                     END as NombreCliente,
                                     u.Nombres as NombreUsuario
-                                    FROM Cita cit
-                                    INNER JOIN Clientes c ON cit.ID_Cliente = c.ID_Cliente
-                                    LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                                    LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
-                                    INNER JOIN Usuario u ON cit.ID_Usuario = u.ID_Usuario
+                                    FROM cita cit
+                                    INNER JOIN clientes c ON cit.ID_Cliente = c.ID_Cliente
+                                    LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                    LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                    INNER JOIN usuario u ON cit.ID_Usuario = u.ID_Usuario
                                     WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
@@ -208,7 +208,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM Cita WHERE ID_Cita = @ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM cita WHERE ID_Cita = @ID", con);
                     cmd.Parameters.AddWithValue("@ID", idCita);
                     MySqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
@@ -268,7 +268,7 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDCita.Value))
                     {
-                        string insert = @"INSERT INTO Cita (ID_Cliente, ID_Usuario, Fecha, Hora, Motivo, FechaRegistro, Estado) 
+                        string insert = @"INSERT INTO cita (ID_Cliente, ID_Usuario, Fecha, Hora, Motivo, FechaRegistro, Estado) 
                                           VALUES (@Cli, @Usu, @Fecha, @Hora, @Motivo, CURRENT_DATE, 1)";
                         cmd = new MySqlCommand(insert, con);
                         cmd.Parameters.AddWithValue("@Cli", ddlCliente.SelectedValue);
@@ -282,7 +282,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string update = @"UPDATE Cita SET ID_Cliente=@Cli, ID_Usuario=@Usu, Fecha=@Fecha, Hora=@Hora, 
+                        string update = @"UPDATE cita SET ID_Cliente=@Cli, ID_Usuario=@Usu, Fecha=@Fecha, Hora=@Hora, 
                                           Motivo=@Motivo, FechaRegistro=@FecReg 
                                           WHERE ID_Cita=@ID";
                         cmd = new MySqlCommand(update, con);
@@ -486,7 +486,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("UPDATE Cita SET Estado = @Est WHERE ID_Cita = @ID", con);
+                    MySqlCommand cmd = new MySqlCommand("UPDATE cita SET Estado = @Est WHERE ID_Cita = @ID", con);
                     cmd.Parameters.AddWithValue("@Est", nuevoEstado);
                     cmd.Parameters.AddWithValue("@ID", idCita);
                     cmd.ExecuteNonQuery();

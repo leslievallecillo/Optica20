@@ -50,7 +50,7 @@ namespace Optica.Compras
                 try
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT IFNULL(MAX(ID_Compra), 0) + 1 FROM Compra", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT IFNULL(MAX(ID_Compra), 0) + 1 FROM compra", con);
                     txtNumeroCompra.Text = "COM-" + int.Parse(cmd.ExecuteScalar().ToString()).ToString("D6");
                 }
                 catch { txtNumeroCompra.Text = "COM-000001"; }
@@ -64,12 +64,12 @@ namespace Optica.Compras
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlDataAdapter daP = new MySqlDataAdapter("SELECT ID_Proveedor, RazonSocial FROM Proveedor WHERE Estado=1 ORDER BY RazonSocial", con);
+                    MySqlDataAdapter daP = new MySqlDataAdapter("SELECT ID_Proveedor, RazonSocial FROM proveedor WHERE Estado=1 ORDER BY RazonSocial", con);
                     DataTable dtP = new DataTable(); daP.Fill(dtP);
                     ddlProveedor.DataSource = dtP; ddlProveedor.DataTextField = "RazonSocial"; ddlProveedor.DataValueField = "ID_Proveedor";
                     ddlProveedor.DataBind(); ddlProveedor.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
 
-                    MySqlDataAdapter daC = new MySqlDataAdapter("SELECT ID_Categoria, Descripcion FROM Categoria WHERE Estado=1", con);
+                    MySqlDataAdapter daC = new MySqlDataAdapter("SELECT ID_Categoria, Descripcion FROM categoria WHERE Estado=1", con);
                     DataTable dtC = new DataTable(); daC.Fill(dtC);
                     ddlCatNueva.DataSource = dtC; ddlCatNueva.DataTextField = "Descripcion"; ddlCatNueva.DataValueField = "ID_Categoria";
                     ddlCatNueva.DataBind(); ddlCatNueva.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
@@ -84,7 +84,7 @@ namespace Optica.Compras
             List<object> result = new List<object>();
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
-                string query = "SELECT ID_Producto, Codigo, Descripcion FROM Producto WHERE Estado = 1 AND (Codigo LIKE @p OR Descripcion LIKE @p) LIMIT 15";
+                string query = "SELECT ID_Producto, Codigo, Descripcion FROM producto WHERE Estado = 1 AND (Codigo LIKE @p OR Descripcion LIKE @p) LIMIT 15";
                 using (MySqlCommand cmd = new MySqlCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@p", "%" + prefijo + "%");
@@ -113,10 +113,10 @@ namespace Optica.Compras
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                object resProd = new MySqlCommand($"SELECT Precio FROM Producto WHERE ID_Producto={idProducto}", con).ExecuteScalar();
+                object resProd = new MySqlCommand($"SELECT Precio FROM producto WHERE ID_Producto={idProducto}", con).ExecuteScalar();
                 if (resProd != null && resProd != DBNull.Value) precioActual = Convert.ToDecimal(resProd);
 
-                object resCosto = new MySqlCommand($"SELECT PrecioUnitario FROM DetalleCompra WHERE ID_Producto={idProducto} ORDER BY ID_DetalleCompra DESC LIMIT 1", con).ExecuteScalar();
+                object resCosto = new MySqlCommand($"SELECT PrecioUnitario FROM detallecompra WHERE ID_Producto={idProducto} ORDER BY ID_DetalleCompra DESC LIMIT 1", con).ExecuteScalar();
                 if (resCosto != null && resCosto != DBNull.Value) ultimoCosto = Convert.ToDecimal(resCosto);
             }
             return new { costo = ultimoCosto, precioVenta = precioActual };
@@ -213,7 +213,7 @@ namespace Optica.Compras
                 {
                     con.Open();
                     // SE CORRIGIÓ: Se añaden las columnas TipoAro y Color a la consulta SQL
-                    string sql = @"INSERT INTO Producto (Codigo, ID_Categoria, Descripcion, Marca, Modelo, TipoAro, Color, RutaImagen, Stock, Precio, Estado, FechaRegistro)
+                    string sql = @"INSERT INTO producto (Codigo, ID_Categoria, Descripcion, Marca, Modelo, TipoAro, Color, RutaImagen, Stock, Precio, Estado, FechaRegistro)
                                    VALUES (@Cod, @Cat, @Desc, @Mar, @Mod, @Aro, @Col, @Img, 0, 0.00, 1, CURDATE()); SELECT LAST_INSERT_ID();";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
@@ -254,10 +254,10 @@ namespace Optica.Compras
                 MySqlTransaction tr = con.BeginTransaction();
                 try
                 {
-                    string sqlGetId = "SELECT IFNULL(MAX(ID_Compra), 0) + 1 FROM Compra FOR UPDATE";
+                    string sqlGetId = "SELECT IFNULL(MAX(ID_Compra), 0) + 1 FROM compra FOR UPDATE";
                     int nextId = Convert.ToInt32(new MySqlCommand(sqlGetId, con, tr).ExecuteScalar());
 
-                    string sqlCompra = @"INSERT INTO Compra (ID_Proveedor, ID_Usuario, NumeroCompra, Fecha, FechaRegistro, Estado) VALUES (@Prov, @User, @Num, NOW(), CURDATE(), 1); SELECT LAST_INSERT_ID();";
+                    string sqlCompra = @"INSERT INTO compra (ID_Proveedor, ID_Usuario, NumeroCompra, Fecha, FechaRegistro, Estado) VALUES (@Prov, @User, @Num, NOW(), CURDATE(), 1); SELECT LAST_INSERT_ID();";
                     MySqlCommand cmdC = new MySqlCommand(sqlCompra, con, tr);
                     cmdC.Parameters.AddWithValue("@Prov", ddlProveedor.SelectedValue);
                     cmdC.Parameters.AddWithValue("@User", idUser);
@@ -266,13 +266,13 @@ namespace Optica.Compras
 
                     foreach (DataRow r in DtItems.Rows)
                     {
-                        string sqlDet = "INSERT INTO DetalleCompra (ID_Compra, ID_Producto, Cantidad, PrecioUnitario, Iva, PrecioTotal, PrecioVenta, FechaRegistro, Estado) VALUES (@IDC, @IDP, @Cant, @Uni, @Iv, @Tot, @Ven, CURDATE(), 1)";
+                        string sqlDet = "INSERT INTO detallecompra (ID_Compra, ID_Producto, Cantidad, PrecioUnitario, Iva, PrecioTotal, PrecioVenta, FechaRegistro, Estado) VALUES (@IDC, @IDP, @Cant, @Uni, @Iv, @Tot, @Ven, CURDATE(), 1)";
                         MySqlCommand cmdD = new MySqlCommand(sqlDet, con, tr);
                         cmdD.Parameters.AddWithValue("@IDC", idCompra); cmdD.Parameters.AddWithValue("@IDP", r["ID_Producto"]); cmdD.Parameters.AddWithValue("@Cant", r["Cantidad"]);
                         cmdD.Parameters.AddWithValue("@Uni", r["PrecioUnitario"]); cmdD.Parameters.AddWithValue("@Iv", r["Iva"]); cmdD.Parameters.AddWithValue("@Tot", r["PrecioTotal"]); cmdD.Parameters.AddWithValue("@Ven", r["PrecioVenta"]);
                         cmdD.ExecuteNonQuery();
 
-                        string sqlUpd = "UPDATE Producto SET Stock = Stock + @Cant, Precio = @Ven WHERE ID_Producto = @IDP";
+                        string sqlUpd = "UPDATE producto SET Stock = Stock + @Cant, Precio = @Ven WHERE ID_Producto = @IDP";
                         MySqlCommand cmdU = new MySqlCommand(sqlUpd, con, tr);
                         cmdU.Parameters.AddWithValue("@Cant", r["Cantidad"]); cmdU.Parameters.AddWithValue("@Ven", r["PrecioVenta"]); cmdU.Parameters.AddWithValue("@IDP", r["ID_Producto"]);
                         cmdU.ExecuteNonQuery();

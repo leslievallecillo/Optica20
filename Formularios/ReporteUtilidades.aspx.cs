@@ -33,35 +33,35 @@ namespace Optica.Reportes
                         SELECT 
                             v.NumeroDocumento as FacturaNo,
                             IF(c.TipoCliente='Natural', 
-                                (SELECT CONCAT(Nombre, ' ', Apellido) FROM ClienteNatural WHERE ID_Cliente = c.ID_Cliente), 
-                                (SELECT NombreEmpresa FROM ClienteJuridico WHERE ID_Cliente = c.ID_Cliente)
+                                (SELECT CONCAT(Nombre, ' ', Apellido) FROM clientenatural WHERE ID_Cliente = c.ID_Cliente), 
+                                (SELECT NombreEmpresa FROM clientejuridico WHERE ID_Cliente = c.ID_Cliente)
                             ) as Cliente,
                             v.Fecha,
                             (
-                                IFNULL((SELECT SUM(Subtotal) FROM DetalleVentaProducto WHERE ID_Venta = v.ID_Venta AND Estado=1), 0) +
-                                IFNULL((SELECT SUM(Subtotal) FROM DetalleVentaLentes WHERE ID_Venta = v.ID_Venta AND Estado=1), 0)
+                                IFNULL((SELECT SUM(Subtotal) FROM detalleventaproducto WHERE ID_Venta = v.ID_Venta AND Estado=1), 0) +
+                                IFNULL((SELECT SUM(Subtotal) FROM detalleventalentes WHERE ID_Venta = v.ID_Venta AND Estado=1), 0)
                             ) as TotalVenta,
                             (
                                 IFNULL((
                                     SELECT SUM(dp.Cantidad * IFNULL(
-                                        (SELECT dc.PrecioUnitario FROM DetalleCompra dc WHERE dc.ID_Producto = dp.ID_Producto ORDER BY dc.FechaRegistro DESC LIMIT 1), 0)
+                                        (SELECT dc.PrecioUnitario FROM detallecompra dc WHERE dc.ID_Producto = dp.ID_Producto ORDER BY dc.FechaRegistro DESC LIMIT 1), 0)
                                     )
-                                    FROM DetalleVentaProducto dp 
+                                    FROM detalleventaproducto dp 
                                     WHERE dp.ID_Venta = v.ID_Venta AND dp.Estado=1
                                 ), 0) 
                                 +
                                 IFNULL((
                                     SELECT SUM(
-                                        IFNULL((SELECT dc.PrecioUnitario FROM DetalleCompra dc 
-                                                JOIN Expediente ex ON dl.ID_Expediente = ex.ID_Expediente 
+                                        IFNULL((SELECT dc.PrecioUnitario FROM detallecompra dc 
+                                                JOIN expediente ex ON dl.ID_Expediente = ex.ID_Expediente 
                                                 WHERE dc.ID_Producto = ex.ID_Producto ORDER BY dc.FechaRegistro DESC LIMIT 1), 0)
                                     )
-                                    FROM DetalleVentaLentes dl
+                                    FROM detalleventalentes dl
                                     WHERE dl.ID_Venta = v.ID_Venta AND dl.Estado=1
                                 ), 0)
                             ) as TotalCosto
-                        FROM Venta v
-                        INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
+                        FROM venta v
+                        INNER JOIN clientes c ON v.ID_Cliente = c.ID_Cliente
                         WHERE v.Estado = 1 ";
 
                     if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))

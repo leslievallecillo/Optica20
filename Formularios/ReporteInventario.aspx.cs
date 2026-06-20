@@ -30,7 +30,7 @@ namespace Optica.Reportes
                 try
                 {
                     con.Open();
-                    string sql = "SELECT ID_Categoria, Descripcion FROM Categoria WHERE Estado = 1 ORDER BY Descripcion";
+                    string sql = "SELECT ID_Categoria, Descripcion FROM categoria WHERE Estado = 1 ORDER BY Descripcion";
                     MySqlDataAdapter da = new MySqlDataAdapter(sql, con);
                     DataTable dt = new DataTable(); da.Fill(dt);
                     ddlCategoria.DataSource = dt;
@@ -53,10 +53,10 @@ namespace Optica.Reportes
                         SELECT 
                             p.ID_Producto, p.Codigo, p.Descripcion, p.Stock, p.RutaImagen, p.Marca, p.Modelo,
                             c.Descripcion as Categoria,
-                            IFNULL((SELECT PrecioUnitario FROM DetalleCompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0) as UltimoCosto,
-                            IFNULL((SELECT PrecioVenta FROM DetalleCompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0) as PrecioVenta
-                        FROM Producto p
-                        INNER JOIN Categoria c ON p.ID_Categoria = c.ID_Categoria
+                            IFNULL((SELECT PrecioUnitario FROM detallecompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0) as UltimoCosto,
+                            IFNULL((SELECT PrecioVenta FROM detallecompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0) as PrecioVenta
+                        FROM producto p
+                        INNER JOIN categoria c ON p.ID_Categoria = c.ID_Categoria
                         WHERE p.Estado = 1";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text)) sql += " AND (p.Codigo LIKE @B OR p.Descripcion LIKE @B OR p.Marca LIKE @B)";
@@ -108,9 +108,9 @@ namespace Optica.Reportes
                     con.Open();
                     string sql = @"
                         SELECT p.Codigo, p.Descripcion, p.Marca, p.Stock, c.Descripcion as Categoria,
-                        IFNULL((SELECT PrecioVenta FROM DetalleCompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0) as Precio
-                        FROM Producto p
-                        INNER JOIN Categoria c ON p.ID_Categoria = c.ID_Categoria
+                        IFNULL((SELECT PrecioVenta FROM detallecompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0) as Precio
+                        FROM producto p
+                        INNER JOIN categoria c ON p.ID_Categoria = c.ID_Categoria
                         WHERE p.Estado = 1";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text)) sql += " AND (p.Codigo LIKE @B OR p.Descripcion LIKE @B OR p.Marca LIKE @B)";

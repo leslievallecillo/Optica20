@@ -19,7 +19,7 @@ namespace Optica
                     {
                         con.Open();
                         // Actualizamos la última vez que vimos al usuario
-                        string sql = "UPDATE Usuario SET UltimaConexion = NOW(), EnLinea = 1 WHERE ID_Usuario = @UID";
+                        string sql = "UPDATE usuario SET UltimaConexion = NOW(), EnLinea = 1 WHERE ID_Usuario = @UID";
                         using (MySqlCommand cmd = new MySqlCommand(sql, con))
                         {
                             cmd.Parameters.AddWithValue("@UID", context.Session["UsuarioID"]);

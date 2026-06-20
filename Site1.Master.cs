@@ -54,7 +54,7 @@ namespace Optica
                 try
                 {
                     con.Open();
-                    string sql = "SELECT Nombres, Apellidos, Rol, Avatar FROM Usuario WHERE ID_Usuario = @uid";
+                    string sql = "SELECT Nombres, Apellidos, Rol, Avatar FROM usuario WHERE ID_Usuario = @uid";
                     using (MySqlCommand cmd = new MySqlCommand(sql, con))
                     {
                         cmd.Parameters.AddWithValue("@uid", idUsuario);
@@ -146,14 +146,14 @@ namespace Optica
                     try
                     {
                         con.Open();
-                        string sqlSesion = "UPDATE SesionUsuario SET Estado='Cerrada', FechaFin=NOW() WHERE SessionID=@Sid";
+                        string sqlSesion = "UPDATE sesionusuario SET Estado='Cerrada', FechaFin=NOW() WHERE SessionID=@Sid";
                         using (MySqlCommand cmd = new MySqlCommand(sqlSesion, con))
                         {
                             cmd.Parameters.AddWithValue("@Sid", sid);
                             cmd.ExecuteNonQuery();
                         }
 
-                        string sqlUser = "UPDATE Usuario SET EnLinea=0 WHERE ID_Usuario=@Uid";
+                        string sqlUser = "UPDATE usuario SET EnLinea=0 WHERE ID_Usuario=@Uid";
                         using (MySqlCommand cmd = new MySqlCommand(sqlUser, con))
                         {
                             cmd.Parameters.AddWithValue("@Uid", uid);
@@ -177,7 +177,7 @@ namespace Optica
                 try
                 {
                     con.Open();
-                    string sql = "UPDATE Usuario SET UltimaConexion=NOW(), EnLinea=1 WHERE ID_Usuario=@Uid";
+                    string sql = "UPDATE usuario SET UltimaConexion=NOW(), EnLinea=1 WHERE ID_Usuario=@Uid";
                     using (MySqlCommand cmd = new MySqlCommand(sql, con))
                     {
                         cmd.Parameters.AddWithValue("@Uid", Session["UsuarioID"]);
@@ -200,7 +200,7 @@ namespace Optica
                 try
                 {
                     con.Open();
-                    string sql = @"SELECT COUNT(*) FROM SesionUsuario 
+                    string sql = @"SELECT COUNT(*) FROM sesionusuario 
                                    WHERE SessionID=@Sid AND ID_Usuario=@Uid AND Estado='Activa'";
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, con))
@@ -212,14 +212,14 @@ namespace Optica
 
                         if (count == 0)
                         {
-                            string checkUser = "SELECT EnLinea FROM Usuario WHERE ID_Usuario=@Uid";
+                            string checkUser = "SELECT EnLinea FROM usuario WHERE ID_Usuario=@Uid";
                             MySqlCommand cmdCheck = new MySqlCommand(checkUser, con);
                             cmdCheck.Parameters.AddWithValue("@Uid", uid);
                             object enLinea = cmdCheck.ExecuteScalar();
 
                             if (enLinea != null && Convert.ToBoolean(enLinea) == true)
                             {
-                                string restore = "INSERT INTO SesionUsuario (ID_Usuario, SessionID, FechaInicio, DireccionIP, Estado) VALUES (@Uid, @Sid, NOW(), '::1', 'Activa')";
+                                string restore = "INSERT INTO sesionusuario (ID_Usuario, SessionID, FechaInicio, DireccionIP, Estado) VALUES (@Uid, @Sid, NOW(), '::1', 'Activa')";
                                 MySqlCommand cmdRestore = new MySqlCommand(restore, con);
                                 cmdRestore.Parameters.AddWithValue("@Uid", uid);
                                 cmdRestore.Parameters.AddWithValue("@Sid", sid);
@@ -248,7 +248,7 @@ namespace Optica
                 try
                 {
                     con.Open();
-                    string sqlUser = @"UPDATE Usuario SET EnLinea=0 
+                    string sqlUser = @"UPDATE usuario SET EnLinea=0 
                                        WHERE EnLinea=1 
                                        AND UltimaConexion < DATE_SUB(NOW(), INTERVAL 2 MINUTE)
                                        AND ID_Usuario != @MiID";
@@ -259,8 +259,8 @@ namespace Optica
                         cmd.ExecuteNonQuery();
                     }
 
-                    string sqlSesion = @"UPDATE SesionUsuario s
-                                         JOIN Usuario u ON s.ID_Usuario = u.ID_Usuario
+                    string sqlSesion = @"UPDATE sesionusuario s
+                                         JOIN usuario u ON s.ID_Usuario = u.ID_Usuario
                                          SET s.Estado='Expirada', s.FechaFin=NOW()
                                          WHERE s.Estado='Activa' AND u.EnLinea=0";
 

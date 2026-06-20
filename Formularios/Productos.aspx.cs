@@ -66,7 +66,7 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                MySqlDataAdapter da = new MySqlDataAdapter("SELECT ID_Categoria, Descripcion FROM Categoria WHERE Estado=1", con);
+                MySqlDataAdapter da = new MySqlDataAdapter("SELECT ID_Categoria, Descripcion FROM categoria WHERE Estado=1", con);
                 DataTable dt = new DataTable(); da.Fill(dt);
 
                 ddlFiltroCat.DataSource = dt; ddlFiltroCat.DataTextField = "Descripcion"; ddlFiltroCat.DataValueField = "ID_Categoria";
@@ -85,8 +85,8 @@ namespace Optica.Formularios
                 string sql = @"SELECT p.ID_Producto, p.Codigo, c.Descripcion as Categoria, p.Descripcion, 
                                       p.TipoAro, p.Marca, p.Modelo, p.Color,
                                       p.Precio, p.Stock, p.FechaRegistro, p.Estado, p.RutaImagen 
-                               FROM Producto p 
-                               INNER JOIN Categoria c ON p.ID_Categoria = c.ID_Categoria 
+                               FROM producto p 
+                               INNER JOIN categoria c ON p.ID_Categoria = c.ID_Categoria 
                                WHERE 1=1";
 
                 if (!string.IsNullOrEmpty(txtBuscar.Text))
@@ -163,10 +163,10 @@ namespace Optica.Formularios
                     bool esNuevo = string.IsNullOrEmpty(hfIdProducto.Value);
 
                     if (esNuevo)
-                        query = @"INSERT INTO Producto (Codigo, ID_Categoria, Descripcion, TipoAro, Marca, Modelo, Color, Precio, Stock, FechaRegistro, RutaImagen, Estado) 
+                        query = @"INSERT INTO producto (Codigo, ID_Categoria, Descripcion, TipoAro, Marca, Modelo, Color, Precio, Stock, FechaRegistro, RutaImagen, Estado) 
                                   VALUES (@Cod, @Cat, @Desc, @Tip, @Mar, @Mod, @Col, @Pre, @Stk, CURDATE(), @Img, 1)";
                     else
-                        query = @"UPDATE Producto SET Codigo=@Cod, ID_Categoria=@Cat, Descripcion=@Desc, 
+                        query = @"UPDATE producto SET Codigo=@Cod, ID_Categoria=@Cat, Descripcion=@Desc, 
                                   TipoAro=@Tip, Marca=@Mar, Modelo=@Mod, Color=@Col, Precio=@Pre, Stock=@Stk" +
                                   (nuevaRuta != null ? ", RutaImagen=@Img" : "") +
                                   " WHERE ID_Producto=@ID";
@@ -249,7 +249,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    new MySqlCommand("UPDATE Producto SET Estado=0 WHERE ID_Producto=" + e.CommandArgument, con).ExecuteNonQuery();
+                    new MySqlCommand("UPDATE producto SET Estado=0 WHERE ID_Producto=" + e.CommandArgument, con).ExecuteNonQuery();
                 }
                 CargarProductos();
             }
@@ -260,7 +260,7 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM Producto WHERE ID_Producto=" + id, con);
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM producto WHERE ID_Producto=" + id, con);
                 MySqlDataReader dr = cmd.ExecuteReader();
                 if (dr.Read())
                 {

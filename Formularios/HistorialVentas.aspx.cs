@@ -40,13 +40,13 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     string baseQuery = @"SELECT V.ID_Venta, V.NumeroDocumento, V.Fecha, V.Estado, V.EstadoPagoVenta, TD.Descripcion as TipoDoc,
-                                       (SELECT IFNULL(SUM(Monto),0) FROM Pago WHERE ID_Venta=V.ID_Venta) as Total,
+                                       (SELECT IFNULL(SUM(Monto),0) FROM pago WHERE ID_Venta=V.ID_Venta) as Total,
                                        CASE WHEN C.TipoCliente='Natural' THEN CONCAT(CN.Nombre,' ',CN.Apellido) ELSE CJ.RepresentanteLegal END as Cliente
-                                       FROM Venta V 
-                                       JOIN Clientes C ON V.ID_Cliente=C.ID_Cliente 
-                                       JOIN TipoDocumento TD ON V.ID_TipoDocumento=TD.ID_TipoDocumento
-                                       LEFT JOIN ClienteNatural CN ON C.ID_Cliente=CN.ID_Cliente 
-                                       LEFT JOIN ClienteJuridico CJ ON C.ID_Cliente=CJ.ID_Cliente 
+                                       FROM venta V 
+                                       JOIN clientes C ON V.ID_Cliente=C.ID_Cliente 
+                                       JOIN tipodocumento TD ON V.ID_TipoDocumento=TD.ID_TipoDocumento
+                                       LEFT JOIN clientenatural CN ON C.ID_Cliente=CN.ID_Cliente 
+                                       LEFT JOIN clientejuridico CJ ON C.ID_Cliente=CJ.ID_Cliente 
                                        WHERE 1=1";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text)) baseQuery += " AND (V.NumeroDocumento LIKE @Bus OR CN.Nombre LIKE @Bus OR CN.Apellido LIKE @Bus OR CJ.RepresentanteLegal LIKE @Bus)";
@@ -101,7 +101,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string sql = "UPDATE Venta SET Estado = CASE WHEN Estado=1 THEN 0 ELSE 1 END WHERE ID_Venta=@ID";
+                    string sql = "UPDATE venta SET Estado = CASE WHEN Estado=1 THEN 0 ELSE 1 END WHERE ID_Venta=@ID";
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     cmd.ExecuteNonQuery();
@@ -556,23 +556,23 @@ namespace Optica.Formularios
                                     CASE WHEN C.TipoCliente='Natural' THEN CONCAT(CN.Nombre,' ',CN.Apellido) ELSE CJ.RepresentanteLegal END as NombreCliente,
                                     CASE WHEN C.TipoCliente='Natural' THEN CN.Cedula ELSE CJ.RUC END as IdentificacionCliente,
                                     C.Direccion, C.Telefono
-                                    FROM Venta V 
-                                    JOIN TipoDocumento TD ON V.ID_TipoDocumento=TD.ID_TipoDocumento
-                                    JOIN Clientes C ON V.ID_Cliente=C.ID_Cliente
-                                    LEFT JOIN ClienteNatural CN ON C.ID_Cliente=CN.ID_Cliente
-                                    LEFT JOIN ClienteJuridico CJ ON C.ID_Cliente=CJ.ID_Cliente
+                                    FROM venta V 
+                                    JOIN tipodocumento TD ON V.ID_TipoDocumento=TD.ID_TipoDocumento
+                                    JOIN clientes C ON V.ID_Cliente=C.ID_Cliente
+                                    LEFT JOIN clientenatural CN ON C.ID_Cliente=CN.ID_Cliente
+                                    LEFT JOIN clientejuridico CJ ON C.ID_Cliente=CJ.ID_Cliente
                                     WHERE V.ID_Venta=@ID";
                 MySqlDataAdapter daV = new MySqlDataAdapter(sqlVenta, con);
                 daV.SelectCommand.Parameters.AddWithValue("@ID", idVenta);
                 daV.Fill(ds, "Venta");
 
-                string sqlProd = @"SELECT DV.*, P.Descripcion FROM DetalleVentaProducto DV 
-                                   JOIN Producto P ON DV.ID_Producto=P.ID_Producto WHERE DV.ID_Venta=@ID";
+                string sqlProd = @"SELECT DV.*, P.Descripcion FROM detalleventaproducto DV 
+                                   JOIN producto P ON DV.ID_Producto=P.ID_Producto WHERE DV.ID_Venta=@ID";
                 MySqlDataAdapter daP = new MySqlDataAdapter(sqlProd, con);
                 daP.SelectCommand.Parameters.AddWithValue("@ID", idVenta);
                 daP.Fill(ds, "Productos");
 
-                string sqlLente = @"SELECT * FROM DetalleVentaLentes WHERE ID_Venta=@ID";
+                string sqlLente = @"SELECT * FROM detalleventalentes WHERE ID_Venta=@ID";
                 MySqlDataAdapter daL = new MySqlDataAdapter(sqlLente, con);
                 daL.SelectCommand.Parameters.AddWithValue("@ID", idVenta);
                 daL.Fill(ds, "Lentes");

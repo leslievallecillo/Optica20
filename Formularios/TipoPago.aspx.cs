@@ -27,7 +27,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT * FROM TipoPago WHERE 1=1 ";
+                    string query = "SELECT * FROM tipopago WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
                         query += " AND Descripcion LIKE @Busq ";
@@ -126,7 +126,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT COUNT(*) FROM TipoPago WHERE Descripcion = @Desc AND ID_TipoPago != @ID";
+                    string query = "SELECT COUNT(*) FROM tipopago WHERE Descripcion = @Desc AND ID_TipoPago != @ID";
                     MySqlCommand cmd = new MySqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@Desc", descripcion);
                     cmd.Parameters.AddWithValue("@ID", string.IsNullOrEmpty(idExcluir) ? "0" : idExcluir);
@@ -166,7 +166,7 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDTipoPago.Value))
                     {
-                        string sql = "INSERT INTO TipoPago (Descripcion, FechaRegistro, Estado) VALUES (@Desc, CURRENT_DATE, 1)";
+                        string sql = "INSERT INTO tipopago (Descripcion, FechaRegistro, Estado) VALUES (@Desc, CURRENT_DATE, 1)";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Desc", txtDescripcion.Text.Trim());
                         cmd.ExecuteNonQuery();
@@ -174,7 +174,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sql = "UPDATE TipoPago SET Descripcion=@Desc WHERE ID_TipoPago=@ID";
+                        string sql = "UPDATE tipopago SET Descripcion=@Desc WHERE ID_TipoPago=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Desc", txtDescripcion.Text.Trim());
                         cmd.Parameters.AddWithValue("@ID", hfIDTipoPago.Value);
@@ -206,7 +206,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM TipoPago WHERE ID_TipoPago=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM tipopago WHERE ID_TipoPago=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader r = cmd.ExecuteReader();
                     if (r.Read())
@@ -234,7 +234,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("UPDATE TipoPago SET Estado=@Est WHERE ID_TipoPago=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("UPDATE tipopago SET Estado=@Est WHERE ID_TipoPago=@ID", con);
                     cmd.Parameters.AddWithValue("@Est", estado);
                     cmd.Parameters.AddWithValue("@ID", id);
                     cmd.ExecuteNonQuery();

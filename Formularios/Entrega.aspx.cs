@@ -36,11 +36,11 @@ namespace Optica.Formularios
                         SELECT 
                             v.ID_Venta, 
                             CONCAT('Venta #', v.ID_Venta, ' - ', COALESCE(cn.Nombre, cj.NombreEmpresa, ''), ' ', COALESCE(cn.Apellido, '')) AS NombreCliente 
-                        FROM Venta v 
-                        INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
-                        LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                        LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
-                        WHERE v.Estado = 1 AND EXISTS (SELECT 1 FROM DetalleVentaLentes dl WHERE dl.ID_Venta = v.ID_Venta)
+                        FROM venta v 
+                        INNER JOIN clientes c ON v.ID_Cliente = c.ID_Cliente
+                        LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                        LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                        WHERE v.Estado = 1 AND EXISTS (SELECT 1 FROM detalleventalentes dl WHERE dl.ID_Venta = v.ID_Venta)
                         ORDER BY v.ID_Venta DESC";
 
                     MySqlDataAdapter daV = new MySqlDataAdapter(sqlVentas, con);
@@ -53,7 +53,7 @@ namespace Optica.Formularios
                     ddlVenta.DataBind();
                     ddlVenta.Items.Insert(0, new ListItem("-- Seleccione Venta --", "0"));
 
-                    string sqlResp = "SELECT DISTINCT Responsable FROM Entrega WHERE Responsable IS NOT NULL AND Responsable != '' AND Responsable != 'ANULADO' ORDER BY Responsable";
+                    string sqlResp = "SELECT DISTINCT Responsable FROM entrega WHERE Responsable IS NOT NULL AND Responsable != '' AND Responsable != 'ANULADO' ORDER BY Responsable";
                     MySqlDataAdapter daR = new MySqlDataAdapter(sqlResp, con);
                     DataTable dtR = new DataTable();
                     daR.Fill(dtR);
@@ -79,7 +79,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string sql = "SELECT EstadoLente, COUNT(*) as Total FROM Entrega WHERE Estado = 1 GROUP BY EstadoLente";
+                    string sql = "SELECT EstadoLente, COUNT(*) as Total FROM entrega WHERE Estado = 1 GROUP BY EstadoLente";
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     using (MySqlDataReader r = cmd.ExecuteReader())
                     {
@@ -108,8 +108,8 @@ namespace Optica.Formularios
                 {
                     con.Open();
                     string query = @"SELECT e.ID_Entrega, e.ID_Venta, e.Fecha, e.Responsable, e.Observaciones, e.FechaRegistro, e.Estado, e.EstadoLente, v.NumeroDocumento 
-                                     FROM Entrega e 
-                                     INNER JOIN Venta v ON e.ID_Venta = v.ID_Venta 
+                                     FROM entrega e 
+                                     INNER JOIN venta v ON e.ID_Venta = v.ID_Venta 
                                      WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
@@ -215,10 +215,10 @@ namespace Optica.Formularios
                 {
                     con.Open();
                     string sql = @"SELECT c.Correo, COALESCE(cn.Nombre, cj.NombreEmpresa, 'Cliente') as Nombre
-                                   FROM Venta v
-                                   INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
-                                   LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                                   LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                   FROM venta v
+                                   INNER JOIN clientes c ON v.ID_Cliente = c.ID_Cliente
+                                   LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                   LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
                                    WHERE v.ID_Venta = @ID_Venta";
                     using (MySqlCommand cmd = new MySqlCommand(sql, con))
                     {
@@ -330,7 +330,7 @@ namespace Optica.Formularios
             {
                 if (ValidarFormatoNombre(valor))
                 {
-                    EjecutarSQL("UPDATE Entrega SET Responsable=@New WHERE Responsable=@Old", valor, anterior);
+                    EjecutarSQL("UPDATE entrega SET Responsable=@New WHERE Responsable=@Old", valor, anterior);
                     CargarCombos();
                     ddlResponsable.SelectedValue = valor;
                     CargarDatos();
@@ -339,7 +339,7 @@ namespace Optica.Formularios
             }
             else if (action == "DELETE")
             {
-                EjecutarSQL("UPDATE Entrega SET Responsable='ANULADO' WHERE Responsable=@Old", "", valor);
+                EjecutarSQL("UPDATE entrega SET Responsable='ANULADO' WHERE Responsable=@Old", "", valor);
                 CargarCombos();
                 CargarDatos();
                 MostrarMensaje("Responsable dado de baja.", "success");
@@ -404,7 +404,7 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDEntrega.Value))
                     {
-                        string sql = @"INSERT INTO Entrega (ID_Venta, Fecha, Responsable, Observaciones, FechaRegistro, Estado, EstadoLente) 
+                        string sql = @"INSERT INTO entrega (ID_Venta, Fecha, Responsable, Observaciones, FechaRegistro, Estado, EstadoLente) 
                                        VALUES (@Venta, @Fecha, @Resp, @Obs, CURRENT_DATE, 1, @EstLente)";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Venta", ddlVenta.SelectedValue);
@@ -417,7 +417,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sql = @"UPDATE Entrega SET ID_Venta=@Venta, Fecha=@Fecha, Responsable=@Resp, 
+                        string sql = @"UPDATE entrega SET ID_Venta=@Venta, Fecha=@Fecha, Responsable=@Resp, 
                                        Observaciones=@Obs, FechaRegistro=@FecReg, EstadoLente=@EstLente 
                                        WHERE ID_Entrega=@ID";
                         cmd = new MySqlCommand(sql, con);
@@ -454,7 +454,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM Entrega WHERE ID_Entrega=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM entrega WHERE ID_Entrega=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader r = cmd.ExecuteReader();
                     if (r.Read())
@@ -511,7 +511,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("UPDATE Entrega SET Estado=@Est WHERE ID_Entrega=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("UPDATE entrega SET Estado=@Est WHERE ID_Entrega=@ID", con);
                     cmd.Parameters.AddWithValue("@Est", estado);
                     cmd.Parameters.AddWithValue("@ID", id);
                     cmd.ExecuteNonQuery();
@@ -540,7 +540,7 @@ namespace Optica.Formularios
                     using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                     {
                         con.Open();
-                        MySqlCommand cmd = new MySqlCommand("SELECT EstadoPagoVenta FROM Venta WHERE ID_Venta = @ID", con);
+                        MySqlCommand cmd = new MySqlCommand("SELECT EstadoPagoVenta FROM venta WHERE ID_Venta = @ID", con);
                         cmd.Parameters.AddWithValue("@ID", ddlVenta.SelectedValue);
                         object result = cmd.ExecuteScalar();
 
@@ -550,7 +550,7 @@ namespace Optica.Formularios
                             v = false;
                         }
 
-                        string sqlDup = "SELECT COUNT(*) FROM Entrega WHERE ID_Venta = @IDVenta AND Estado = 1";
+                        string sqlDup = "SELECT COUNT(*) FROM entrega WHERE ID_Venta = @IDVenta AND Estado = 1";
                         if (!string.IsNullOrEmpty(hfIDEntrega.Value))
                         {
                             sqlDup += " AND ID_Entrega != @IDEntrega";

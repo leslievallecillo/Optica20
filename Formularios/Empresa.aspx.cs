@@ -49,7 +49,7 @@ namespace Optica.Formularios
             {
                 try
                 {
-                    string query = "SELECT * FROM Empresa WHERE ID_Empresa = @ID LIMIT 1";
+                    string query = "SELECT * FROM empresa WHERE ID_Empresa = @ID LIMIT 1";
                     MySqlCommand cmd = new MySqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@ID", EMPRESA_DEFAULT_ID);
 
@@ -249,7 +249,7 @@ namespace Optica.Formularios
                 {
                     con.Open();
 
-                    string checkQuery = "SELECT COUNT(*) FROM Empresa WHERE ID_Empresa = @ID";
+                    string checkQuery = "SELECT COUNT(*) FROM empresa WHERE ID_Empresa = @ID";
                     MySqlCommand checkCmd = new MySqlCommand(checkQuery, con);
                     checkCmd.Parameters.AddWithValue("@ID", EMPRESA_DEFAULT_ID);
                     int existe = Convert.ToInt32(checkCmd.ExecuteScalar());
@@ -257,7 +257,7 @@ namespace Optica.Formularios
                     string query;
                     if (existe > 0)
                     {
-                        query = @"UPDATE Empresa SET 
+                        query = @"UPDATE empresa SET 
                                   Nombre = @Nombre, 
                                   RUC = @RUC, 
                                   Telefono = @Telefono, 
@@ -270,7 +270,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        query = @"INSERT INTO Empresa (ID_Empresa, Nombre, RUC, Telefono, Correo, Estado, FechaRegistro, LogoRuta) 
+                        query = @"INSERT INTO empresa (ID_Empresa, Nombre, RUC, Telefono, Correo, Estado, FechaRegistro, LogoRuta) 
                                   VALUES (@ID, @Nombre, @RUC, @Telefono, @Correo, 1, CURRENT_DATE, @LogoRuta)";
                     }
 

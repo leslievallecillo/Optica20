@@ -31,7 +31,7 @@ namespace Optica.Formularios
                 try
                 {
                     con.Open();
-                    string sql = "SELECT * FROM CatalogoImagenes ORDER BY Seccion, ID_Imagen DESC";
+                    string sql = "SELECT * FROM catalogoimagenes ORDER BY Seccion, ID_Imagen DESC";
                     MySqlDataAdapter da = new MySqlDataAdapter(sql, con);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
@@ -140,12 +140,12 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDImagen.Value))
                     {
-                        string sql = "INSERT INTO CatalogoImagenes (Seccion, Titulo, Descripcion, Precio, UrlImagen) VALUES (@Sec, @Tit, @Desc, @Pre, @Url)";
+                        string sql = "INSERT INTO catalogoimagenes (Seccion, Titulo, Descripcion, Precio, UrlImagen) VALUES (@Sec, @Tit, @Desc, @Pre, @Url)";
                         cmd = new MySqlCommand(sql, con);
                     }
                     else
                     {
-                        string sql = "UPDATE CatalogoImagenes SET Seccion=@Sec, Titulo=@Tit, Descripcion=@Desc, Precio=@Pre, UrlImagen=@Url WHERE ID_Imagen=@ID";
+                        string sql = "UPDATE catalogoimagenes SET Seccion=@Sec, Titulo=@Tit, Descripcion=@Desc, Precio=@Pre, UrlImagen=@Url WHERE ID_Imagen=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@ID", hfIDImagen.Value);
                     }
@@ -177,7 +177,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM CatalogoImagenes WHERE ID_Imagen=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM catalogoimagenes WHERE ID_Imagen=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     using (MySqlDataReader r = cmd.ExecuteReader())
                     {
@@ -210,7 +210,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("DELETE FROM CatalogoImagenes WHERE ID_Imagen=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("DELETE FROM catalogoimagenes WHERE ID_Imagen=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     cmd.ExecuteNonQuery();
                     MostrarAlerta("Elemento eliminado.", "success");

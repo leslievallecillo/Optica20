@@ -37,7 +37,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string sql = "SELECT CONCAT(Nombres, ' ', Apellidos) FROM Usuario WHERE ID_Usuario = @ID";
+                    string sql = "SELECT CONCAT(Nombres, ' ', Apellidos) FROM usuario WHERE ID_Usuario = @ID";
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     cmd.Parameters.AddWithValue("@ID", idUsuario);
                     object result = cmd.ExecuteScalar();
@@ -77,15 +77,15 @@ namespace Optica.Formularios
                                       ' - ', p.Descripcion
                                    ) as DescripcionProducto,
                                    e.Responsable as ResponsableEntrega
-                                   FROM Garantia g
-                                   INNER JOIN DetalleVentaLentes dl ON g.ID_DetalleVentaLente = dl.ID_DetalleVentaLentes
-                                   INNER JOIN Expediente exp ON dl.ID_Expediente = exp.ID_Expediente
-                                   INNER JOIN Producto p ON exp.ID_Producto = p.ID_Producto
-                                   INNER JOIN Venta v ON dl.ID_Venta = v.ID_Venta
-                                   INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
-                                   LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                                   LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
-                                   INNER JOIN Entrega e ON g.ID_Entrega = e.ID_Entrega
+                                   FROM garantia g
+                                   INNER JOIN detalleventalentes dl ON g.ID_DetalleVentaLente = dl.ID_DetalleVentaLentes
+                                   INNER JOIN expediente exp ON dl.ID_Expediente = exp.ID_Expediente
+                                   INNER JOIN producto p ON exp.ID_Producto = p.ID_Producto
+                                   INNER JOIN venta v ON dl.ID_Venta = v.ID_Venta
+                                   INNER JOIN clientes c ON v.ID_Cliente = c.ID_Cliente
+                                   LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                   LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                   INNER JOIN entrega e ON g.ID_Entrega = e.ID_Entrega
                                    WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscarGarantia.Text))
@@ -148,14 +148,14 @@ namespace Optica.Formularios
                                         IF(c.TipoCliente='Natural', CONCAT(cn.Nombre,' ',cn.Apellido), cj.NombreEmpresa),
                                         ' - ', p.Descripcion, ' (Doc: ', v.NumeroDocumento, ')'
                                     ) as Descrip 
-                                    FROM DetalleVentaLentes dl
-                                    INNER JOIN Venta v ON dl.ID_Venta = v.ID_Venta
-                                    INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
-                                    LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                                    LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
-                                    INNER JOIN Expediente exp ON dl.ID_Expediente = exp.ID_Expediente
-                                    INNER JOIN Producto p ON exp.ID_Producto = p.ID_Producto
-                                    INNER JOIN Entrega ent ON v.ID_Venta = ent.ID_Venta
+                                    FROM detalleventalentes dl
+                                    INNER JOIN venta v ON dl.ID_Venta = v.ID_Venta
+                                    INNER JOIN clientes c ON v.ID_Cliente = c.ID_Cliente
+                                    LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                    LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                    INNER JOIN expediente exp ON dl.ID_Expediente = exp.ID_Expediente
+                                    INNER JOIN producto p ON exp.ID_Producto = p.ID_Producto
+                                    INNER JOIN entrega ent ON v.ID_Venta = ent.ID_Venta
                                     WHERE dl.Estado = 1 AND ent.Estado = 1
                                     ORDER BY dl.ID_DetalleVentaLentes DESC";
 
@@ -168,7 +168,7 @@ namespace Optica.Formularios
                     ddlDetalleLente.DataBind();
                     ddlDetalleLente.Items.Insert(0, new ListItem("-- Seleccione Producto --", "0"));
 
-                    string sqlE = "SELECT ID_Entrega, CONCAT('ID: ', ID_Entrega, ' - ', Responsable) as Descrip FROM Entrega WHERE Estado = 1 ORDER BY ID_Entrega DESC";
+                    string sqlE = "SELECT ID_Entrega, CONCAT('ID: ', ID_Entrega, ' - ', Responsable) as Descrip FROM entrega WHERE Estado = 1 ORDER BY ID_Entrega DESC";
                     MySqlDataAdapter daE = new MySqlDataAdapter(sqlE, con);
                     DataTable dtE = new DataTable();
                     daE.Fill(dtE);
@@ -192,9 +192,9 @@ namespace Optica.Formularios
                     {
                         con.Open();
                         string sql = @"SELECT v.Fecha, ent.ID_Entrega 
-                                       FROM DetalleVentaLentes dl 
-                                       JOIN Venta v ON dl.ID_Venta = v.ID_Venta 
-                                       JOIN Entrega ent ON v.ID_Venta = ent.ID_Venta
+                                       FROM detalleventalentes dl 
+                                       JOIN venta v ON dl.ID_Venta = v.ID_Venta 
+                                       JOIN entrega ent ON v.ID_Venta = ent.ID_Venta
                                        WHERE dl.ID_DetalleVentaLentes = @ID AND ent.Estado = 1 LIMIT 1";
                         MySqlCommand cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@ID", ddlDetalleLente.SelectedValue);
@@ -277,7 +277,7 @@ namespace Optica.Formularios
                     MySqlCommand cmd;
                     if (string.IsNullOrEmpty(hfIDGarantia.Value))
                     {
-                        string sql = @"INSERT INTO Garantia (ID_DetalleVentaLente, ID_Entrega, FechaFin, Estado, FechaRegistro)
+                        string sql = @"INSERT INTO garantia (ID_DetalleVentaLente, ID_Entrega, FechaFin, Estado, FechaRegistro)
                                        VALUES (@Lente, @Entrega, @Fin, @Est, CURRENT_DATE)";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Lente", ddlDetalleLente.SelectedValue);
@@ -289,7 +289,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sql = @"UPDATE Garantia SET ID_DetalleVentaLente=@Lente, ID_Entrega=@Entrega, 
+                        string sql = @"UPDATE garantia SET ID_DetalleVentaLente=@Lente, ID_Entrega=@Entrega, 
                                        FechaFin=@Fin, Estado=@Est WHERE ID_Garantia=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Lente", ddlDetalleLente.SelectedValue);
@@ -353,7 +353,7 @@ namespace Optica.Formularios
                     MySqlCommand cmd;
                     if (string.IsNullOrEmpty(hfIDReclamo.Value))
                     {
-                        string sql = @"INSERT INTO ReclamoGarantia (ID_Garantia, FechaReclamo, Motivo, SolucionAplicada, 
+                        string sql = @"INSERT INTO reclamogarantia (ID_Garantia, FechaReclamo, Motivo, SolucionAplicada, 
                                        EstadoReclamo, Responsable, FechaSolucion, FechaRegistro, Estado)
                                        VALUES (@Garantia, @FecRec, @Mot, @Sol, @EstRec, @Resp, @FecSol, CURRENT_DATE, 1)";
                         cmd = new MySqlCommand(sql, con);
@@ -371,7 +371,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sql = @"UPDATE ReclamoGarantia SET Motivo=@Mot, SolucionAplicada=@Sol,
+                        string sql = @"UPDATE reclamogarantia SET Motivo=@Mot, SolucionAplicada=@Sol,
                                        EstadoReclamo=@EstRec, Responsable=@Resp, FechaSolucion=@FecSol WHERE ID_Reclamo=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Mot", txtMotivo.Text.Trim());
@@ -404,7 +404,7 @@ namespace Optica.Formularios
             }
             else if (e.CommandName == "DarBajaG")
             {
-                CambiarEstadoGeneral("Garantia", "Estado", "Anulada", "ID_Garantia", id);
+                CambiarEstadoGeneral("garantia", "Estado", "Anulada", "ID_Garantia", id);
                 CargarGarantias();
             }
             else if (e.CommandName == "VerReclamos")
@@ -451,7 +451,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM Garantia WHERE ID_Garantia=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM garantia WHERE ID_Garantia=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader r = cmd.ExecuteReader();
                     if (r.Read())
@@ -476,7 +476,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM ReclamoGarantia WHERE ID_Reclamo=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM reclamogarantia WHERE ID_Reclamo=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader r = cmd.ExecuteReader();
                     if (r.Read())
@@ -502,7 +502,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string sql = "SELECT * FROM ReclamoGarantia WHERE ID_Garantia = @ID ORDER BY FechaReclamo DESC";
+                    string sql = "SELECT * FROM reclamogarantia WHERE ID_Garantia = @ID ORDER BY FechaReclamo DESC";
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     cmd.Parameters.AddWithValue("@ID", idGarantia);
                     MySqlDataAdapter da = new MySqlDataAdapter(cmd);

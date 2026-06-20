@@ -59,9 +59,9 @@ namespace Optica.Formularios
                                     CASE WHEN c.TipoCliente = 'Natural' THEN cn.Cedula
                                          WHEN c.TipoCliente = 'Juridico' THEN cj.RUC ELSE '---' END AS Identificacion,
                                     c.Telefono, c.Correo, c.FechaRegistro, c.Estado
-                                    FROM Clientes c
-                                    LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                                    LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                    FROM clientes c
+                                    LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                    LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
                                     WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
@@ -371,11 +371,11 @@ namespace Optica.Formularios
         {
             string query = "";
             if (campo == "Telefono" || campo == "Correo")
-                query = $"SELECT COUNT(*) FROM Clientes WHERE {campo} = @Val AND ID_Cliente != @ID";
+                query = $"SELECT COUNT(*) FROM clientes WHERE {campo} = @Val AND ID_Cliente != @ID";
             else if (campo == "Cedula")
-                query = $"SELECT COUNT(*) FROM ClienteNatural WHERE Cedula = @Val AND ID_Cliente != @ID";
+                query = $"SELECT COUNT(*) FROM clientenatural WHERE Cedula = @Val AND ID_Cliente != @ID";
             else if (campo == "RUC")
-                query = $"SELECT COUNT(*) FROM ClienteJuridico WHERE RUC = @Val AND ID_Cliente != @ID";
+                query = $"SELECT COUNT(*) FROM clientejuridico WHERE RUC = @Val AND ID_Cliente != @ID";
 
             int count = 0;
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
@@ -409,7 +409,7 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDCliente.Value))
                     {
-                        string sqlMaestro = "INSERT INTO Clientes (Direccion, Telefono, Correo, TipoCliente, FechaRegistro, Estado) VALUES (@Dir, @Tel, @Cor, @Tipo, NOW(), 1); SELECT LAST_INSERT_ID();";
+                        string sqlMaestro = "INSERT INTO clientes (Direccion, Telefono, Correo, TipoCliente, FechaRegistro, Estado) VALUES (@Dir, @Tel, @Cor, @Tipo, NOW(), 1); SELECT LAST_INSERT_ID();";
                         cmd = new MySqlCommand(sqlMaestro, con);
                         cmd.Parameters.AddWithValue("@Dir", txtDireccion.Text.Trim());
                         cmd.Parameters.AddWithValue("@Tel", telefonoFull);
@@ -419,7 +419,7 @@ namespace Optica.Formularios
 
                         if (ddlTipoCliente.SelectedValue == "Natural")
                         {
-                            string sqlNat = "INSERT INTO ClienteNatural (ID_Cliente, Nombre, Apellido, Cedula) VALUES (@ID, @Nom, @Ape, @Ced)";
+                            string sqlNat = "INSERT INTO clientenatural (ID_Cliente, Nombre, Apellido, Cedula) VALUES (@ID, @Nom, @Ape, @Ced)";
                             cmd = new MySqlCommand(sqlNat, con);
                             cmd.Parameters.AddWithValue("@ID", idGenerado);
                             cmd.Parameters.AddWithValue("@Nom", txtNombre.Text.Trim());
@@ -429,7 +429,7 @@ namespace Optica.Formularios
                         }
                         else
                         {
-                            string sqlJur = "INSERT INTO ClienteJuridico (ID_Cliente, NombreEmpresa, RUC, GiroNegocio, RepresentanteLegal, EsAfiliada, DescuentoCorporativo) VALUES (@ID, @Emp, @RUC, @Giro, @Rep, @Afi, @Desc)";
+                            string sqlJur = "INSERT INTO clientejuridico (ID_Cliente, NombreEmpresa, RUC, GiroNegocio, RepresentanteLegal, EsAfiliada, DescuentoCorporativo) VALUES (@ID, @Emp, @RUC, @Giro, @Rep, @Afi, @Desc)";
                             cmd = new MySqlCommand(sqlJur, con);
                             cmd.Parameters.AddWithValue("@ID", idGenerado);
                             cmd.Parameters.AddWithValue("@Emp", txtNombreEmpresa.Text.Trim());
@@ -444,7 +444,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sqlMaestro = "UPDATE Clientes SET Direccion=@Dir, Telefono=@Tel, Correo=@Cor WHERE ID_Cliente=@ID";
+                        string sqlMaestro = "UPDATE clientes SET Direccion=@Dir, Telefono=@Tel, Correo=@Cor WHERE ID_Cliente=@ID";
                         cmd = new MySqlCommand(sqlMaestro, con);
                         cmd.Parameters.AddWithValue("@Dir", txtDireccion.Text.Trim());
                         cmd.Parameters.AddWithValue("@Tel", telefonoFull);
@@ -454,7 +454,7 @@ namespace Optica.Formularios
 
                         if (ddlTipoCliente.SelectedValue == "Natural")
                         {
-                            string sqlNat = "UPDATE ClienteNatural SET Nombre=@Nom, Apellido=@Ape, Cedula=@Ced WHERE ID_Cliente=@ID";
+                            string sqlNat = "UPDATE clientenatural SET Nombre=@Nom, Apellido=@Ape, Cedula=@Ced WHERE ID_Cliente=@ID";
                             cmd = new MySqlCommand(sqlNat, con);
                             cmd.Parameters.AddWithValue("@Nom", txtNombre.Text.Trim());
                             cmd.Parameters.AddWithValue("@Ape", txtApellido.Text.Trim());
@@ -464,7 +464,7 @@ namespace Optica.Formularios
                         }
                         else
                         {
-                            string sqlJur = "UPDATE ClienteJuridico SET NombreEmpresa=@Emp, RUC=@RUC, GiroNegocio=@Giro, RepresentanteLegal=@Rep, EsAfiliada=@Afi, DescuentoCorporativo=@Desc WHERE ID_Cliente=@ID";
+                            string sqlJur = "UPDATE clientejuridico SET NombreEmpresa=@Emp, RUC=@RUC, GiroNegocio=@Giro, RepresentanteLegal=@Rep, EsAfiliada=@Afi, DescuentoCorporativo=@Desc WHERE ID_Cliente=@ID";
                             cmd = new MySqlCommand(sqlJur, con);
                             cmd.Parameters.AddWithValue("@Emp", txtNombreEmpresa.Text.Trim());
                             cmd.Parameters.AddWithValue("@RUC", txtRUC.Text.Trim());
@@ -514,9 +514,9 @@ namespace Optica.Formularios
                 con.Open();
                 string sql = @"SELECT c.*, cn.Nombre, cn.Apellido, cn.Cedula, 
                              cj.NombreEmpresa, cj.RUC, cj.GiroNegocio, cj.RepresentanteLegal, cj.EsAfiliada, cj.DescuentoCorporativo
-                             FROM Clientes c 
-                             LEFT JOIN ClienteNatural cn ON c.ID_Cliente=cn.ID_Cliente
-                             LEFT JOIN ClienteJuridico cj ON c.ID_Cliente=cj.ID_Cliente
+                             FROM clientes c 
+                             LEFT JOIN clientenatural cn ON c.ID_Cliente=cn.ID_Cliente
+                             LEFT JOIN clientejuridico cj ON c.ID_Cliente=cj.ID_Cliente
                              WHERE c.ID_Cliente=@ID";
                 MySqlCommand cmd = new MySqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@ID", id);
@@ -562,7 +562,7 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                MySqlCommand cmd = new MySqlCommand("UPDATE Clientes SET Estado=@Est WHERE ID_Cliente=@ID", con);
+                MySqlCommand cmd = new MySqlCommand("UPDATE clientes SET Estado=@Est WHERE ID_Cliente=@ID", con);
                 cmd.Parameters.AddWithValue("@Est", estado);
                 cmd.Parameters.AddWithValue("@ID", id);
                 cmd.ExecuteNonQuery();

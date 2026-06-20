@@ -27,17 +27,17 @@ namespace Optica.Formularios
                 try
                 {
                     con.Open();
-                    string qC = "SELECT ID_Cliente, IF(TipoCliente='Natural', (SELECT CONCAT(Nombre, ' ', Apellido) FROM ClienteNatural WHERE ID_Cliente = c.ID_Cliente), (SELECT NombreEmpresa FROM ClienteJuridico WHERE ID_Cliente = c.ID_Cliente)) as Nombre FROM Clientes c WHERE Estado = 1 ORDER BY Nombre";
+                    string qC = "SELECT ID_Cliente, IF(TipoCliente='Natural', (SELECT CONCAT(Nombre, ' ', Apellido) FROM clientenatural WHERE ID_Cliente = c.ID_Cliente), (SELECT NombreEmpresa FROM clientejuridico WHERE ID_Cliente = c.ID_Cliente)) as Nombre FROM clientes c WHERE Estado = 1 ORDER BY Nombre";
                     DataTable dtC = new DataTable(); new MySqlDataAdapter(qC, con).Fill(dtC);
                     ddlCliente.DataSource = dtC; ddlCliente.DataTextField = "Nombre"; ddlCliente.DataValueField = "ID_Cliente";
                     ddlCliente.DataBind(); ddlCliente.Items.Insert(0, new ListItem("-- Seleccione --", ""));
 
-                    string qP = "SELECT ID_Producto, Descripcion FROM Producto WHERE Estado = 1";
+                    string qP = "SELECT ID_Producto, Descripcion FROM producto WHERE Estado = 1";
                     DataTable dtP = new DataTable(); new MySqlDataAdapter(qP, con).Fill(dtP);
                     ddlProducto.DataSource = dtP; ddlProducto.DataTextField = "Descripcion"; ddlProducto.DataValueField = "ID_Producto";
                     ddlProducto.DataBind(); ddlProducto.Items.Insert(0, new ListItem("-- Seleccione --", ""));
 
-                    string qT = "SELECT ID_Tratamiento, Nombre FROM Tratamiento WHERE Estado = 1";
+                    string qT = "SELECT ID_Tratamiento, Nombre FROM tratamiento WHERE Estado = 1";
                     DataTable dtT = new DataTable(); new MySqlDataAdapter(qT, con).Fill(dtT);
                     ddlTratamiento.DataSource = dtT; ddlTratamiento.DataTextField = "Nombre"; ddlTratamiento.DataValueField = "ID_Tratamiento";
                     ddlTratamiento.DataBind(); ddlTratamiento.Items.Insert(0, new ListItem("Ninguno", ""));
@@ -52,11 +52,11 @@ namespace Optica.Formularios
             {
                 string query = @"SELECT e.ID_Expediente, e.Fecha, e.Beneficiario, e.Estado, p.Descripcion as Producto,
                                 IF(c.TipoCliente='Natural', cn.Nombre, cj.NombreEmpresa) as NombreCliente
-                                FROM Expediente e
-                                INNER JOIN Clientes c ON e.ID_Cliente = c.ID_Cliente
-                                LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                                LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
-                                INNER JOIN Producto p ON e.ID_Producto = p.ID_Producto
+                                FROM expediente e
+                                INNER JOIN clientes c ON e.ID_Cliente = c.ID_Cliente
+                                LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                INNER JOIN producto p ON e.ID_Producto = p.ID_Producto
                                 WHERE 1=1";
 
                 if (!string.IsNullOrEmpty(txtBuscar.Text)) query += " AND (cn.Nombre LIKE @Bus OR e.Beneficiario LIKE @Bus)";
@@ -104,7 +104,7 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM Expediente WHERE ID_Expediente = @id", con);
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM expediente WHERE ID_Expediente = @id", con);
                 cmd.Parameters.AddWithValue("@id", id);
                 MySqlDataReader r = cmd.ExecuteReader();
                 if (r.Read())
@@ -132,9 +132,9 @@ namespace Optica.Formularios
                 {
                     con.Open();
                     string sql = string.IsNullOrEmpty(hfIDExpediente.Value) ?
-                        @"INSERT INTO Expediente (ID_Cliente, Beneficiario, Fecha, OD, OD_AV, OI, OI_AV, AD_D, DP, ALT, ID_Producto, ID_Tratamiento, Estado) 
+                        @"INSERT INTO expediente (ID_Cliente, Beneficiario, Fecha, OD, OD_AV, OI, OI_AV, AD_D, DP, ALT, ID_Producto, ID_Tratamiento, Estado) 
                           VALUES (@cli, @ben, @fec, @od, @odav, @oi, @oiav, @add, @dp, @alt, @prod, @trat, 1)" :
-                        @"UPDATE Expediente SET ID_Cliente=@cli, Beneficiario=@ben, Fecha=@fec, OD=@od, OD_AV=@odav, OI=@oi, OI_AV=@oiav, 
+                        @"UPDATE expediente SET ID_Cliente=@cli, Beneficiario=@ben, Fecha=@fec, OD=@od, OD_AV=@odav, OI=@oi, OI_AV=@oiav, 
                           AD_D=@add, DP=@dp, ALT=@alt, ID_Producto=@prod, ID_Tratamiento=@trat WHERE ID_Expediente=@id";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);

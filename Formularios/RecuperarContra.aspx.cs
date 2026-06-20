@@ -42,8 +42,8 @@ namespace Optica.Formularios
                     con.Open();
                     // Buscar usuario por Login o por Email
                     string sql = @"SELECT u.ID_Usuario, u.Correo, u.Nombres 
-                                   FROM Usuario u
-                                   JOIN InicioSesion i ON u.ID_Usuario = i.ID_Usuario
+                                   FROM usuario u
+                                   JOIN iniciosesion i ON u.ID_Usuario = i.ID_Usuario
                                    WHERE i.NombreUsuario = @Dato OR u.Correo = @Dato";
 
                     using (MySqlCommand cmd = new MySqlCommand(sql, con))
@@ -66,7 +66,7 @@ namespace Optica.Formularios
                         string codigo = new Random().Next(100000, 999999).ToString();
 
                         // Guardar en BD
-                        string sqlToken = "INSERT INTO PasswordResetTokens (ID_Usuario, Token, ExpiryDate, Used) VALUES (@uid, @tok, DATE_ADD(NOW(), INTERVAL 15 MINUTE), 0)";
+                        string sqlToken = "INSERT INTO passwordresettokens (ID_Usuario, Token, ExpiryDate, Used) VALUES (@uid, @tok, DATE_ADD(NOW(), INTERVAL 15 MINUTE), 0)";
                         using (MySqlCommand cmd = new MySqlCommand(sqlToken, con))
                         {
                             cmd.Parameters.AddWithValue("@uid", idUsuario);
@@ -120,7 +120,7 @@ namespace Optica.Formularios
                 {
                     con.Open();
                     // Verificar Token
-                    string sqlCheck = "SELECT COUNT(*) FROM PasswordResetTokens WHERE ID_Usuario=@uid AND Token=@tok AND Used=0 AND ExpiryDate > NOW()";
+                    string sqlCheck = "SELECT COUNT(*) FROM passwordresettokens WHERE ID_Usuario=@uid AND Token=@tok AND Used=0 AND ExpiryDate > NOW()";
                     int valido = 0;
                     using (MySqlCommand cmd = new MySqlCommand(sqlCheck, con))
                     {
@@ -135,7 +135,7 @@ namespace Optica.Formularios
                         string hashNuevaClave = GenerarHashSHA256(nuevaClave);
 
                         // 2. Actualizar BD
-                        string sqlUpd = "UPDATE InicioSesion SET Clave=@pass WHERE ID_Usuario=@uid";
+                        string sqlUpd = "UPDATE iniciosesion SET Clave=@pass WHERE ID_Usuario=@uid";
                         using (MySqlCommand cmd = new MySqlCommand(sqlUpd, con))
                         {
                             cmd.Parameters.AddWithValue("@pass", hashNuevaClave);
@@ -144,7 +144,7 @@ namespace Optica.Formularios
                         }
 
                         // 3. Quemar Token
-                        string sqlBurn = "UPDATE PasswordResetTokens SET Used=1 WHERE ID_Usuario=@uid AND Token=@tok";
+                        string sqlBurn = "UPDATE passwordresettokens SET Used=1 WHERE ID_Usuario=@uid AND Token=@tok";
                         using (MySqlCommand cmd = new MySqlCommand(sqlBurn, con))
                         {
                             cmd.Parameters.AddWithValue("@uid", uid);

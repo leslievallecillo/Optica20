@@ -30,10 +30,10 @@ namespace Optica.Formularios
                     string sql = @"SELECT r.ID_Reclamo, r.FechaReclamo, r.Motivo, r.EstadoReclamo, r.Responsable, 
                                           r.FechaSolucion, r.SolucionAplicada, g.ID_Garantia,
                                           CONCAT('Garantía #', g.ID_Garantia, ' - Venta: ', v.NumeroDocumento) as RefGarantia
-                                   FROM ReclamoGarantia r
-                                   INNER JOIN Garantia g ON r.ID_Garantia = g.ID_Garantia
-                                   INNER JOIN DetalleVentaLentes dl ON g.ID_DetalleVentaLente = dl.ID_DetalleVentaLentes
-                                   INNER JOIN Venta v ON dl.ID_Venta = v.ID_Venta
+                                   FROM reclamogarantia r
+                                   INNER JOIN garantia g ON r.ID_Garantia = g.ID_Garantia
+                                   INNER JOIN detalleventalentes dl ON g.ID_DetalleVentaLente = dl.ID_DetalleVentaLentes
+                                   INNER JOIN venta v ON dl.ID_Venta = v.ID_Venta
                                    WHERE r.Estado = 1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
@@ -140,10 +140,10 @@ namespace Optica.Formularios
                 {
                     con.Open();
                     string sql = @"SELECT r.*, CONCAT('Garantía #', g.ID_Garantia, ' - Doc: ', v.NumeroDocumento) as RefGarantia
-                                   FROM ReclamoGarantia r
-                                   INNER JOIN Garantia g ON r.ID_Garantia = g.ID_Garantia
-                                   INNER JOIN DetalleVentaLentes dl ON g.ID_DetalleVentaLente = dl.ID_DetalleVentaLentes
-                                   INNER JOIN Venta v ON dl.ID_Venta = v.ID_Venta
+                                   FROM reclamogarantia r
+                                   INNER JOIN garantia g ON r.ID_Garantia = g.ID_Garantia
+                                   INNER JOIN detalleventalentes dl ON g.ID_DetalleVentaLente = dl.ID_DetalleVentaLentes
+                                   INNER JOIN venta v ON dl.ID_Venta = v.ID_Venta
                                    WHERE r.ID_Reclamo=@ID";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
@@ -227,7 +227,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string sql = @"UPDATE ReclamoGarantia SET SolucionAplicada=@Sol, EstadoReclamo=@EstRec, FechaSolucion=@FecSol WHERE ID_Reclamo=@ID";
+                    string sql = @"UPDATE reclamogarantia SET SolucionAplicada=@Sol, EstadoReclamo=@EstRec, FechaSolucion=@FecSol WHERE ID_Reclamo=@ID";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     cmd.Parameters.AddWithValue("@Sol", txtSolucion.Text.Trim());

@@ -37,7 +37,7 @@ namespace Optica.AdministrarAccesos
 
                     // Cerrar sesiones que llevan más de 24 horas activas
                     string query = @"
-                        UPDATE SesionUsuario 
+                        UPDATE sesionusuario 
                         SET Estado = 'Expirada', FechaFin = NOW() 
                         WHERE Estado = 'Activa' AND FechaInicio < DATE_SUB(NOW(), INTERVAL 24 HOUR)";
 
@@ -52,9 +52,9 @@ namespace Optica.AdministrarAccesos
 
                     // Actualizar usuarios que no deberían estar en línea
                     string queryUsuarios = @"
-                        UPDATE Usuario u
-                        LEFT JOIN SesionUsuario s ON u.ID_Usuario = s.ID_Usuario AND s.Estado = 'Activa'
-                        SET u.EnLinea = 0, u.SesionActiva = NULL
+                        UPDATE usuario u
+                        LEFT JOIN sesionusuario s ON u.ID_Usuario = s.ID_Usuario AND s.Estado = 'Activa'
+                        SET u.EnLinea = 0
                         WHERE u.EnLinea = 1 AND s.ID_Sesion IS NULL";
 
                     using (MySqlCommand comando = new MySqlCommand(queryUsuarios, conexion))
@@ -79,7 +79,7 @@ namespace Optica.AdministrarAccesos
                     conexion.Open();
 
                     string query = @"
-                        INSERT INTO AuditoriaLogin (ID_Usuario, DireccionIP, Accion, Exitoso, Descripcion) 
+                        INSERT INTO auditorialogin (ID_Usuario, DireccionIP, Accion, Exitoso, Descripcion) 
                         VALUES (@UsuarioID, @DireccionIP, @Accion, @Exitoso, @Descripcion)";
 
                     using (MySqlCommand comando = new MySqlCommand(query, conexion))
@@ -99,7 +99,6 @@ namespace Optica.AdministrarAccesos
             }
         }
 
-        // El resto de tus métodos permanecen igual...
         private void CargarRoles()
         {
             using (MySqlConnection conexion = new MySqlConnection(Conexion.CadenaConexion))
@@ -107,7 +106,7 @@ namespace Optica.AdministrarAccesos
                 try
                 {
                     conexion.Open();
-                    string query = "SELECT DISTINCT Rol FROM Usuario WHERE Estado = 1 AND Rol IS NOT NULL ORDER BY Rol";
+                    string query = "SELECT DISTINCT Rol FROM usuario WHERE Estado = 1 AND Rol IS NOT NULL ORDER BY Rol";
 
                     using (MySqlCommand comando = new MySqlCommand(query, conexion))
                     {
@@ -154,8 +153,8 @@ namespace Optica.AdministrarAccesos
                         u.Telefono,
                         u.FechaRegistro,
                         i.NombreUsuario
-                    FROM Usuario u
-                    LEFT JOIN InicioSesion i ON u.ID_Usuario = i.ID_Usuario
+                    FROM usuario u
+                    LEFT JOIN iniciosesion i ON u.ID_Usuario = i.ID_Usuario
                     WHERE u.Estado = 1";
 
                     // Aplicar filtros
@@ -213,7 +212,7 @@ namespace Optica.AdministrarAccesos
                         COUNT(*) as TotalUsuarios,
                         SUM(CASE WHEN EnLinea = 1 THEN 1 ELSE 0 END) as EnLinea,
                         SUM(CASE WHEN EnLinea = 0 THEN 1 ELSE 0 END) as Desconectados
-                    FROM Usuario 
+                    FROM usuario 
                     WHERE Estado = 1";
 
                     using (MySqlCommand comando = new MySqlCommand(query, conexion))
@@ -275,7 +274,7 @@ namespace Optica.AdministrarAccesos
 
                     // Cerrar TODAS las sesiones activas del usuario
                     string querySesiones = @"
-                        UPDATE SesionUsuario 
+                        UPDATE sesionusuario 
                         SET Estado = 'Cerrada', FechaFin = NOW() 
                         WHERE ID_Usuario = @UsuarioID AND Estado = 'Activa'";
 
@@ -287,8 +286,8 @@ namespace Optica.AdministrarAccesos
 
                     // Actualizar estado del usuario
                     string queryUsuario = @"
-                        UPDATE Usuario 
-                        SET EnLinea = 0, SesionActiva = NULL 
+                        UPDATE usuario 
+                        SET EnLinea = 0 
                         WHERE ID_Usuario = @UsuarioID";
 
                     using (MySqlCommand comando = new MySqlCommand(queryUsuario, conexion))
@@ -299,7 +298,7 @@ namespace Optica.AdministrarAccesos
 
                     // Registrar en auditoría
                     string queryAuditoria = @"
-                        INSERT INTO AuditoriaLogin (ID_Usuario, DireccionIP, Accion, Exitoso, Descripcion) 
+                        INSERT INTO auditorialogin (ID_Usuario, DireccionIP, Accion, Exitoso, Descripcion) 
                         VALUES (@UsuarioID, @DireccionIP, 'Logout', 1, 'Cierre de sesión forzado por administrador')";
 
                     using (MySqlCommand comando = new MySqlCommand(queryAuditoria, conexion))
@@ -384,7 +383,7 @@ namespace Optica.AdministrarAccesos
                 using (MySqlConnection conexion = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     conexion.Open();
-                    string query = "SELECT COUNT(*) FROM SesionUsuario WHERE ID_Usuario = @UsuarioID AND Estado = 'Activa'";
+                    string query = "SELECT COUNT(*) FROM sesionusuario WHERE ID_Usuario = @UsuarioID AND Estado = 'Activa'";
 
                     using (MySqlCommand comando = new MySqlCommand(query, conexion))
                     {

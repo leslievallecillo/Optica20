@@ -27,7 +27,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT * FROM Proveedor WHERE 1=1 ";
+                    string query = "SELECT * FROM proveedor WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
                         query += " AND (Nombre LIKE @Busq OR Apellido LIKE @Busq OR RazonSocial LIKE @Busq OR Correo LIKE @Busq) ";
@@ -173,7 +173,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = $"SELECT COUNT(*) FROM Proveedor WHERE {campo} = @Val AND ID_Proveedor != @ID";
+                    string query = $"SELECT COUNT(*) FROM proveedor WHERE {campo} = @Val AND ID_Proveedor != @ID";
                     MySqlCommand cmd = new MySqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@Val", valor);
                     cmd.Parameters.AddWithValue("@ID", string.IsNullOrEmpty(idExcluir) ? "0" : idExcluir);
@@ -215,7 +215,7 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDProveedor.Value))
                     {
-                        string sql = @"INSERT INTO Proveedor (Nombre, Apellido, RazonSocial, Correo, Telefono, FechaRegistro, Estado) 
+                        string sql = @"INSERT INTO proveedor (Nombre, Apellido, RazonSocial, Correo, Telefono, FechaRegistro, Estado) 
                                        VALUES (@Nom, @Ape, @Raz, @Cor, @Tel, CURRENT_DATE, 1)";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Nom", txtNombre.Text.Trim());
@@ -228,7 +228,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sql = @"UPDATE Proveedor SET Nombre=@Nom, Apellido=@Ape, RazonSocial=@Raz, Correo=@Cor, 
+                        string sql = @"UPDATE proveedor SET Nombre=@Nom, Apellido=@Ape, RazonSocial=@Raz, Correo=@Cor, 
                                        Telefono=@Tel, FechaRegistro=@Fec WHERE ID_Proveedor=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Nom", txtNombre.Text.Trim());
@@ -263,7 +263,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM Proveedor WHERE ID_Proveedor=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM proveedor WHERE ID_Proveedor=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader r = cmd.ExecuteReader();
                     if (r.Read())
@@ -295,7 +295,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("UPDATE Proveedor SET Estado=@Est WHERE ID_Proveedor=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("UPDATE proveedor SET Estado=@Est WHERE ID_Proveedor=@ID", con);
                     cmd.Parameters.AddWithValue("@Est", estado);
                     cmd.Parameters.AddWithValue("@ID", id);
                     cmd.ExecuteNonQuery();

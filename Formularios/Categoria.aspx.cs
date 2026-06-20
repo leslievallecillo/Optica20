@@ -27,7 +27,8 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT * FROM Categoria WHERE 1=1 ";
+                    // Corrección: categoria en minúsculas
+                    string query = "SELECT * FROM categoria WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
                         query += " AND Descripcion LIKE @Busq ";
@@ -121,7 +122,8 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT COUNT(*) FROM Categoria WHERE Descripcion = @Desc AND ID_Categoria != @ID";
+                    // Corrección: categoria en minúsculas
+                    string query = "SELECT COUNT(*) FROM categoria WHERE Descripcion = @Desc AND ID_Categoria != @ID";
                     MySqlCommand cmd = new MySqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@Desc", descripcion);
                     cmd.Parameters.AddWithValue("@ID", string.IsNullOrEmpty(idExcluir) ? "0" : idExcluir);
@@ -161,7 +163,8 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDCategoria.Value))
                     {
-                        string sql = "INSERT INTO Categoria (Descripcion, FechaRegistro, Estado) VALUES (@Desc, CURRENT_DATE, 1)";
+                        // Corrección: categoria en minúsculas
+                        string sql = "INSERT INTO categoria (Descripcion, FechaRegistro, Estado) VALUES (@Desc, CURRENT_DATE, 1)";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Desc", txtDescripcion.Text.Trim());
                         cmd.ExecuteNonQuery();
@@ -169,7 +172,8 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sql = "UPDATE Categoria SET Descripcion=@Desc WHERE ID_Categoria=@ID";
+                        // Corrección: categoria en minúsculas
+                        string sql = "UPDATE categoria SET Descripcion=@Desc WHERE ID_Categoria=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Desc", txtDescripcion.Text.Trim());
                         cmd.Parameters.AddWithValue("@ID", hfIDCategoria.Value);
@@ -201,7 +205,8 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM Categoria WHERE ID_Categoria=@ID", con);
+                    // Corrección: categoria en minúsculas
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM categoria WHERE ID_Categoria=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader r = cmd.ExecuteReader();
                     if (r.Read())
@@ -229,7 +234,8 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("UPDATE Categoria SET Estado=@Est WHERE ID_Categoria=@ID", con);
+                    // Corrección: categoria en minúsculas
+                    MySqlCommand cmd = new MySqlCommand("UPDATE categoria SET Estado=@Est WHERE ID_Categoria=@ID", con);
                     cmd.Parameters.AddWithValue("@Est", estado);
                     cmd.Parameters.AddWithValue("@ID", id);
                     cmd.ExecuteNonQuery();
@@ -270,21 +276,23 @@ namespace Optica.Formularios
         private void LimpiarFormulario()
         {
             hfIDCategoria.Value = "";
-            txtDescripcion.Text = ""; txtFechaRegistro.Text = "";
+            txtDescripcion.Text = "";
+            txtFechaRegistro.Text = "";
             LimpiarErrores();
             QuitarMarcas();
         }
 
         private void LimpiarErrores()
         {
-            if (errDescripcion != null) errDescripcion.Visible = false;
+            if (errDescripcion != null)
+                errDescripcion.Visible = false;
             QuitarMarcas();
         }
 
-        private void MostrarError(Label l, string m)
+        private void MostrarError(Label lbl, string mensaje)
         {
-            l.Text = $"<i class='fa-solid fa-circle-exclamation'></i> {m}";
-            l.Visible = true;
+            lbl.Text = $"<i class='fa-solid fa-circle-exclamation'></i> {mensaje}";
+            lbl.Visible = true;
         }
 
         private void MarcarError(TextBox txt)
@@ -297,9 +305,9 @@ namespace Optica.Formularios
             txtDescripcion.CssClass = txtDescripcion.CssClass.Replace(" is-invalid", "");
         }
 
-        private void MostrarMensaje(string t, string i)
+        private void MostrarMensaje(string texto, string icono)
         {
-            ScriptManager.RegisterStartupScript(this, GetType(), "Toast", $"Swal.fire('Categorías', '{t}', '{i}');", true);
+            ScriptManager.RegisterStartupScript(this, GetType(), "Toast", $"Swal.fire('Categorías', '{texto}', '{icono}');", true);
         }
     }
 }

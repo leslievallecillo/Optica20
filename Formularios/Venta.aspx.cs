@@ -25,7 +25,7 @@ namespace Optica.Formularios
 
                 try
                 {
-                    txtUsuarioForm.Text = Session["Usuario"] != null ? Session["Usuario"].ToString() : GetValor("SELECT CONCAT(Nombres, ' ', Apellidos) FROM Usuario WHERE ID_Usuario=" + IdUsuario);
+                    txtUsuarioForm.Text = Session["Usuario"] != null ? Session["Usuario"].ToString() : GetValor("SELECT CONCAT(Nombres, ' ', Apellidos) FROM usuario WHERE ID_Usuario=" + IdUsuario);
                 }
                 catch
                 {
@@ -62,7 +62,7 @@ namespace Optica.Formularios
                     decimal dbMontoRecibidoSaldo = 0;
                     decimal dbCambioSaldo = 0;
 
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM Venta WHERE ID_Venta=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM venta WHERE ID_Venta=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader dr = cmd.ExecuteReader();
                     if (dr.Read())
@@ -90,7 +90,7 @@ namespace Optica.Formularios
                     }
                     dr.Close();
 
-                    MySqlCommand cmdP = new MySqlCommand("SELECT * FROM DetalleVentaProducto WHERE ID_Venta=@ID", con);
+                    MySqlCommand cmdP = new MySqlCommand("SELECT * FROM detalleventaproducto WHERE ID_Venta=@ID", con);
                     cmdP.Parameters.AddWithValue("@ID", id);
                     DataTable dtP = new DataTable();
                     new MySqlDataAdapter(cmdP).Fill(dtP);
@@ -108,7 +108,7 @@ namespace Optica.Formularios
                         }
                     }
 
-                    MySqlCommand cmdL = new MySqlCommand("SELECT * FROM DetalleVentaLentes WHERE ID_Venta=@ID", con);
+                    MySqlCommand cmdL = new MySqlCommand("SELECT * FROM detalleventalentes WHERE ID_Venta=@ID", con);
                     cmdL.Parameters.AddWithValue("@ID", id);
                     DataTable dtL = new DataTable();
                     new MySqlDataAdapter(cmdL).Fill(dtL);
@@ -120,7 +120,7 @@ namespace Optica.Formularios
                         txtSubtotalLente.Text = Convert.ToDecimal(dtL.Rows[0]["Subtotal"]).ToString("0.00", CultureInfo.InvariantCulture);
                     }
 
-                    MySqlCommand cmdPag = new MySqlCommand("SELECT * FROM Pago WHERE ID_Venta=@ID ORDER BY ID_Pago DESC LIMIT 1", con);
+                    MySqlCommand cmdPag = new MySqlCommand("SELECT * FROM pago WHERE ID_Venta=@ID ORDER BY ID_Pago DESC LIMIT 1", con);
                     cmdPag.Parameters.AddWithValue("@ID", id);
                     DataTable dtPag = new DataTable();
                     new MySqlDataAdapter(cmdPag).Fill(dtPag);
@@ -280,11 +280,11 @@ namespace Optica.Formularios
                     if (esEdicion)
                     {
                         RestaurarStock(hfIdVenta.Value, con, tran);
-                        new MySqlCommand($"DELETE FROM DetalleVentaProducto WHERE ID_Venta={hfIdVenta.Value}", con, tran).ExecuteNonQuery();
-                        new MySqlCommand($"DELETE FROM DetalleVentaLentes WHERE ID_Venta={hfIdVenta.Value}", con, tran).ExecuteNonQuery();
-                        new MySqlCommand($"DELETE FROM Pago WHERE ID_Venta={hfIdVenta.Value}", con, tran).ExecuteNonQuery();
+                        new MySqlCommand($"DELETE FROM detalleventaproducto WHERE ID_Venta={hfIdVenta.Value}", con, tran).ExecuteNonQuery();
+                        new MySqlCommand($"DELETE FROM detalleventalentes WHERE ID_Venta={hfIdVenta.Value}", con, tran).ExecuteNonQuery();
+                        new MySqlCommand($"DELETE FROM pago WHERE ID_Venta={hfIdVenta.Value}", con, tran).ExecuteNonQuery();
 
-                        string upV = "UPDATE Venta SET ID_Cliente=@Cli, ID_TipoDocumento=@Doc, ID_TipoPago=@Pago, Fecha=@Fec, MontoRecibido=@MR, Cambio=@Cam, Total=@Tot, EstadoPagoVenta=@EPV, TotalSaldo=@TS, MontoRecibidoSaldo=@MRS, CambioSaldo=@CS WHERE ID_Venta=@ID";
+                        string upV = "UPDATE venta SET ID_Cliente=@Cli, ID_TipoDocumento=@Doc, ID_TipoPago=@Pago, Fecha=@Fec, MontoRecibido=@MR, Cambio=@Cam, Total=@Tot, EstadoPagoVenta=@EPV, TotalSaldo=@TS, MontoRecibidoSaldo=@MRS, CambioSaldo=@CS WHERE ID_Venta=@ID";
                         MySqlCommand cmdUp = new MySqlCommand(upV, con, tran);
                         cmdUp.Parameters.AddWithValue("@Cli", ddlCliente.SelectedValue);
                         cmdUp.Parameters.AddWithValue("@Doc", ddlTipoDoc.SelectedValue);
@@ -302,7 +302,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sqlV = @"INSERT INTO Venta (ID_Cliente, ID_TipoDocumento, NumeroDocumento, ID_TipoPago, ID_Usuario, Fecha, MontoRecibido, Cambio, Total, Estado, EstadoPagoVenta, TotalSaldo, MontoRecibidoSaldo, CambioSaldo) 
+                        string sqlV = @"INSERT INTO venta (ID_Cliente, ID_TipoDocumento, NumeroDocumento, ID_TipoPago, ID_Usuario, Fecha, MontoRecibido, Cambio, Total, Estado, EstadoPagoVenta, TotalSaldo, MontoRecibidoSaldo, CambioSaldo) 
                                         VALUES (@Cli, @Doc, @Num, @Pago, @User, @Fec, @MR, @Cam, @Tot, 1, @EPV, @TS, @MRS, @CS); SELECT LAST_INSERT_ID();";
                         MySqlCommand cmd = new MySqlCommand(sqlV, con, tran);
                         cmd.Parameters.AddWithValue("@Cli", ddlCliente.SelectedValue);
@@ -327,7 +327,7 @@ namespace Optica.Formularios
                     {
                         decimal c = decimal.Parse(txtCantProd.Text, CultureInfo.InvariantCulture);
                         decimal p = decimal.Parse(txtPrecioProd.Text, CultureInfo.InvariantCulture);
-                        string sqlP = "INSERT INTO DetalleVentaProducto (ID_Venta, ID_Producto, Cantidad, Subtotal, Estado) VALUES (@IdV, @IdP, @Cant, @Sub, 1)";
+                        string sqlP = "INSERT INTO detalleventaproducto (ID_Venta, ID_Producto, Cantidad, Subtotal, Estado) VALUES (@IdV, @IdP, @Cant, @Sub, 1)";
                         MySqlCommand cmdP = new MySqlCommand(sqlP, con, tran);
                         cmdP.Parameters.AddWithValue("@IdV", idVenta);
                         cmdP.Parameters.AddWithValue("@IdP", ddlProducto.SelectedValue);
@@ -335,7 +335,7 @@ namespace Optica.Formularios
                         cmdP.Parameters.AddWithValue("@Sub", c * p);
                         cmdP.ExecuteNonQuery();
 
-                        new MySqlCommand($"UPDATE Producto SET Stock = Stock - {c} WHERE ID_Producto={ddlProducto.SelectedValue}", con, tran).ExecuteNonQuery();
+                        new MySqlCommand($"UPDATE producto SET Stock = Stock - {c} WHERE ID_Producto={ddlProducto.SelectedValue}", con, tran).ExecuteNonQuery();
                     }
 
                     if (chkLente.Checked)
@@ -345,7 +345,7 @@ namespace Optica.Formularios
                         decimal adelanto = pagado;
                         if (chkProducto.Checked) adelanto -= (decimal.Parse(txtCantProd.Text, CultureInfo.InvariantCulture) * decimal.Parse(txtPrecioProd.Text, CultureInfo.InvariantCulture));
 
-                        string sqlL = "INSERT INTO DetalleVentaLentes (ID_Venta, ID_Expediente, Adelanto, SaldoPendiente, EstadoPago, EstadoEntrega, Subtotal, Estado) VALUES (@IdV, @Exp, @Adel, @Saldo, @Est, 'Taller', @Sub, 1)";
+                        string sqlL = "INSERT INTO detalleventalentes (ID_Venta, ID_Expediente, Adelanto, SaldoPendiente, EstadoPago, EstadoEntrega, Subtotal, Estado) VALUES (@IdV, @Exp, @Adel, @Saldo, @Est, 'Taller', @Sub, 1)";
                         MySqlCommand cmdL = new MySqlCommand(sqlL, con, tran);
                         cmdL.Parameters.AddWithValue("@IdV", idVenta);
                         cmdL.Parameters.AddWithValue("@Exp", ddlExpediente.SelectedValue);
@@ -355,12 +355,12 @@ namespace Optica.Formularios
                         cmdL.Parameters.AddWithValue("@Sub", sub);
                         cmdL.ExecuteNonQuery();
 
-                        string idProdLente = GetValor("SELECT ID_Producto FROM Expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue, con, tran);
+                        string idProdLente = GetValor("SELECT ID_Producto FROM expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue, con, tran);
                         if (!string.IsNullOrEmpty(idProdLente))
-                            new MySqlCommand($"UPDATE Producto SET Stock = Stock - 1 WHERE ID_Producto={idProdLente}", con, tran).ExecuteNonQuery();
+                            new MySqlCommand($"UPDATE producto SET Stock = Stock - 1 WHERE ID_Producto={idProdLente}", con, tran).ExecuteNonQuery();
                     }
 
-                    string sqlPag = "INSERT INTO Pago (ID_Venta, Monto, Fecha, ID_TipoPago, Descripcion, Estado) VALUES (@IdV, @Monto, @Fec, @Tp, @Desc, 1)";
+                    string sqlPag = "INSERT INTO pago (ID_Venta, Monto, Fecha, ID_TipoPago, Descripcion, Estado) VALUES (@IdV, @Monto, @Fec, @Tp, @Desc, 1)";
                     MySqlCommand cmdPag = new MySqlCommand(sqlPag, con, tran);
                     cmdPag.Parameters.AddWithValue("@IdV", idVenta);
                     cmdPag.Parameters.AddWithValue("@Monto", decimal.Parse(txtMontoPagar.Text, CultureInfo.InvariantCulture));
@@ -411,13 +411,13 @@ namespace Optica.Formularios
 
         private void RestaurarStock(string idVenta, MySqlConnection con, MySqlTransaction tran)
         {
-            DataTable dtP = GetTable("SELECT ID_Producto, Cantidad FROM DetalleVentaProducto WHERE ID_Venta=" + idVenta, con, tran);
+            DataTable dtP = GetTable("SELECT ID_Producto, Cantidad FROM detalleventaproducto WHERE ID_Venta=" + idVenta, con, tran);
             foreach (DataRow r in dtP.Rows)
-                new MySqlCommand($"UPDATE Producto SET Stock = Stock + {r["Cantidad"]} WHERE ID_Producto={r["ID_Producto"]}", con, tran).ExecuteNonQuery();
+                new MySqlCommand($"UPDATE producto SET Stock = Stock + {r["Cantidad"]} WHERE ID_Producto={r["ID_Producto"]}", con, tran).ExecuteNonQuery();
 
-            DataTable dtL = GetTable("SELECT E.ID_Producto FROM DetalleVentaLentes D JOIN Expediente E ON D.ID_Expediente=E.ID_Expediente WHERE D.ID_Venta=" + idVenta, con, tran);
+            DataTable dtL = GetTable("SELECT E.ID_Producto FROM detalleventalentes D JOIN expediente E ON D.ID_Expediente=E.ID_Expediente WHERE D.ID_Venta=" + idVenta, con, tran);
             foreach (DataRow r in dtL.Rows)
-                if (r["ID_Producto"] != DBNull.Value) new MySqlCommand($"UPDATE Producto SET Stock = Stock + 1 WHERE ID_Producto={r["ID_Producto"]}", con, tran).ExecuteNonQuery();
+                if (r["ID_Producto"] != DBNull.Value) new MySqlCommand($"UPDATE producto SET Stock = Stock + 1 WHERE ID_Producto={r["ID_Producto"]}", con, tran).ExecuteNonQuery();
         }
 
         protected void Recalcular_Event(object sender, EventArgs e)
@@ -503,14 +503,14 @@ namespace Optica.Formularios
                 using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     c.Open();
-                    LlenarCombo(c, ddlCliente, "SELECT ID_Cliente, CASE WHEN TipoCliente='Natural' THEN CONCAT(IFNULL((SELECT Nombre FROM ClienteNatural WHERE ID_Cliente=Clientes.ID_Cliente),''),' ',IFNULL((SELECT Apellido FROM ClienteNatural WHERE ID_Cliente=Clientes.ID_Cliente),'')) ELSE (SELECT RepresentanteLegal FROM ClienteJuridico WHERE ID_Cliente=Clientes.ID_Cliente) END AS Nom FROM Clientes WHERE Estado=1", "Nom", "ID_Cliente");
-                    LlenarCombo(c, ddlProducto, "SELECT ID_Producto, CONCAT(Descripcion, ' (Stock: ', Stock, ')') AS Info FROM Producto WHERE Estado=1", "Info", "ID_Producto");
+                    LlenarCombo(c, ddlCliente, "SELECT ID_Cliente, CASE WHEN TipoCliente='Natural' THEN CONCAT(IFNULL((SELECT Nombre FROM clientenatural WHERE ID_Cliente=clientes.ID_Cliente),''),' ',IFNULL((SELECT Apellido FROM clientenatural WHERE ID_Cliente=clientes.ID_Cliente),'')) ELSE (SELECT RepresentanteLegal FROM clientejuridico WHERE ID_Cliente=clientes.ID_Cliente) END AS Nom FROM clientes WHERE Estado=1", "Nom", "ID_Cliente");
+                    LlenarCombo(c, ddlProducto, "SELECT ID_Producto, CONCAT(Descripcion, ' (Stock: ', Stock, ')') AS Info FROM producto WHERE Estado=1", "Info", "ID_Producto");
 
                     ddlExpediente.Items.Clear();
                     ddlExpediente.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
 
-                    LlenarCombo(c, ddlTipoDoc, "SELECT * FROM TipoDocumento WHERE Estado=1", "Descripcion", "ID_TipoDocumento");
-                    LlenarCombo(c, ddlTipoPago, "SELECT * FROM TipoPago WHERE Estado=1", "Descripcion", "ID_TipoPago");
+                    LlenarCombo(c, ddlTipoDoc, "SELECT * FROM tipodocumento WHERE Estado=1", "Descripcion", "ID_TipoDocumento");
+                    LlenarCombo(c, ddlTipoPago, "SELECT * FROM tipopago WHERE Estado=1", "Descripcion", "ID_TipoPago");
                 }
             }
             catch { }
@@ -537,7 +537,7 @@ namespace Optica.Formularios
                 using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     c.Open();
-                    LlenarCombo(c, ddlExpediente, "SELECT ID_Expediente, CONCAT('Exp #', ID_Expediente, ' - ', Fecha) AS Info FROM Expediente WHERE Estado=1 AND ID_Cliente=" + idCliente, "Info", "ID_Expediente");
+                    LlenarCombo(c, ddlExpediente, "SELECT ID_Expediente, CONCAT('Exp #', ID_Expediente, ' - ', Fecha) AS Info FROM expediente WHERE Estado=1 AND ID_Cliente=" + idCliente, "Info", "ID_Expediente");
                 }
 
                 if (ddlExpediente.Items.Count == 2)
@@ -558,7 +558,7 @@ namespace Optica.Formularios
         {
             if (ddlProducto.SelectedValue != "0")
             {
-                decimal p = GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM DetalleCompra WHERE ID_Producto=" + ddlProducto.SelectedValue + " ORDER BY ID_DetalleCompra DESC LIMIT 1");
+                decimal p = GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM detallecompra WHERE ID_Producto=" + ddlProducto.SelectedValue + " ORDER BY ID_DetalleCompra DESC LIMIT 1");
                 txtPrecioProd.Text = p.ToString("0.00", CultureInfo.InvariantCulture);
             }
             else txtPrecioProd.Text = "0.00";
@@ -569,11 +569,11 @@ namespace Optica.Formularios
         {
             if (ddlExpediente.SelectedValue != "0")
             {
-                string idT = GetValor("SELECT ID_Tratamiento FROM Expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue);
-                string idP = GetValor("SELECT ID_Producto FROM Expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue);
+                string idT = GetValor("SELECT ID_Tratamiento FROM expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue);
+                string idP = GetValor("SELECT ID_Producto FROM expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue);
                 decimal t = 0;
-                if (!string.IsNullOrEmpty(idT)) t += GetDecimal("SELECT PrecioAdicional FROM Tratamiento WHERE ID_Tratamiento=" + idT);
-                if (!string.IsNullOrEmpty(idP)) t += GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM DetalleCompra WHERE ID_Producto=" + idP + " ORDER BY ID_DetalleCompra DESC LIMIT 1");
+                if (!string.IsNullOrEmpty(idT)) t += GetDecimal("SELECT PrecioAdicional FROM tratamiento WHERE ID_Tratamiento=" + idT);
+                if (!string.IsNullOrEmpty(idP)) t += GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM detallecompra WHERE ID_Producto=" + idP + " ORDER BY ID_DetalleCompra DESC LIMIT 1");
                 txtSubtotalLente.Text = t.ToString("0.00", CultureInfo.InvariantCulture);
             }
             else txtSubtotalLente.Text = "0.00";
@@ -582,7 +582,7 @@ namespace Optica.Formularios
 
         protected void btnCancelar_Click(object sender, EventArgs e) { Response.Redirect("HistorialVentas.aspx"); }
 
-        private void GenerarFactura() { try { using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion)) { c.Open(); lblNoFactura.Text = (Convert.ToInt32(new MySqlCommand("SELECT IFNULL(MAX(ID_Venta),0)+1 FROM Venta", c).ExecuteScalar())).ToString("D4"); } } catch { lblNoFactura.Text = "0001"; } }
+        private void GenerarFactura() { try { using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion)) { c.Open(); lblNoFactura.Text = (Convert.ToInt32(new MySqlCommand("SELECT IFNULL(MAX(ID_Venta),0)+1 FROM venta", c).ExecuteScalar())).ToString("D4"); } } catch { lblNoFactura.Text = "0001"; } }
 
         private void LlenarCombo(MySqlConnection c, DropDownList d, string s, string t, string v) { MySqlDataAdapter a = new MySqlDataAdapter(s, c); DataTable dt = new DataTable(); a.Fill(dt); d.DataSource = dt; d.DataTextField = t; d.DataValueField = v; d.DataBind(); d.Items.Insert(0, new ListItem("-- Seleccione --", "0")); }
         private decimal GetDecimal(string s) { using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion)) { c.Open(); object r = new MySqlCommand(s, c).ExecuteScalar(); return r != null ? Convert.ToDecimal(r) : 0; } }

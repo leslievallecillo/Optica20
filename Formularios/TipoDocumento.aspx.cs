@@ -27,7 +27,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT * FROM TipoDocumento WHERE 1=1 ";
+                    string query = "SELECT * FROM tipodocumento WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
                         query += " AND Descripcion LIKE @Busq ";
@@ -114,7 +114,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT COUNT(*) FROM TipoDocumento WHERE Descripcion = @Desc AND ID_TipoDocumento != @ID";
+                    string query = "SELECT COUNT(*) FROM tipodocumento WHERE Descripcion = @Desc AND ID_TipoDocumento != @ID";
                     MySqlCommand cmd = new MySqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@Desc", descripcion);
                     cmd.Parameters.AddWithValue("@ID", string.IsNullOrEmpty(idExcluir) ? "0" : idExcluir);
@@ -155,7 +155,7 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDTipoDocumento.Value))
                     {
-                        string sql = "INSERT INTO TipoDocumento (Descripcion, FechaRegistro, Estado) VALUES (@Desc, CURRENT_DATE, 1)";
+                        string sql = "INSERT INTO tipodocumento (Descripcion, FechaRegistro, Estado) VALUES (@Desc, CURRENT_DATE, 1)";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Desc", txtDescripcion.Text.Trim());
                         cmd.ExecuteNonQuery();
@@ -163,7 +163,7 @@ namespace Optica.Formularios
                     }
                     else
                     {
-                        string sql = "UPDATE TipoDocumento SET Descripcion=@Desc, FechaRegistro=@Fec WHERE ID_TipoDocumento=@ID";
+                        string sql = "UPDATE tipodocumento SET Descripcion=@Desc, FechaRegistro=@Fec WHERE ID_TipoDocumento=@ID";
                         cmd = new MySqlCommand(sql, con);
                         cmd.Parameters.AddWithValue("@Desc", txtDescripcion.Text.Trim());
                         cmd.Parameters.AddWithValue("@Fec", ConvertirFechaMySQL(txtFechaRegistro.Text));
@@ -193,7 +193,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM TipoDocumento WHERE ID_TipoDocumento=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM tipodocumento WHERE ID_TipoDocumento=@ID", con);
                     cmd.Parameters.AddWithValue("@ID", id);
                     MySqlDataReader r = cmd.ExecuteReader();
                     if (r.Read())
@@ -221,7 +221,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    MySqlCommand cmd = new MySqlCommand("UPDATE TipoDocumento SET Estado=@Est WHERE ID_TipoDocumento=@ID", con);
+                    MySqlCommand cmd = new MySqlCommand("UPDATE tipodocumento SET Estado=@Est WHERE ID_TipoDocumento=@ID", con);
                     cmd.Parameters.AddWithValue("@Est", estado);
                     cmd.Parameters.AddWithValue("@ID", id);
                     cmd.ExecuteNonQuery();

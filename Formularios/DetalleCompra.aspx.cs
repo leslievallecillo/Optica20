@@ -28,7 +28,7 @@ namespace Optica.Compras
             {
                 con.Open();
                 // Consulta escalar MySQL
-                MySqlCommand cmd = new MySqlCommand("SELECT NumeroCompra FROM Compra WHERE ID_Compra=" + IDCompra, con);
+                MySqlCommand cmd = new MySqlCommand("SELECT NumeroCompra FROM compra WHERE ID_Compra=" + IDCompra, con);
                 object res = cmd.ExecuteScalar();
                 if (res != null) lblNumCompra.Text = res.ToString();
             }
@@ -42,8 +42,8 @@ namespace Optica.Compras
                 // Consulta MySQL uniendo Detalle y Producto
                 string sql = @"SELECT d.ID_DetalleCompra, p.Descripcion as Producto, d.Cantidad, 
                                d.PrecioUnitario, d.Iva, d.PrecioTotal, d.PrecioVenta, d.Estado
-                               FROM DetalleCompra d
-                               INNER JOIN Producto p ON d.ID_Producto = p.ID_Producto
+                               FROM detallecompra d
+                               INNER JOIN producto p ON d.ID_Producto = p.ID_Producto
                                WHERE d.ID_Compra = @IDC";
 
                 if (!string.IsNullOrEmpty(txtBuscar.Text)) sql += " AND p.Descripcion LIKE @B";
@@ -79,7 +79,7 @@ namespace Optica.Compras
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                MySqlDataAdapter da = new MySqlDataAdapter("SELECT ID_Producto, Descripcion FROM Producto WHERE Estado=1", con);
+                MySqlDataAdapter da = new MySqlDataAdapter("SELECT ID_Producto, Descripcion FROM producto WHERE Estado=1", con);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 ddlProducto.DataSource = dt;
@@ -108,7 +108,7 @@ namespace Optica.Compras
                 try
                 {
                     // 1. Insertar Detalle con CURDATE()
-                    string sql = @"INSERT INTO DetalleCompra (ID_Compra, ID_Producto, Cantidad, PrecioUnitario, Iva, PrecioTotal, PrecioVenta, FechaRegistro, Estado)
+                    string sql = @"INSERT INTO detallecompra (ID_Compra, ID_Producto, Cantidad, PrecioUnitario, Iva, PrecioTotal, PrecioVenta, FechaRegistro, Estado)
                                    VALUES (@IDC, @IDP, @Cant, @Unit, @Iva, @Total, @Venta, CURDATE(), 1)";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con, trans);
@@ -122,7 +122,7 @@ namespace Optica.Compras
                     cmd.ExecuteNonQuery();
 
                     // 2. Actualizar Stock de Producto (SUMAR)
-                    string sqlStock = "UPDATE Producto SET Stock = Stock + @Cant WHERE ID_Producto = @IDP";
+                    string sqlStock = "UPDATE producto SET Stock = Stock + @Cant WHERE ID_Producto = @IDP";
                     MySqlCommand cmdStock = new MySqlCommand(sqlStock, con, trans);
                     cmdStock.Parameters.AddWithValue("@Cant", cant);
                     cmdStock.Parameters.AddWithValue("@IDP", ddlProducto.SelectedValue);
@@ -160,7 +160,7 @@ namespace Optica.Compras
             {
                 con.Open();
                 // Obtener datos para restar stock antes de anular
-                MySqlCommand cmdSel = new MySqlCommand("SELECT ID_Producto, Cantidad FROM DetalleCompra WHERE ID_DetalleCompra=" + idDetalle, con);
+                MySqlCommand cmdSel = new MySqlCommand("SELECT ID_Producto, Cantidad FROM detallecompra WHERE ID_DetalleCompra=" + idDetalle, con);
                 MySqlDataReader r = cmdSel.ExecuteReader();
                 if (r.Read())
                 {
@@ -172,9 +172,9 @@ namespace Optica.Compras
                     try
                     {
                         // Anular Detalle
-                        new MySqlCommand("UPDATE DetalleCompra SET Estado=0 WHERE ID_DetalleCompra=" + idDetalle, con, trans).ExecuteNonQuery();
+                        new MySqlCommand("UPDATE detallecompra SET Estado=0 WHERE ID_DetalleCompra=" + idDetalle, con, trans).ExecuteNonQuery();
                         // RESTAR Stock (Revertir compra)
-                        new MySqlCommand($"UPDATE Producto SET Stock = Stock - {cant} WHERE ID_Producto={idProd}", con, trans).ExecuteNonQuery();
+                        new MySqlCommand($"UPDATE producto SET Stock = Stock - {cant} WHERE ID_Producto={idProd}", con, trans).ExecuteNonQuery();
 
                         trans.Commit();
                     }

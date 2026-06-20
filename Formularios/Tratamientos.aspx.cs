@@ -28,7 +28,7 @@ namespace Optica.Formularios
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    string query = "SELECT * FROM Tratamiento WHERE 1=1";
+                    string query = "SELECT * FROM tratamiento WHERE 1=1";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
                         query += " AND Nombre LIKE @Buscar";
@@ -118,7 +118,7 @@ namespace Optica.Formularios
 
         private bool ExisteDuplicado(string nombre, string idExcluir)
         {
-            string query = "SELECT COUNT(*) FROM Tratamiento WHERE Nombre = @Nombre AND ID_Tratamiento != @ID";
+            string query = "SELECT COUNT(*) FROM tratamiento WHERE Nombre = @Nombre AND ID_Tratamiento != @ID";
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
@@ -148,11 +148,11 @@ namespace Optica.Formularios
 
                     if (esNuevo)
                     {
-                        query = "INSERT INTO Tratamiento (Nombre, PrecioAdicional, FechaRegistro, Estado) VALUES (@Nombre, @Precio, CURDATE(), 1)";
+                        query = "INSERT INTO tratamiento (Nombre, PrecioAdicional, FechaRegistro, Estado) VALUES (@Nombre, @Precio, CURDATE(), 1)";
                     }
                     else
                     {
-                        query = "UPDATE Tratamiento SET Nombre=@Nombre, PrecioAdicional=@Precio WHERE ID_Tratamiento=@ID";
+                        query = "UPDATE tratamiento SET Nombre=@Nombre, PrecioAdicional=@Precio WHERE ID_Tratamiento=@ID";
                     }
 
                     using (MySqlCommand cmd = new MySqlCommand(query, con))
@@ -246,7 +246,7 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                string query = "SELECT * FROM Tratamiento WHERE ID_Tratamiento = @ID";
+                string query = "SELECT * FROM tratamiento WHERE ID_Tratamiento = @ID";
                 using (MySqlCommand cmd = new MySqlCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@ID", id);
@@ -274,7 +274,7 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                new MySqlCommand($"UPDATE Tratamiento SET Estado={estado} WHERE ID_Tratamiento={id}", con).ExecuteNonQuery();
+                new MySqlCommand($"UPDATE tratamiento SET Estado={estado} WHERE ID_Tratamiento={id}", con).ExecuteNonQuery();
             }
             CargarDatos();
             string accion = estado == 1 ? "reactivado" : "desactivado";

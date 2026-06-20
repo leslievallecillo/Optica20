@@ -18,7 +18,7 @@ namespace Optica.Reportes
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                MySqlDataAdapter da = new MySqlDataAdapter("SELECT ID_Producto, CONCAT(Codigo, ' - ', Descripcion) as Nombre FROM Producto ORDER BY Descripcion", con);
+                MySqlDataAdapter da = new MySqlDataAdapter("SELECT ID_Producto, CONCAT(Codigo, ' - ', Descripcion) as Nombre FROM producto ORDER BY Descripcion", con);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 ddlProducto.DataSource = dt;
@@ -47,7 +47,7 @@ namespace Optica.Reportes
                 con.Open();
 
                 // 1. Obtener Stock Actual
-                MySqlCommand cmdStock = new MySqlCommand("SELECT Stock FROM Producto WHERE ID_Producto=" + idProd, con);
+                MySqlCommand cmdStock = new MySqlCommand("SELECT Stock FROM producto WHERE ID_Producto=" + idProd, con);
                 object stock = cmdStock.ExecuteScalar();
                 txtStockActual.Text = stock != null ? stock.ToString() : "0";
 
@@ -56,16 +56,16 @@ namespace Optica.Reportes
                     SELECT * FROM (
                         -- ENTRADAS (Compras)
                         SELECT c.FechaRegistro as Fecha, 'ENTRADA (COMPRA)' as Tipo, c.NumeroCompra as Documento, dc.Cantidad
-                        FROM DetalleCompra dc
-                        INNER JOIN Compra c ON dc.ID_Compra = c.ID_Compra
+                        FROM detallecompra dc
+                        INNER JOIN compra c ON dc.ID_Compra = c.ID_Compra
                         WHERE dc.ID_Producto = @ID AND c.Estado = 1
 
                         UNION ALL
 
                         -- SALIDAS (Ventas Productos)
                         SELECT v.FechaRegistro as Fecha, 'SALIDA (VENTA)' as Tipo, v.NumeroDocumento as Documento, dv.Cantidad
-                        FROM DetalleVentaProducto dv
-                        INNER JOIN Venta v ON dv.ID_Venta = v.ID_Venta
+                        FROM detalleventaproducto dv
+                        INNER JOIN venta v ON dv.ID_Venta = v.ID_Venta
                         WHERE dv.ID_Producto = @ID AND v.Estado = 1
                     ) as Movimientos
                     ORDER BY Fecha DESC";

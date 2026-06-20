@@ -33,7 +33,7 @@ namespace Optica.Formularios
                 try
                 {
                     con.Open();
-                    string sql = "SELECT Nombres, Apellidos, Correo, Rol, Avatar FROM Usuario WHERE ID_Usuario = @ID";
+                    string sql = "SELECT Nombres, Apellidos, Correo, Rol, Avatar FROM usuario WHERE ID_Usuario = @ID";
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     cmd.Parameters.AddWithValue("@ID", idUsuario);
 
@@ -80,7 +80,7 @@ namespace Optica.Formularios
                 try
                 {
                     con.Open();
-                    string sql = "UPDATE Usuario SET Nombres=@Nom, Apellidos=@Ape, Correo=@Cor, Avatar=@Ava WHERE ID_Usuario=@ID";
+                    string sql = "UPDATE usuario SET Nombres=@Nom, Apellidos=@Ape, Correo=@Cor, Avatar=@Ava WHERE ID_Usuario=@ID";
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     cmd.Parameters.AddWithValue("@Nom", nombres);
                     cmd.Parameters.AddWithValue("@Ape", apellidos);

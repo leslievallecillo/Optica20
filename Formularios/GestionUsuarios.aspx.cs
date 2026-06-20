@@ -9,8 +9,6 @@ using Optica.Clases;
 using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
-using Mysqlx;
-using Optica.AdministrarAccesos;
 
 namespace Optica.Formularios
 {
@@ -41,8 +39,8 @@ namespace Optica.Formularios
                                             CONCAT(u.Nombres, ' ', u.Apellidos) AS NombreCompleto,
                                             u.Rol, u.Correo, u.Estado,
                                             i.NombreUsuario
-                                     FROM Usuario u
-                                     LEFT JOIN InicioSesion i ON u.ID_Usuario = i.ID_Usuario
+                                     FROM usuario u
+                                     LEFT JOIN iniciosesion i ON u.ID_Usuario = i.ID_Usuario
                                      WHERE 1=1 ";
 
                     if (!string.IsNullOrEmpty(txtBuscar.Text))
@@ -133,9 +131,9 @@ namespace Optica.Formularios
         private bool ExisteDatoEnBD(string campo, string valor, string idExcluir)
         {
             string query = "";
-            if (campo == "Correo") query = "SELECT COUNT(*) FROM Usuario WHERE Correo = @Val AND ID_Usuario != @ID";
-            if (campo == "Telefono") query = "SELECT COUNT(*) FROM Usuario WHERE Telefono = @Val AND ID_Usuario != @ID";
-            if (campo == "Usuario") query = "SELECT COUNT(*) FROM InicioSesion WHERE NombreUsuario = @Val AND ID_Usuario != @ID";
+            if (campo == "Correo") query = "SELECT COUNT(*) FROM usuario WHERE Correo = @Val AND ID_Usuario != @ID";
+            if (campo == "Telefono") query = "SELECT COUNT(*) FROM usuario WHERE Telefono = @Val AND ID_Usuario != @ID";
+            if (campo == "Usuario") query = "SELECT COUNT(*) FROM iniciosesion WHERE NombreUsuario = @Val AND ID_Usuario != @ID";
 
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
@@ -149,7 +147,7 @@ namespace Optica.Formularios
 
         private bool ExistePersona(string nom, string ape, string idExcluir)
         {
-            string query = "SELECT COUNT(*) FROM Usuario WHERE Nombres = @n AND Apellidos = @a AND ID_Usuario != @ID";
+            string query = "SELECT COUNT(*) FROM usuario WHERE Nombres = @n AND Apellidos = @a AND ID_Usuario != @ID";
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
@@ -177,7 +175,7 @@ namespace Optica.Formularios
 
                     if (string.IsNullOrEmpty(hfIDUsuario.Value))
                     {
-                        string sqlU = "INSERT INTO Usuario (Nombres, Apellidos, Correo, Telefono, Rol, FechaRegistro, Estado) VALUES (@n,@a,@c,@t,@r,NOW(),1); SELECT LAST_INSERT_ID();";
+                        string sqlU = "INSERT INTO usuario (Nombres, Apellidos, Correo, Telefono, Rol, FechaRegistro, Estado) VALUES (@n,@a,@c,@t,@r,NOW(),1); SELECT LAST_INSERT_ID();";
                         cmd = new MySqlCommand(sqlU, con, trans);
                         cmd.Parameters.AddWithValue("@n", txtNombre.Text);
                         cmd.Parameters.AddWithValue("@a", txtApellido.Text);
@@ -186,7 +184,7 @@ namespace Optica.Formularios
                         cmd.Parameters.AddWithValue("@r", ddlRol.SelectedValue);
                         id = Convert.ToInt64(cmd.ExecuteScalar());
 
-                        string sqlL = "INSERT INTO InicioSesion (ID_Usuario, NombreUsuario, Clave, Estado) VALUES (@id, @u, @p, 1)";
+                        string sqlL = "INSERT INTO iniciosesion (ID_Usuario, NombreUsuario, Clave, Estado) VALUES (@id, @u, @p, 1)";
                         cmd = new MySqlCommand(sqlL, con, trans);
                         cmd.Parameters.AddWithValue("@id", id);
                         cmd.Parameters.AddWithValue("@u", txtUsuario.Text.Trim().ToLower());
@@ -197,7 +195,7 @@ namespace Optica.Formularios
                     else
                     {
                         id = long.Parse(hfIDUsuario.Value);
-                        string sqlU = "UPDATE Usuario SET Nombres=@n, Apellidos=@a, Correo=@c, Telefono=@t, Rol=@r WHERE ID_Usuario=@id";
+                        string sqlU = "UPDATE usuario SET Nombres=@n, Apellidos=@a, Correo=@c, Telefono=@t, Rol=@r WHERE ID_Usuario=@id";
                         cmd = new MySqlCommand(sqlU, con, trans);
                         cmd.Parameters.AddWithValue("@n", txtNombre.Text);
                         cmd.Parameters.AddWithValue("@a", txtApellido.Text);
@@ -207,7 +205,7 @@ namespace Optica.Formularios
                         cmd.Parameters.AddWithValue("@id", id);
                         cmd.ExecuteNonQuery();
 
-                        string sqlL = "UPDATE InicioSesion SET NombreUsuario=@u" + (!string.IsNullOrEmpty(txtClave.Text) ? ", Clave=@p" : "") + " WHERE ID_Usuario=@id";
+                        string sqlL = "UPDATE iniciosesion SET NombreUsuario=@u" + (!string.IsNullOrEmpty(txtClave.Text) ? ", Clave=@p" : "") + " WHERE ID_Usuario=@id";
                         cmd = new MySqlCommand(sqlL, con, trans);
                         cmd.Parameters.AddWithValue("@u", txtUsuario.Text.Trim().ToLower());
                         cmd.Parameters.AddWithValue("@id", id);
@@ -237,7 +235,7 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                string sql = "SELECT u.*, i.NombreUsuario FROM Usuario u LEFT JOIN InicioSesion i ON u.ID_Usuario=i.ID_Usuario WHERE u.ID_Usuario=@id";
+                string sql = "SELECT u.*, i.NombreUsuario FROM usuario u LEFT JOIN iniciosesion i ON u.ID_Usuario=i.ID_Usuario WHERE u.ID_Usuario=@id";
                 MySqlCommand cmd = new MySqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@id", id);
                 MySqlDataReader r = cmd.ExecuteReader();
@@ -264,8 +262,8 @@ namespace Optica.Formularios
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                new MySqlCommand($"UPDATE Usuario SET Estado={estado} WHERE ID_Usuario={id}", con).ExecuteNonQuery();
-                new MySqlCommand($"UPDATE InicioSesion SET Estado={estado} WHERE ID_Usuario={id}", con).ExecuteNonQuery();
+                new MySqlCommand($"UPDATE usuario SET Estado={estado} WHERE ID_Usuario={id}", con).ExecuteNonQuery();
+                new MySqlCommand($"UPDATE iniciosesion SET Estado={estado} WHERE ID_Usuario={id}", con).ExecuteNonQuery();
             }
             CargarDatos();
         }

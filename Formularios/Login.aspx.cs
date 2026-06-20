@@ -138,7 +138,7 @@ namespace Optica.Formularios
                 {
                     con.Open();
 
-                    string sql = "SELECT ID_Usuario, Clave, Estado FROM InicioSesion WHERE NombreUsuario = @User";
+                    string sql = "SELECT ID_Usuario, Clave, Estado FROM iniciosesion WHERE NombreUsuario = @User";
 
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     cmd.Parameters.AddWithValue("@User", usuario);
@@ -191,14 +191,14 @@ namespace Optica.Formularios
 
         private void RegistrarSesionBD(int idUsuario, string sessionID, MySqlConnection con)
         {
-            string sqlClean = "UPDATE SesionUsuario SET Estado='Cerrada' WHERE SessionID=@Sid";
+            string sqlClean = "UPDATE sesionusuario SET Estado='Cerrada' WHERE SessionID=@Sid";
             using (MySqlCommand cmd = new MySqlCommand(sqlClean, con))
             {
                 cmd.Parameters.AddWithValue("@Sid", sessionID);
                 cmd.ExecuteNonQuery();
             }
 
-            string sqlInsert = @"INSERT INTO SesionUsuario (ID_Usuario, SessionID, FechaInicio, DireccionIP, Estado) 
+            string sqlInsert = @"INSERT INTO sesionusuario (ID_Usuario, SessionID, FechaInicio, DireccionIP, Estado) 
                                  VALUES (@Uid, @Sid, NOW(), @IP, 'Activa')";
 
             using (MySqlCommand cmd = new MySqlCommand(sqlInsert, con))
@@ -210,7 +210,7 @@ namespace Optica.Formularios
                 cmd.ExecuteNonQuery();
             }
 
-            string sqlUser = "UPDATE Usuario SET EnLinea=1, UltimaConexion=NOW() WHERE ID_Usuario=@Uid";
+            string sqlUser = "UPDATE usuario SET EnLinea=1, UltimaConexion=NOW() WHERE ID_Usuario=@Uid";
             using (MySqlCommand cmd = new MySqlCommand(sqlUser, con))
             {
                 cmd.Parameters.AddWithValue("@Uid", idUsuario);

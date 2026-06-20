@@ -34,17 +34,17 @@ namespace Optica.Reportes
                         SELECT 
                             v.NumeroDocumento, 
                             v.Fecha,
-                            IF(c.TipoCliente='Natural', (SELECT CONCAT(Nombre,' ',Apellido) FROM ClienteNatural WHERE ID_Cliente=c.ID_Cliente), (SELECT NombreEmpresa FROM ClienteJuridico WHERE ID_Cliente=c.ID_Cliente)) as Cliente,
+                            IF(c.TipoCliente='Natural', (SELECT CONCAT(Nombre,' ',Apellido) FROM clientenatural WHERE ID_Cliente=c.ID_Cliente), (SELECT NombreEmpresa FROM clientejuridico WHERE ID_Cliente=c.ID_Cliente)) as Cliente,
                             CONCAT(u.Nombres, ' ', u.Apellidos) as Vendedor,
                             tp.Descripcion as TipoPago,
                             (
-                                IFNULL((SELECT SUM(Subtotal) FROM DetalleVentaProducto WHERE ID_Venta = v.ID_Venta AND Estado=1), 0) +
-                                IFNULL((SELECT SUM(Subtotal) FROM DetalleVentaLentes WHERE ID_Venta = v.ID_Venta AND Estado=1), 0)
+                                IFNULL((SELECT SUM(Subtotal) FROM detalleventaproducto WHERE ID_Venta = v.ID_Venta AND Estado=1), 0) +
+                                IFNULL((SELECT SUM(Subtotal) FROM detalleventalentes WHERE ID_Venta = v.ID_Venta AND Estado=1), 0)
                             ) as Total
-                        FROM Venta v
-                        INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
-                        INNER JOIN Usuario u ON v.ID_Usuario = u.ID_Usuario
-                        INNER JOIN TipoPago tp ON v.ID_TipoPago = tp.ID_TipoPago
+                        FROM venta v
+                        INNER JOIN clientes c ON v.ID_Cliente = c.ID_Cliente
+                        INNER JOIN usuario u ON v.ID_Usuario = u.ID_Usuario
+                        INNER JOIN tipopago tp ON v.ID_TipoPago = tp.ID_TipoPago
                         WHERE v.Estado = 1 ";
 
                     if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))
@@ -103,17 +103,17 @@ namespace Optica.Reportes
                         SELECT 
                             v.NumeroDocumento, 
                             v.Fecha,
-                            IF(c.TipoCliente='Natural', (SELECT CONCAT(Nombre,' ',Apellido) FROM ClienteNatural WHERE ID_Cliente=c.ID_Cliente), (SELECT NombreEmpresa FROM ClienteJuridico WHERE ID_Cliente=c.ID_Cliente)) as Cliente,
+                            IF(c.TipoCliente='Natural', (SELECT CONCAT(Nombre,' ',Apellido) FROM clientenatural WHERE ID_Cliente=c.ID_Cliente), (SELECT NombreEmpresa FROM clientejuridico WHERE ID_Cliente=c.ID_Cliente)) as Cliente,
                             CONCAT(u.Nombres, ' ', u.Apellidos) as Vendedor,
                             tp.Descripcion as TipoPago,
                             (
-                                IFNULL((SELECT SUM(Subtotal) FROM DetalleVentaProducto WHERE ID_Venta = v.ID_Venta AND Estado=1), 0) +
-                                IFNULL((SELECT SUM(Subtotal) FROM DetalleVentaLentes WHERE ID_Venta = v.ID_Venta AND Estado=1), 0)
+                                IFNULL((SELECT SUM(Subtotal) FROM detalleventaproducto WHERE ID_Venta = v.ID_Venta AND Estado=1), 0) +
+                                IFNULL((SELECT SUM(Subtotal) FROM detalleventalentes WHERE ID_Venta = v.ID_Venta AND Estado=1), 0)
                             ) as Total
-                        FROM Venta v
-                        INNER JOIN Clientes c ON v.ID_Cliente = c.ID_Cliente
-                        INNER JOIN Usuario u ON v.ID_Usuario = u.ID_Usuario
-                        INNER JOIN TipoPago tp ON v.ID_TipoPago = tp.ID_TipoPago
+                        FROM venta v
+                        INNER JOIN clientes c ON v.ID_Cliente = c.ID_Cliente
+                        INNER JOIN usuario u ON v.ID_Usuario = u.ID_Usuario
+                        INNER JOIN tipopago tp ON v.ID_TipoPago = tp.ID_TipoPago
                         WHERE v.Estado = 1 ";
 
                     if (!string.IsNullOrEmpty(txtF1.Text) && !string.IsNullOrEmpty(txtF2.Text))

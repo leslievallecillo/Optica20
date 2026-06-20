@@ -41,7 +41,7 @@ namespace Optica.Formularios
                     try
                     {
                         con.Open();
-                        MySqlCommand cmd = new MySqlCommand("SELECT Nombres FROM Usuario WHERE ID_Usuario = @uid", con);
+                        MySqlCommand cmd = new MySqlCommand("SELECT Nombres FROM usuario WHERE ID_Usuario = @uid", con);
                         cmd.Parameters.AddWithValue("@uid", Session["UsuarioID"]);
                         object res = cmd.ExecuteScalar();
                         if (res != null)
@@ -66,8 +66,8 @@ namespace Optica.Formularios
 
                     string sqlInv = @"SELECT 
                                         SUM(p.Stock) as StockTotal,
-                                        SUM(p.Stock * IFNULL((SELECT PrecioVenta FROM DetalleCompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0)) as ValorNeto
-                                      FROM Producto p WHERE p.Estado = 1";
+                                        SUM(p.Stock * IFNULL((SELECT PrecioVenta FROM detallecompra WHERE ID_Producto = p.ID_Producto ORDER BY ID_DetalleCompra DESC LIMIT 1), 0)) as ValorNeto
+                                      FROM producto p WHERE p.Estado = 1";
 
                     MySqlCommand cmdInv = new MySqlCommand(sqlInv, con);
                     using (MySqlDataReader r = cmdInv.ExecuteReader())
@@ -82,10 +82,10 @@ namespace Optica.Formularios
                     string sqlVentas = @"SELECT 
                                             COUNT(*) as Cantidad,
                                             SUM(
-                                                (SELECT IFNULL(SUM(Subtotal),0) FROM DetalleVentaProducto WHERE ID_Venta=v.ID_Venta) + 
-                                                (SELECT IFNULL(SUM(Subtotal),0) FROM DetalleVentaLentes WHERE ID_Venta=v.ID_Venta)
+                                                (SELECT IFNULL(SUM(Subtotal),0) FROM detalleventaproducto WHERE ID_Venta=v.ID_Venta) + 
+                                                (SELECT IFNULL(SUM(Subtotal),0) FROM detalleventalentes WHERE ID_Venta=v.ID_Venta)
                                             ) as Total
-                                         FROM Venta v WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1";
+                                         FROM venta v WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1";
 
                     MySqlCommand cmdVentas = new MySqlCommand(sqlVentas, con);
                     using (MySqlDataReader r = cmdVentas.ExecuteReader())
@@ -99,8 +99,8 @@ namespace Optica.Formularios
 
                     string sqlCompras = @"SELECT 
                                             COUNT(*) as Cantidad,
-                                            SUM((SELECT IFNULL(SUM(PrecioTotal),0) FROM DetalleCompra WHERE ID_Compra=c.ID_Compra)) as Total
-                                          FROM Compra c WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1";
+                                            SUM((SELECT IFNULL(SUM(PrecioTotal),0) FROM detallecompra WHERE ID_Compra=c.ID_Compra)) as Total
+                                          FROM compra c WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1";
 
                     MySqlCommand cmdCompras = new MySqlCommand(sqlCompras, con);
                     using (MySqlDataReader r = cmdCompras.ExecuteReader())
@@ -112,7 +112,7 @@ namespace Optica.Formularios
                         }
                     }
 
-                    string sqlCli = "SELECT COUNT(*) FROM Clientes WHERE Estado = 1";
+                    string sqlCli = "SELECT COUNT(*) FROM clientes WHERE Estado = 1";
                     MySqlCommand cmdCli = new MySqlCommand(sqlCli, con);
                     lblClientesTotal.Text = cmdCli.ExecuteScalar().ToString();
                 }
@@ -132,10 +132,10 @@ namespace Optica.Formularios
 
                     string qV = @"SELECT MONTH(Fecha) as Mes, 
                                   SUM(
-                                    (SELECT IFNULL(SUM(Subtotal),0) FROM DetalleVentaProducto WHERE ID_Venta=v.ID_Venta) + 
-                                    (SELECT IFNULL(SUM(Subtotal),0) FROM DetalleVentaLentes WHERE ID_Venta=v.ID_Venta)
+                                    (SELECT IFNULL(SUM(Subtotal),0) FROM detalleventaproducto WHERE ID_Venta=v.ID_Venta) + 
+                                    (SELECT IFNULL(SUM(Subtotal),0) FROM detalleventalentes WHERE ID_Venta=v.ID_Venta)
                                   ) as Total
-                                  FROM Venta v WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1 GROUP BY MONTH(Fecha)";
+                                  FROM venta v WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1 GROUP BY MONTH(Fecha)";
 
                     MySqlCommand cmdV = new MySqlCommand(qV, con);
                     using (MySqlDataReader r = cmdV.ExecuteReader())
@@ -148,8 +148,8 @@ namespace Optica.Formularios
                     }
 
                     string qC = @"SELECT MONTH(Fecha) as Mes, 
-                                  SUM((SELECT IFNULL(SUM(PrecioTotal),0) FROM DetalleCompra WHERE ID_Compra=c.ID_Compra)) as Total
-                                  FROM Compra c WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1 GROUP BY MONTH(Fecha)";
+                                  SUM((SELECT IFNULL(SUM(PrecioTotal),0) FROM detallecompra WHERE ID_Compra=c.ID_Compra)) as Total
+                                  FROM compra c WHERE YEAR(Fecha) = YEAR(CURDATE()) AND Estado = 1 GROUP BY MONTH(Fecha)";
 
                     MySqlCommand cmdC = new MySqlCommand(qC, con);
                     using (MySqlDataReader r = cmdC.ExecuteReader())
@@ -183,10 +183,10 @@ namespace Optica.Formularios
                                         WHEN c.TipoCliente = 'Juridico' THEN cj.NombreEmpresa
                                         ELSE '---'
                                     END as Cliente
-                                    FROM Cita cit
-                                    INNER JOIN Clientes c ON cit.ID_Cliente = c.ID_Cliente
-                                    LEFT JOIN ClienteNatural cn ON c.ID_Cliente = cn.ID_Cliente
-                                    LEFT JOIN ClienteJuridico cj ON c.ID_Cliente = cj.ID_Cliente
+                                    FROM cita cit
+                                    INNER JOIN clientes c ON cit.ID_Cliente = c.ID_Cliente
+                                    LEFT JOIN clientenatural cn ON c.ID_Cliente = cn.ID_Cliente
+                                    LEFT JOIN clientejuridico cj ON c.ID_Cliente = cj.ID_Cliente
                                     WHERE cit.Estado = 1 AND cit.Fecha >= CURDATE()
                                     ORDER BY cit.Fecha ASC, cit.Hora ASC LIMIT 5";
 
@@ -196,7 +196,7 @@ namespace Optica.Formularios
                     gvCitasProximas.DataBind();
 
                     string sqlP = @"SELECT p.Descripcion, p.Marca, p.Modelo, p.RutaImagen, p.Stock
-                                    FROM Producto p
+                                    FROM producto p
                                     WHERE p.Estado = 1
                                     ORDER BY p.Stock ASC LIMIT 5";
 

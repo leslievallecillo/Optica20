@@ -27,8 +27,8 @@ namespace Optica.Compras
                 {
                     con.Open();
                     string sql = @"SELECT c.ID_Compra, c.NumeroCompra, p.RazonSocial as Proveedor, c.Fecha, c.Estado, 
-                                   (SELECT IFNULL(SUM(PrecioTotal),0) FROM DetalleCompra WHERE ID_Compra=c.ID_Compra) as Total 
-                                   FROM Compra c INNER JOIN Proveedor p ON c.ID_Proveedor=p.ID_Proveedor 
+                                   (SELECT IFNULL(SUM(PrecioTotal),0) FROM detallecompra WHERE ID_Compra=c.ID_Compra) as Total 
+                                   FROM compra c INNER JOIN proveedor p ON c.ID_Proveedor=p.ID_Proveedor 
                                    WHERE 1=1";
 
                     if (txtBuscar.Text != "") sql += " AND c.NumeroCompra LIKE @B";
@@ -99,7 +99,7 @@ namespace Optica.Compras
 
                 try
                 {
-                    string sqlItems = "SELECT ID_Producto, Cantidad, PrecioVenta FROM DetalleCompra WHERE ID_Compra = @ID";
+                    string sqlItems = "SELECT ID_Producto, Cantidad, PrecioVenta FROM detallecompra WHERE ID_Compra = @ID";
                     MySqlCommand cmdItems = new MySqlCommand(sqlItems, con, tr);
                     cmdItems.Parameters.AddWithValue("@ID", idCompra);
 
@@ -119,11 +119,11 @@ namespace Optica.Compras
 
                             if (nuevoEstado == 0)
                             {
-                                sqlStock = "UPDATE Producto SET Stock = Stock - @Cant WHERE ID_Producto = @IDP";
+                                sqlStock = "UPDATE producto SET Stock = Stock - @Cant WHERE ID_Producto = @IDP";
                             }
                             else if (nuevoEstado == 1)
                             {
-                                sqlStock = "UPDATE Producto SET Stock = Stock + @Cant, Precio = @PrecioV WHERE ID_Producto = @IDP";
+                                sqlStock = "UPDATE producto SET Stock = Stock + @Cant, Precio = @PrecioV WHERE ID_Producto = @IDP";
                             }
 
                             if (!string.IsNullOrEmpty(sqlStock))
@@ -142,8 +142,8 @@ namespace Optica.Compras
                         }
                     }
 
-                    new MySqlCommand($"UPDATE Compra SET Estado={nuevoEstado} WHERE ID_Compra={idCompra}", con, tr).ExecuteNonQuery();
-                    new MySqlCommand($"UPDATE DetalleCompra SET Estado={nuevoEstado} WHERE ID_Compra={idCompra}", con, tr).ExecuteNonQuery();
+                    new MySqlCommand($"UPDATE compra SET Estado={nuevoEstado} WHERE ID_Compra={idCompra}", con, tr).ExecuteNonQuery();
+                    new MySqlCommand($"UPDATE detallecompra SET Estado={nuevoEstado} WHERE ID_Compra={idCompra}", con, tr).ExecuteNonQuery();
 
                     tr.Commit();
                     string msg = nuevoEstado == 0 ? "Compra anulada." : "Compra reactivada. Precios e inventario actualizados.";
@@ -163,11 +163,11 @@ namespace Optica.Compras
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 con.Open();
-                MySqlCommand cmdT = new MySqlCommand("SELECT NumeroCompra FROM Compra WHERE ID_Compra=" + idCompra, con);
+                MySqlCommand cmdT = new MySqlCommand("SELECT NumeroCompra FROM compra WHERE ID_Compra=" + idCompra, con);
                 lblFacturaModal.Text = cmdT.ExecuteScalar()?.ToString();
 
                 string sql = @"SELECT p.Descripcion as Producto, d.Cantidad, d.PrecioUnitario, d.Iva, d.PrecioTotal 
-                               FROM DetalleCompra d INNER JOIN Producto p ON d.ID_Producto=p.ID_Producto 
+                               FROM detallecompra d INNER JOIN producto p ON d.ID_Producto=p.ID_Producto 
                                WHERE d.ID_Compra=@ID";
                 MySqlCommand cmd = new MySqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@ID", idCompra);

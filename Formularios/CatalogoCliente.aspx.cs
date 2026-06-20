@@ -24,21 +24,22 @@ namespace Optica.Formularios
                 {
                     con.Open();
 
-                    string sqlDestacados = "SELECT Titulo, Descripcion, Precio, UrlImagen FROM CatalogoImagenes WHERE Seccion = 'Destacados' ORDER BY ID_Imagen DESC";
+                    // Corrección: catalogoimagenes escrito estrictamente en minúsculas
+                    string sqlDestacados = "SELECT Titulo, Descripcion, Precio, UrlImagen FROM catalogoimagenes WHERE Seccion = 'Destacados' ORDER BY ID_Imagen DESC";
                     MySqlDataAdapter daDestacados = new MySqlDataAdapter(sqlDestacados, con);
                     DataTable dtDestacados = new DataTable();
                     daDestacados.Fill(dtDestacados);
                     rptDestacados.DataSource = dtDestacados;
                     rptDestacados.DataBind();
 
-                    string sqlPromociones = "SELECT Titulo, Descripcion, Precio, UrlImagen FROM CatalogoImagenes WHERE Seccion = 'Promociones' ORDER BY ID_Imagen DESC";
+                    string sqlPromociones = "SELECT Titulo, Descripcion, Precio, UrlImagen FROM catalogoimagenes WHERE Seccion = 'Promociones' ORDER BY ID_Imagen DESC";
                     MySqlDataAdapter daPromociones = new MySqlDataAdapter(sqlPromociones, con);
                     DataTable dtPromociones = new DataTable();
                     daPromociones.Fill(dtPromociones);
                     rptPromociones.DataSource = dtPromociones;
                     rptPromociones.DataBind();
 
-                    string sqlOtros = "SELECT Titulo, Descripcion, Precio, UrlImagen FROM CatalogoImagenes WHERE Seccion = 'Otros' ORDER BY ID_Imagen DESC";
+                    string sqlOtros = "SELECT Titulo, Descripcion, Precio, UrlImagen FROM catalogoimagenes WHERE Seccion = 'Otros' ORDER BY ID_Imagen DESC";
                     MySqlDataAdapter daOtros = new MySqlDataAdapter(sqlOtros, con);
                     DataTable dtOtros = new DataTable();
                     daOtros.Fill(dtOtros);
@@ -47,7 +48,8 @@ namespace Optica.Formularios
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error al cargar el catálogo: " + ex.Message);
+                    // Corrección: Ahora el error saltará en una alerta visual en la página
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('Error al cargar el catálogo: " + ex.Message.Replace("'", "\\'") + "');", true);
                 }
             }
         }
