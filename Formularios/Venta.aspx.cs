@@ -558,7 +558,7 @@ namespace Optica.Formularios
         {
             if (ddlProducto.SelectedValue != "0")
             {
-                decimal p = GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM detallecompra WHERE ID_Producto=" + ddlProducto.SelectedValue + " ORDER BY ID_DetalleCompra DESC LIMIT 1");
+                decimal p = ObtenerPrecioSeguro("producto", ddlProducto.SelectedValue);
                 txtPrecioProd.Text = p.ToString("0.00", CultureInfo.InvariantCulture);
             }
             else txtPrecioProd.Text = "0.00";
@@ -572,12 +572,30 @@ namespace Optica.Formularios
                 string idT = GetValor("SELECT ID_Tratamiento FROM expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue);
                 string idP = GetValor("SELECT ID_Producto FROM expediente WHERE ID_Expediente=" + ddlExpediente.SelectedValue);
                 decimal t = 0;
-                if (!string.IsNullOrEmpty(idT)) t += GetDecimal("SELECT PrecioAdicional FROM tratamiento WHERE ID_Tratamiento=" + idT);
-                if (!string.IsNullOrEmpty(idP)) t += GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM detallecompra WHERE ID_Producto=" + idP + " ORDER BY ID_DetalleCompra DESC LIMIT 1");
+                if (!string.IsNullOrEmpty(idT)) t += ObtenerPrecioSeguro("tratamiento", idT);
+                if (!string.IsNullOrEmpty(idP)) t += ObtenerPrecioSeguro("producto", idP);
                 txtSubtotalLente.Text = t.ToString("0.00", CultureInfo.InvariantCulture);
             }
             else txtSubtotalLente.Text = "0.00";
             Recalcular_Event(sender, e);
+        }
+
+        private decimal ObtenerPrecioSeguro(string tipo, string id)
+        {
+            if (string.IsNullOrEmpty(id) || id == "0") return 0;
+            decimal precio = 0;
+            if (tipo == "producto")
+            {
+                try { precio = GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM detallecompra WHERE ID_Producto=" + id + " ORDER BY ID_DetalleCompra DESC LIMIT 1"); if (precio > 0) return precio; } catch { }
+                try { precio = GetDecimal("SELECT IFNULL(PrecioVenta, 0) FROM producto WHERE ID_Producto=" + id); if (precio > 0) return precio; } catch { }
+                try { precio = GetDecimal("SELECT IFNULL(Precio, 0) FROM producto WHERE ID_Producto=" + id); if (precio > 0) return precio; } catch { }
+            }
+            else if (tipo == "tratamiento")
+            {
+                try { precio = GetDecimal("SELECT IFNULL(PrecioAdicional, 0) FROM tratamiento WHERE ID_Tratamiento=" + id); if (precio > 0) return precio; } catch { }
+                try { precio = GetDecimal("SELECT IFNULL(Precio, 0) FROM tratamiento WHERE ID_Tratamiento=" + id); if (precio > 0) return precio; } catch { }
+            }
+            return precio;
         }
 
         protected void btnCancelar_Click(object sender, EventArgs e) { Response.Redirect("HistorialVentas.aspx"); }
@@ -585,7 +603,7 @@ namespace Optica.Formularios
         private void GenerarFactura() { try { using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion)) { c.Open(); lblNoFactura.Text = (Convert.ToInt32(new MySqlCommand("SELECT IFNULL(MAX(ID_Venta),0)+1 FROM venta", c).ExecuteScalar())).ToString("D4"); } } catch { lblNoFactura.Text = "0001"; } }
 
         private void LlenarCombo(MySqlConnection c, DropDownList d, string s, string t, string v) { MySqlDataAdapter a = new MySqlDataAdapter(s, c); DataTable dt = new DataTable(); a.Fill(dt); d.DataSource = dt; d.DataTextField = t; d.DataValueField = v; d.DataBind(); d.Items.Insert(0, new ListItem("-- Seleccione --", "0")); }
-        private decimal GetDecimal(string s) { using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion)) { c.Open(); object r = new MySqlCommand(s, c).ExecuteScalar(); return r != null ? Convert.ToDecimal(r) : 0; } }
+        private decimal GetDecimal(string s) { using (MySqlConnection c = new MySqlConnection(Conexion.CadenaConexion)) { c.Open(); object r = new MySqlCommand(s, c).ExecuteScalar(); return r != null && r != DBNull.Value ? Convert.ToDecimal(r) : 0; } }
         private string GetValor(string s, MySqlConnection c = null, MySqlTransaction t = null)
         {
             if (c == null) using (c = new MySqlConnection(Conexion.CadenaConexion)) { c.Open(); return new MySqlCommand(s, c).ExecuteScalar()?.ToString(); }
