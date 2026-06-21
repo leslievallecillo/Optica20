@@ -100,6 +100,29 @@
                 }
             });
         }
+
+        // Evitar que Enter dispare el botón guardar y que solo navegue entre campos
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                var target = event.target;
+                if (target.tagName === 'INPUT' || target.tagName === 'SELECT') {
+                    // Verificar si estamos dentro del modal (para evitar interferir con otros formularios)
+                    var modal = document.getElementById('modalProd');
+                    if (modal && modal.style.display === 'flex') {
+                        event.preventDefault();
+                        // Buscar el siguiente campo
+                        var form = target.form;
+                        if (form) {
+                            var inputs = form.querySelectorAll('input, select');
+                            var currentIndex = Array.from(inputs).indexOf(target);
+                            if (currentIndex < inputs.length - 1) {
+                                inputs[currentIndex + 1].focus();
+                            }
+                        }
+                    }
+                }
+            }
+        });
     </script>
 </asp:Content>
 

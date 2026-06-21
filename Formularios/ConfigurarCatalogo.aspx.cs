@@ -50,21 +50,106 @@ namespace Optica.Formularios
             mensajeError = "";
             if (string.IsNullOrEmpty(texto)) return true;
 
+            // No permitir más de 1 espacio seguido
             if (Regex.IsMatch(texto, @"\s{2,}"))
             {
                 mensajeError = "No se permite más de un espacio seguido por palabra.";
                 return false;
             }
+
+            // No permitir 3 o más letras repetidas seguidas (ej: aaaron no permitido, aaron permitido)
             if (Regex.IsMatch(texto, @"([a-zA-ZáéíóúÁÉÍÓÚñÑ])\1{2,}"))
             {
                 mensajeError = "No se permite repetir la misma letra 3 o más veces seguidas.";
                 return false;
             }
+
+            // Solo permitir letras, números, espacios y los símbolos ! ¡ ? ¿
             if (!Regex.IsMatch(texto, @"^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s!¡?¿]+$"))
             {
                 mensajeError = "No se permiten símbolos especiales, a excepción de ! ¡ ? ¿";
                 return false;
             }
+
+            return true;
+        }
+
+        private bool ValidarTitulo(string texto, out string mensajeError)
+        {
+            mensajeError = "";
+            if (string.IsNullOrEmpty(texto)) return true;
+
+            // No permitir números
+            if (Regex.IsMatch(texto, @"\d"))
+            {
+                mensajeError = "El título no puede contener números.";
+                return false;
+            }
+
+            // No permitir más de 1 espacio seguido
+            if (Regex.IsMatch(texto, @"\s{2,}"))
+            {
+                mensajeError = "No se permite más de un espacio seguido por palabra.";
+                return false;
+            }
+
+            // No permitir 3 o más letras repetidas seguidas
+            if (Regex.IsMatch(texto, @"([a-zA-ZáéíóúÁÉÍÓÚñÑ])\1{2,}"))
+            {
+                mensajeError = "No se permite repetir la misma letra 3 o más veces seguidas.";
+                return false;
+            }
+
+            // Solo permitir letras, espacios y los símbolos ! ¡ ? ¿
+            if (!Regex.IsMatch(texto, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s!¡?¿]+$"))
+            {
+                mensajeError = "No se permiten números ni símbolos especiales, a excepción de ! ¡ ? ¿";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidarDescripcion(string texto, out string mensajeError)
+        {
+            mensajeError = "";
+            if (string.IsNullOrEmpty(texto)) return true;
+
+            // Límite de 100 caracteres
+            if (texto.Length > 100)
+            {
+                mensajeError = "La descripción no puede exceder los 100 caracteres.";
+                return false;
+            }
+
+            // No permitir números
+            if (Regex.IsMatch(texto, @"\d"))
+            {
+                mensajeError = "La descripción no puede contener números.";
+                return false;
+            }
+
+            // No permitir más de 1 espacio seguido
+            if (Regex.IsMatch(texto, @"\s{2,}"))
+            {
+                mensajeError = "No se permite más de un espacio seguido por palabra.";
+                return false;
+            }
+
+            // No permitir 3 o más letras repetidas seguidas
+            if (Regex.IsMatch(texto, @"([a-zA-ZáéíóúÁÉÍÓÚñÑ])\1{2,}"))
+            {
+                mensajeError = "No se permite repetir la misma letra 3 o más veces seguidas.";
+                return false;
+            }
+
+            // Solo permitir letras, espacios y los símbolos ! ¡ ? ¿
+            if (!Regex.IsMatch(texto, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s!¡?¿]+$"))
+            {
+                mensajeError = "No se permiten números ni símbolos especiales, a excepción de ! ¡ ? ¿";
+                return false;
+            }
+
             return true;
         }
 
@@ -91,13 +176,13 @@ namespace Optica.Formularios
             }
 
             string errorMsj;
-            if (!ValidarTexto(titulo, out errorMsj))
+            if (!ValidarTitulo(titulo, out errorMsj))
             {
                 MostrarAlerta("Título inválido: " + errorMsj, "error");
                 return;
             }
 
-            if (!ValidarTexto(descripcion, out errorMsj))
+            if (!ValidarDescripcion(descripcion, out errorMsj))
             {
                 MostrarAlerta("Descripción inválida: " + errorMsj, "error");
                 return;
@@ -119,10 +204,24 @@ namespace Optica.Formularios
                     return;
                 }
 
+                // Validar que solo contenga números
+                if (!Regex.IsMatch(precioRaw, @"^\d+$"))
+                {
+                    MostrarAlerta("El precio solo puede contener números.", "error");
+                    return;
+                }
+
                 precioFinal = valorPrecio.ToString("0.##") + " C$";
             }
-            else
+            else // Etiqueta
             {
+                // Validar que no contenga números
+                if (Regex.IsMatch(precioRaw, @"\d"))
+                {
+                    MostrarAlerta("La etiqueta no puede contener números.", "error");
+                    return;
+                }
+
                 if (!ValidarTexto(precioRaw, out errorMsj))
                 {
                     MostrarAlerta("Etiqueta inválida: " + errorMsj, "error");

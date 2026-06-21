@@ -115,13 +115,28 @@
 
         function confirmarBaja(sender) {
             Swal.fire({
-                title: '¿Bloquear?',
-                text: "El usuario perderá el acceso.",
+                title: '¿Desea bloquear el usuario?',
+                text: "El usuario perderá el acceso al sistema.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, bloquear'
+                confirmButtonText: 'Sí, bloquear',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => { if (result.isConfirmed) { eval(sender.href); } });
+            return false;
+        }
+
+        function confirmarReactivacion(sender) {
+            Swal.fire({
+                title: '¿Está seguro de reactivar al usuario?',
+                text: "El usuario podrá acceder al sistema nuevamente.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, reactivar',
+                cancelButtonText: 'Cancelar'
             }).then((result) => { if (result.isConfirmed) { eval(sender.href); } });
             return false;
         }
@@ -193,7 +208,7 @@
                                         <div style="display: flex; gap: 5px; justify-content: center;">
                                             <asp:LinkButton ID="btnEditar" runat="server" CommandName="Editar" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-primary" style="padding:4px 8px;"><i class="fa-solid fa-pen"></i></asp:LinkButton>
                                             <asp:LinkButton ID="btnBaja" runat="server" CommandName="DarBaja" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-danger" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-ban"></i></asp:LinkButton>
-                                            <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-success" style="padding:4px 8px;" OnClientClick="return confirmarBaja(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
+                                            <asp:LinkButton ID="btnReactivar" runat="server" CommandName="Reactivar" CommandArgument='<%# Eval("ID_Usuario") %>' CssClass="btn-std btn-success" style="padding:4px 8px;" OnClientClick="return confirmarReactivacion(this);" Visible='<%# !Convert.ToBoolean(Eval("Estado")) %>'><i class="fa-solid fa-check"></i></asp:LinkButton>
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
