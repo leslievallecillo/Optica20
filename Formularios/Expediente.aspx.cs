@@ -113,9 +113,13 @@ namespace Optica.Formularios
                     ddlCliente.SelectedValue = r["ID_Cliente"].ToString();
                     txtBeneficiario.Text = r["Beneficiario"].ToString();
                     txtFecha.Text = Convert.ToDateTime(r["Fecha"]).ToString("yyyy-MM-dd");
-                    txtOD.Text = r["OD"].ToString(); txtOD_AV.Text = r["OD_AV"].ToString();
-                    txtOI.Text = r["OI"].ToString(); txtOI_AV.Text = r["OI_AV"].ToString();
-                    txtADD.Text = r["AD_D"].ToString(); txtDP.Text = r["DP"].ToString(); txtALT.Text = r["ALT"].ToString();
+                    txtOD.Text = r["OD"].ToString();
+                    txtOD_AV.Text = r["OD_AV"] != DBNull.Value ? r["OD_AV"].ToString() : "";
+                    txtOI.Text = r["OI"].ToString();
+                    txtOI_AV.Text = r["OI_AV"] != DBNull.Value ? r["OI_AV"].ToString() : "";
+                    txtADD.Text = r["AD_D"].ToString();
+                    txtDP.Text = r["DP"].ToString();
+                    txtALT.Text = r["ALT"].ToString();
                     ddlProducto.SelectedValue = r["ID_Producto"].ToString();
                     ddlTratamiento.SelectedValue = r["ID_Tratamiento"] != DBNull.Value ? r["ID_Tratamiento"].ToString() : "";
                     lblTituloAccion.Text = "Modificar Expediente";
@@ -126,6 +130,18 @@ namespace Optica.Formularios
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
+            // Validar campos obligatorios
+            if (ddlCliente.SelectedValue == "")
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "err", "Swal.fire('Error', 'Debe seleccionar un cliente.', 'error');", true);
+                return;
+            }
+            if (ddlProducto.SelectedValue == "")
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "err", "Swal.fire('Error', 'Debe seleccionar un producto.', 'error');", true);
+                return;
+            }
+
             using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
             {
                 try
@@ -141,11 +157,20 @@ namespace Optica.Formularios
                     cmd.Parameters.AddWithValue("@cli", ddlCliente.SelectedValue);
                     cmd.Parameters.AddWithValue("@ben", txtBeneficiario.Text.Trim());
                     cmd.Parameters.AddWithValue("@fec", txtFecha.Text);
+
+                    // OD y OI son numéricos (con signo + o -)
                     cmd.Parameters.AddWithValue("@od", Normalizar(txtOD.Text));
                     cmd.Parameters.AddWithValue("@oi", Normalizar(txtOI.Text));
+
+                    // OD_AV y OI_AV son TEXTO (ej: "20/20", "20/30") - NO se normalizan
+                    cmd.Parameters.AddWithValue("@odav", txtOD_AV.Text.Trim());
+                    cmd.Parameters.AddWithValue("@oiav", txtOI_AV.Text.Trim());
+
+                    // ADD es numérico
                     cmd.Parameters.AddWithValue("@add", Normalizar(txtADD.Text));
-                    cmd.Parameters.AddWithValue("@odav", txtOD_AV.Text); cmd.Parameters.AddWithValue("@oiav", txtOI_AV.Text);
-                    cmd.Parameters.AddWithValue("@dp", txtDP.Text); cmd.Parameters.AddWithValue("@alt", txtALT.Text);
+                    cmd.Parameters.AddWithValue("@dp", txtDP.Text.Trim());
+                    cmd.Parameters.AddWithValue("@alt", txtALT.Text.Trim());
+
                     cmd.Parameters.AddWithValue("@prod", ddlProducto.SelectedValue);
                     cmd.Parameters.AddWithValue("@trat", string.IsNullOrEmpty(ddlTratamiento.SelectedValue) ? (object)DBNull.Value : ddlTratamiento.SelectedValue);
                     if (!string.IsNullOrEmpty(hfIDExpediente.Value)) cmd.Parameters.AddWithValue("@id", hfIDExpediente.Value);
@@ -154,7 +179,10 @@ namespace Optica.Formularios
                     ScriptManager.RegisterStartupScript(this, GetType(), "swal", "Swal.fire('Éxito', 'Guardado correctamente', 'success');", true);
                     PanelMantenimiento.Visible = false; PanelListado.Visible = true; CargarGrid();
                 }
-                catch (Exception ex) { ScriptManager.RegisterStartupScript(this, GetType(), "err", $"alert('{ex.Message}')", true); }
+                catch (Exception ex)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "err", $"Swal.fire('Error', '{ex.Message.Replace("'", "\\'")}', 'error');", true);
+                }
             }
         }
 

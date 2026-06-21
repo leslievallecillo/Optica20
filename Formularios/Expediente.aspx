@@ -105,7 +105,9 @@
                     <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             Mostrar <asp:DropDownList ID="ddlPageSize" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged" CssClass="form-control-formal" style="width: auto; display: inline-block;">
-                                <asp:ListItem>10</asp:ListItem><asp:ListItem>20</asp:ListItem><asp:ListItem Value="All">Todos</asp:ListItem>
+                                <asp:ListItem>10</asp:ListItem>
+                                <asp:ListItem>20</asp:ListItem>
+                                <asp:ListItem Value="All">Todos</asp:ListItem>
                             </asp:DropDownList>
                         </div>
                     </div>
@@ -187,4 +189,44 @@
             </div>
         </asp:Panel>
     </div>
+
+    <!-- Prevenir que Enter haga submit -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Buscar el formulario del MasterPage
+            var forms = document.getElementsByTagName('form');
+            var form = null;
+            for (var i = 0; i < forms.length; i++) {
+                if (forms[i].id && forms[i].id.indexOf('aspnetForm') !== -1) {
+                    form = forms[i];
+                    break;
+                }
+            }
+            if (!form && forms.length > 0) {
+                form = forms[0];
+            }
+
+            if (form) {
+                var inputs = form.querySelectorAll('input:not([type="submit"]):not([type="button"]):not([type="reset"]), select, textarea');
+                inputs.forEach(function (input) {
+                    input.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            var elements = Array.from(form.elements);
+                            var index = elements.indexOf(this);
+                            if (index < elements.length - 1) {
+                                for (var i = index + 1; i < elements.length; i++) {
+                                    if (elements[i].type !== 'submit' && elements[i].type !== 'button' && elements[i].type !== 'reset') {
+                                        elements[i].focus();
+                                        break;
+                                    }
+                                }
+                            }
+                            return false;
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </asp:Content>

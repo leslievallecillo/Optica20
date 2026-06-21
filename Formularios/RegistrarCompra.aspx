@@ -78,19 +78,109 @@
     </style>
 
     <script type="text/javascript">
-        document.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
+        // ============================================
+        // PREVENIR ENTER EN TODA LA PÁGINA (CORREGIDO)
+        // ============================================
+        function prevenirEnterGlobal(e) {
+            if (e.key === 'Enter') {
                 var target = e.target;
-                if (target.tagName === "TEXTAREA" || (target.tagName === "INPUT" && target.type === "submit")) return true;
-                if (!document.getElementById('modalProd').contains(target) && !document.getElementById('modalNuevoProducto').contains(target)) {
+
+                // Permitir Enter en textarea
+                if (target.tagName === 'TEXTAREA') return true;
+
+                // Si es FileUpload, prevenir completamente
+                if (target.type === 'file') {
                     e.preventDefault();
+                    e.stopPropagation();
+                    return false;
                 }
+
+                var modalProd = document.getElementById('modalProd');
+                var modalNuevo = document.getElementById('modalNuevoProducto');
+                var isInModal = (modalProd && modalProd.contains(target)) || (modalNuevo && modalNuevo.contains(target));
+
+                // SI ESTÁ EN UN MODAL, DEJAR QUE LAS FUNCIONES SALTOMODAL MANEJEN EL ENTER
+                if (isInModal) {
+                    // NO HACER NADA - DEJAR QUE SALTOMODAL NUEVO MANEJE EL ENTER
+                    return true;
+                }
+
+                // Fuera del modal, prevenir submit y navegar
+                e.preventDefault();
+                e.stopPropagation();
+                var form = target.form;
+                if (form) {
+                    var allInputs = Array.from(form.elements);
+                    var idx = allInputs.indexOf(target);
+                    for (var i = idx + 1; i < allInputs.length; i++) {
+                        var el = allInputs[i];
+                        if (el.type !== 'submit' && el.type !== 'button' && el.type !== 'reset' && el.type !== 'hidden' && !el.disabled) {
+                            el.focus();
+                            return false;
+                        }
+                    }
+                }
+                return false;
             }
+            return true;
+        }
+
+        function initPrevenirEnter() {
+            var form = document.querySelector('form');
+            if (form) {
+                var inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(function (input) {
+                    input.removeEventListener('keydown', prevenirEnterGlobal);
+                    input.addEventListener('keydown', prevenirEnterGlobal);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initPrevenirEnter();
         });
 
+        if (typeof Sys !== 'undefined') {
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+                initPrevenirEnter();
+            });
+        }
+
+        // ============================================
+        // SALTO MODAL NUEVO (CORREGIDO)
+        // ============================================
+        function saltoModalNuevo(e, siguienteID) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (siguienteID === 'CLICK_NUEVO') {
+                    var btnNuevo = document.getElementById('<%= btnGuardarNuevoProd.ClientID %>');
+                    if (btnNuevo && !btnNuevo.disabled) {
+                        btnNuevo.click();
+                    }
+                    return false;
+                } else {
+                    var next = document.getElementById(siguienteID);
+                    if (next) {
+                        next.focus();
+                        if (next.type !== "button" && next.type !== "file") {
+                            next.select();
+                        }
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // ============================================
+        // SALTO MODAL PRINCIPAL
+        // ============================================
         function saltoModal(e, siguienteID) {
             if (e.key === "Enter") {
                 e.preventDefault();
+                e.stopPropagation();
                 if (siguienteID === 'CLICK') {
                     var btn = document.getElementById('<%= btnModalAdd.ClientID %>');
                     if (btn) btn.click();
@@ -101,6 +191,9 @@
             }
         }
 
+        // ============================================
+        // FUNCIONES DE IMAGEN Y CÁLCULOS
+        // ============================================
         function verImagenFull(srcPath) {
             if (srcPath.includes("default-product.png") && srcPath.indexOf('data:image') === -1) return;
             Swal.fire({
@@ -151,6 +244,9 @@
             document.getElementById('lblMargenHelp').innerText = 'Margen real del ' + margenReal.toFixed(2) + '%. Se actualizará en Inventario.';
         }
 
+        // ============================================
+        // AUTOCOMPLETE
+        // ============================================
         function initAutocomplete() {
             $("#<%= txtBusquedaProducto.ClientID %>").autocomplete({
                 source: function (request, response) {
@@ -169,7 +265,7 @@
                     $("#<%= hfIdProductoSeleccionado.ClientID %>").val(i.item.val);
                     $("#<%= hfNombreProductoSeleccionado.ClientID %>").val(i.item.desc);
                     buscarPreciosHistoricos(i.item.val);
-                    setTimeout(function() { document.getElementById('<%= txtCantidad.ClientID %>').focus(); }, 100);
+                    setTimeout(function () { document.getElementById('<%= txtCantidad.ClientID %>').focus(); }, 100);
                 },
                 minLength: 2
             });
@@ -182,13 +278,13 @@
                 dataType: "json", type: "POST", contentType: "application/json; charset=utf-8",
                 success: function (data) {
                     if (data.d) {
-                        if(data.d.costo > 0) {
+                        if (data.d.costo > 0) {
                             $("#<%= txtPrecioUnitario.ClientID %>").val(data.d.costo.toFixed(2));
                             calcularAutomatica();
                         }
-                        if(data.d.precioVenta > 0) {
+                        if (data.d.precioVenta > 0) {
                             $("#<%= txtPrecioVenta.ClientID %>").val(data.d.precioVenta.toFixed(2));
-                            calcularMargenInverso(); 
+                            calcularMargenInverso();
                         }
                     }
                 }
@@ -197,19 +293,32 @@
 
         $(document).ready(function () {
             initAutocomplete();
+
             var prm = Sys.WebForms.PageRequestManager.getInstance();
-            prm.add_endRequest(function () { initAutocomplete(); });
+            prm.add_endRequest(function () {
+                initAutocomplete();
+                initPrevenirEnter();
+            });
         });
 
-        function openModal() { 
-            document.getElementById('modalProd').style.display = 'flex'; 
-            setTimeout(function() { document.getElementById('<%= txtBusquedaProducto.ClientID %>').focus(); }, 100);
+        // ============================================
+        // MODALES
+        // ============================================
+        function openModal() {
+            document.getElementById('modalProd').style.display = 'flex';
+            setTimeout(function () {
+                var input = document.getElementById('<%= txtBusquedaProducto.ClientID %>');
+                if (input) input.focus();
+            }, 100);
         }
         function closeModal() { document.getElementById('modalProd').style.display = 'none'; return false; }
 
         function abrirModalNuevoProducto() {
             document.getElementById('modalNuevoProducto').style.display = 'flex';
-            setTimeout(function() { document.getElementById('<%= txtCodNuevo.ClientID %>').focus(); }, 100);
+            setTimeout(function () {
+                var input = document.getElementById('<%= txtCodNuevo.ClientID %>');
+                if (input) input.focus();
+            }, 100);
             return false;
         }
         function cerrarModalNuevoProducto() { document.getElementById('modalNuevoProducto').style.display = 'none'; return false; }
@@ -300,6 +409,7 @@
         </div>
     </div>
 
+    <!-- MODAL PRINCIPAL -->
     <div id="modalProd" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -312,7 +422,7 @@
                         <div class="input-group-row">
                             <span class="field-label">Buscar Producto (Código o Nombre) <span style="color:red">*</span></span>
                             <div style="display: flex; gap: 10px;">
-                                <asp:TextBox ID="txtBusquedaProducto" runat="server" CssClass="ui-input" autocomplete="off" placeholder="Escriba para buscar..."></asp:TextBox>
+                                <asp:TextBox ID="txtBusquedaProducto" runat="server" CssClass="ui-input" autocomplete="off" placeholder="Escriba para buscar..." onkeydown="saltoModal(event, 'ContentPlaceHolder1_txtCantidad')"></asp:TextBox>
                                 <button type="button" class="btn-info-action" onclick="return abrirModalNuevoProducto()" title="Crear Producto Nuevo"><i class="fa-solid fa-plus"></i></button>
                             </div>
                             <asp:HiddenField ID="hfIdProductoSeleccionado" runat="server" />
@@ -354,6 +464,7 @@
         </div>
     </div>
 
+    <!-- MODAL NUEVO PRODUCTO CORREGIDO -->
     <div id="modalNuevoProducto" class="modal-overlay modal-overlay-top">
         <div class="modal-box">
             <div class="modal-header">
@@ -364,31 +475,56 @@
                 <asp:UpdatePanel ID="upNuevoProd" runat="server" UpdateMode="Conditional">
                     <ContentTemplate>
                         <div class="grid-2-col">
-                            <div class="input-group-row"><span class="field-label">Código <span style="color:red">*</span></span><asp:TextBox ID="txtCodNuevo" runat="server" CssClass="ui-input" autocomplete="off"></asp:TextBox></div>
-                            <div class="input-group-row"><span class="field-label">Categoría <span style="color:red">*</span></span><asp:DropDownList ID="ddlCatNueva" runat="server" CssClass="ui-input"></asp:DropDownList></div>
+                            <div class="input-group-row">
+                                <span class="field-label">Código <span style="color:red">*</span></span>
+                                <asp:TextBox ID="txtCodNuevo" runat="server" CssClass="ui-input" autocomplete="off" onkeydown="saltoModalNuevo(event, 'ContentPlaceHolder1_txtDescNueva')"></asp:TextBox>
+                            </div>
+                            <div class="input-group-row">
+                                <span class="field-label">Categoría <span style="color:red">*</span></span>
+                                <asp:DropDownList ID="ddlCatNueva" runat="server" CssClass="ui-input" onkeydown="saltoModalNuevo(event, 'ContentPlaceHolder1_txtMarcaNueva')"></asp:DropDownList>
+                            </div>
                         </div>
 
-                        <div class="input-group-row"><span class="field-label">Descripción <span style="color:red">*</span></span><asp:TextBox ID="txtDescNueva" runat="server" CssClass="ui-input" autocomplete="off"></asp:TextBox></div>
+                        <div class="input-group-row">
+                            <span class="field-label">Descripción <span style="color:red">*</span></span>
+                            <asp:TextBox ID="txtDescNueva" runat="server" CssClass="ui-input" autocomplete="off" onkeydown="saltoModalNuevo(event, 'ContentPlaceHolder1_txtMarcaNueva')"></asp:TextBox>
+                        </div>
 
                         <div class="grid-2-col">
-                            <div class="input-group-row"><span class="field-label">Marca</span><asp:TextBox ID="txtMarcaNueva" runat="server" CssClass="ui-input" autocomplete="off"></asp:TextBox></div>
-                            <div class="input-group-row"><span class="field-label">Modelo</span><asp:TextBox ID="txtModeloNuevo" runat="server" CssClass="ui-input" autocomplete="off"></asp:TextBox></div>
+                            <div class="input-group-row">
+                                <span class="field-label">Marca</span>
+                                <asp:TextBox ID="txtMarcaNueva" runat="server" CssClass="ui-input" autocomplete="off" onkeydown="saltoModalNuevo(event, 'ContentPlaceHolder1_txtModeloNuevo')"></asp:TextBox>
+                            </div>
+                            <div class="input-group-row">
+                                <span class="field-label">Modelo</span>
+                                <asp:TextBox ID="txtModeloNuevo" runat="server" CssClass="ui-input" autocomplete="off" onkeydown="saltoModalNuevo(event, 'ContentPlaceHolder1_txtAroNuevo')"></asp:TextBox>
+                            </div>
                         </div>
                         <div class="grid-2-col">
-                            <div class="input-group-row"><span class="field-label">Tipo Aro</span><asp:TextBox ID="txtAroNuevo" runat="server" CssClass="ui-input" autocomplete="off"></asp:TextBox></div>
-                            <div class="input-group-row"><span class="field-label">Color</span><asp:TextBox ID="txtColorNuevo" runat="server" CssClass="ui-input" autocomplete="off"></asp:TextBox></div>
+                            <div class="input-group-row">
+                                <span class="field-label">Tipo Aro</span>
+                                <asp:TextBox ID="txtAroNuevo" runat="server" CssClass="ui-input" autocomplete="off" onkeydown="saltoModalNuevo(event, 'ContentPlaceHolder1_txtColorNuevo')"></asp:TextBox>
+                            </div>
+                            <div class="input-group-row">
+                                <span class="field-label">Color</span>
+                                <asp:TextBox ID="txtColorNuevo" runat="server" CssClass="ui-input" autocomplete="off" onkeydown="saltoModalNuevo(event, 'CLICK_NUEVO')"></asp:TextBox>
+                            </div>
                         </div>
 
                         <div class="input-group-row">
                             <span class="field-label">Imagen del Producto</span>
                             <div class="upload-box">
                                 <asp:Image ID="imgNuevoProdPreview" runat="server" CssClass="preview-small" title="Click para ampliar" onclick="verImagenFull(this.src)" ImageUrl="~/Images/default-product.png" />
-                                <div style="flex-grow: 1;"><asp:FileUpload ID="fuImagenNueva" runat="server" CssClass="ui-input" style="padding-top: 9px;" onchange="previewImageNew(this);" /></div>
+                                <div style="flex-grow: 1;">
+                                    <asp:FileUpload ID="fuImagenNueva" runat="server" CssClass="ui-input" style="padding-top: 9px;" onchange="previewImageNew(this);" />
+                                </div>
                             </div>
                         </div>
 
                         <asp:Label ID="lblErrorNuevoProd" runat="server" ForeColor="#ef4444" Visible="false" style="display:block; margin-bottom:15px; font-weight:600; text-align:center;"></asp:Label>
-                        <asp:Button ID="btnGuardarNuevoProd" runat="server" Text="Guardar y Seleccionar" CssClass="btn-success-action" Width="100%" style="justify-content:center;" OnClick="btnGuardarNuevoProd_Click" />
+                        <div style="text-align:right; margin-top:15px;">
+                            <asp:Button ID="btnGuardarNuevoProd" runat="server" Text="Guardar y Seleccionar" CssClass="btn-success-action" OnClick="btnGuardarNuevoProd_Click" UseSubmitBehavior="false" />
+                        </div>
                     </ContentTemplate>
                     <Triggers><asp:PostBackTrigger ControlID="btnGuardarNuevoProd" /></Triggers>
                 </asp:UpdatePanel>

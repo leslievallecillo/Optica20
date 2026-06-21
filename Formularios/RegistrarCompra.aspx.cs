@@ -40,7 +40,34 @@ namespace Optica.Compras
             {
                 CargarListas();
                 GenerarCodigoVisual();
+
+                if (Session["UsuarioID"] != null)
+                {
+                    CargarUsuario();
+                }
             }
+        }
+
+        private void CargarUsuario()
+        {
+            using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
+            {
+                try
+                {
+                    con.Open();
+                    string sql = "SELECT CONCAT(Nombres, ' ', Apellidos) FROM usuario WHERE ID_Usuario = @id";
+                    MySqlCommand cmd = new MySqlCommand(sql, con);
+                    cmd.Parameters.AddWithValue("@id", Session["UsuarioID"]);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        lblUsuario.Text = result.ToString();
+                    }
+                }
+                catch { }
+            }
+
+            lblFecha.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
         }
 
         private void GenerarCodigoVisual()
@@ -212,7 +239,6 @@ namespace Optica.Compras
                 using (MySqlConnection con = new MySqlConnection(Conexion.CadenaConexion))
                 {
                     con.Open();
-                    // SE CORRIGIÓ: Se añaden las columnas TipoAro y Color a la consulta SQL
                     string sql = @"INSERT INTO producto (Codigo, ID_Categoria, Descripcion, Marca, Modelo, TipoAro, Color, RutaImagen, Stock, Precio, Estado, FechaRegistro)
                                    VALUES (@Cod, @Cat, @Desc, @Mar, @Mod, @Aro, @Col, @Img, 0, 0.00, 1, CURDATE()); SELECT LAST_INSERT_ID();";
 
@@ -242,7 +268,7 @@ namespace Optica.Compras
             catch (Exception ex) { lblErrorNuevoProd.Text = "Error: " + ex.Message; lblErrorNuevoProd.Visible = true; }
         }
 
-        // --- FINALIZAR COMPRA (Firma de método corregida) ---
+        // --- FINALIZAR COMPRA ---
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             if (ddlProveedor.SelectedValue == "0" || DtItems.Rows.Count == 0) { MostrarAlerta("Datos incompletos.", "warning"); return; }
